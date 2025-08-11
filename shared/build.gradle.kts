@@ -74,7 +74,6 @@ kotlin {
         androidMain {
             dependsOn(commonComposeMain)
             dependencies {
-                implementation(libs.koin.android)
             }
         }
 
