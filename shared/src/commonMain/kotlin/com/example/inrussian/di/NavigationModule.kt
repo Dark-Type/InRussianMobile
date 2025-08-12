@@ -9,9 +9,15 @@ import com.example.inrussian.components.auth.passwordRecovery.enterEmail.Default
 import com.example.inrussian.components.auth.passwordRecovery.enterRecoveryCode.DefaultEnterRecoveryCodeComponent
 import com.example.inrussian.components.auth.passwordRecovery.updatePassword.DefaultUpdatePasswordComponent
 import com.example.inrussian.components.auth.root.DefaultAuthRootComponent
+import com.example.inrussian.components.main.home.DefaultCourseDetailsComponent
 import com.example.inrussian.components.main.home.DefaultHomeComponent
+import com.example.inrussian.components.main.profile.DefaultAboutComponent
+import com.example.inrussian.components.main.profile.DefaultEditProfileComponent
+import com.example.inrussian.components.main.profile.DefaultPrivacyPolicyComponent
 import com.example.inrussian.components.main.profile.DefaultProfileComponent
 import com.example.inrussian.components.main.root.DefaultMainRootComponent
+import com.example.inrussian.components.main.train.DefaultSectionDetailComponent
+import com.example.inrussian.components.main.train.DefaultTasksComponent
 import com.example.inrussian.components.main.train.DefaultTrainComponent
 import com.example.inrussian.components.onboarding.language.DefaultLanguageComponent
 import com.example.inrussian.components.onboarding.root.DefaultOnboardingRootComponent
@@ -34,6 +40,17 @@ val navigationModule = module {
                 authComponentFactory = get(QAuthRootFactory),
                 onboardingComponentFactory = get(QOnboardingRootFactory),
                 mainComponentFactory = get(QMainRootFactory),
+            )
+        }
+    }
+    factory<MainRootFactory>(qualifier = QMainRootFactory) {
+        { componentContext, onOutput ->
+            DefaultMainRootComponent(
+                componentContext = componentContext,
+                onOutput = onOutput,
+                homeFactory = get(QHomeFactory),
+                trainFactory = get(QTrainFactory),
+                profileFactory = get(QProfileFactory)
             )
         }
     }
@@ -68,17 +85,6 @@ val navigationModule = module {
         }
     }
 
-    factory<MainRootFactory>(qualifier = QMainRootFactory) {
-        { componentContext, onOutput ->
-            DefaultMainRootComponent(
-                componentContext = componentContext,
-                onOutput = onOutput,
-                homeComponentFactory = get(),
-                trainComponentFactory = get(),
-                profileComponentFactory = get()
-            )
-        }
-    }
 
     factory<BaseAuthFactory>(qualifier = QBaseAuthFactory) {
         { componentContext, onOutput ->
@@ -101,23 +107,7 @@ val navigationModule = module {
     }
 
 
-    factory<HomeFactory>(qualifier = QHomeFactory) {
-        { componentContext, onOutput ->
-            DefaultHomeComponent(
-                componentContext = componentContext,
-                onOutput = onOutput
-            )
-        }
-    }
 
-    factory<TrainFactory>(qualifier = QTrainFactory) {
-        { componentContext, onOutput ->
-            DefaultTrainComponent(
-                componentContext = componentContext,
-                onOutput = onOutput
-            )
-        }
-    }
     factory<RegisterFactory>(qualifier = QRegisterFactory) {
         { componentContext, onOutput ->
             DefaultRegisterComponent(
@@ -164,16 +154,6 @@ val navigationModule = module {
         }
     }
 
-
-    factory<ProfileFactory>(qualifier = QProfileFactory) {
-        { componentContext, onOutput ->
-            DefaultProfileComponent(
-                componentContext = componentContext,
-                onOutput = onOutput,
-                userRepository = get()
-            )
-        }
-    }
     factory<LanguageFactory>(qualifier = QLanguageFactory) {
         { componentContext, onOutput ->
             DefaultLanguageComponent(componentContext, onOutput)
@@ -204,6 +184,94 @@ val navigationModule = module {
            DefaultInteractiveOnboardingComponent(onOutput)
         }
     }
+    factory<CourseDetailsComponentFactory>(qualifier = QCourseDetailsComponentFactory) {
+        { componentContext, courseId, onOutput ->
+            DefaultCourseDetailsComponent(
+                componentContext = componentContext,
+                courseId = courseId,
+                onOutput = onOutput
+            )
+        }
+    }
 
+    factory<TasksComponentFactory>(qualifier = QTasksComponentFactory) {
+        { componentContext, sectionId, option, onOutput ->
+            DefaultTasksComponent(
+                componentContext = componentContext,
+                sectionId = sectionId,
+                option = option,
+                onOutput = onOutput
+            )
+        }
+    }
 
+    factory<SectionDetailComponentFactory>(qualifier = QSectionDetailComponentFactory) {
+        { componentContext, sectionId, onOutput ->
+            DefaultSectionDetailComponent(
+                componentContext = componentContext,
+                sectionId = sectionId,
+                onOutput = onOutput,
+                tasksFactory = get(QTasksComponentFactory)
+            )
+        }
+    }
+    factory<EditProfileComponentFactory>(qualifier = QEditProfileComponentFactory) {
+        { componentContext, onOutput ->
+            DefaultEditProfileComponent(
+                componentContext = componentContext,
+                onOutput = onOutput
+            )
+        }
+    }
+
+    factory<AboutComponentFactory>(qualifier = QAboutComponentFactory) {
+        { componentContext, onOutput ->
+            DefaultAboutComponent(
+                componentContext = componentContext,
+                onOutput = onOutput
+            )
+        }
+    }
+
+    factory<PrivacyPolicyComponentFactory>(qualifier = QPrivacyPolicyComponentFactory) {
+        { componentContext, onOutput ->
+            DefaultPrivacyPolicyComponent(
+                componentContext = componentContext,
+                onOutput = onOutput
+            )
+        }
+    }
+
+    factory<HomeFactory>(qualifier = QHomeFactory) {
+        { componentContext, onOutput ->
+            DefaultHomeComponent(
+                componentContext = componentContext,
+                onOutput = onOutput,
+                courseDetailsComponentFactory = get(QCourseDetailsComponentFactory),
+            )
+        }
+    }
+
+    factory<TrainFactory>(qualifier = QTrainFactory) {
+        { componentContext, onOutput ->
+            DefaultTrainComponent(
+                componentContext = componentContext,
+                onOutput = onOutput,
+                sectionDetailComponentFactory = get(QSectionDetailComponentFactory),
+            )
+        }
+    }
+
+    factory<ProfileFactory>(qualifier = QProfileFactory) {
+        { componentContext, onOutput ->
+            DefaultProfileComponent(
+                componentContext = componentContext,
+                onOutput = onOutput,
+                userRepository = get(),
+                editProfileFactory = get(QEditProfileComponentFactory),
+                aboutFactory = get(QAboutComponentFactory),
+                privacyPolicyFactory = get(QPrivacyPolicyComponentFactory)
+            )
+        }
+    }
 }

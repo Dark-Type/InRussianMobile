@@ -95,7 +95,7 @@ class DefaultRootComponent(
 
     private fun onMainOutput(output: MainOutput) {
         when (output) {
-            is MainOutput.Logout -> {
+            is MainOutput.NavigateBack -> {
                 rootStore.accept(RootIntent.ShowAuth)
                 navigation.replaceAll(Configuration.Auth)
             }

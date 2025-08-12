@@ -12,9 +12,11 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.inrussian.components.main.root.MainRootComponent
 import com.example.inrussian.navigation.configurations.MainConfiguration
 import com.example.inrussian.root.main.home.HomeComponentUi
@@ -24,8 +26,9 @@ import com.example.inrussian.root.main.train.TrainComponentUi
 
 @Composable
 fun MainRootComponentUi(component: MainRootComponent) {
-    val stack = component.stack.value
+    val stack by component.childStack.subscribeAsState()
     val current = stack.active.instance
+    val activeTab = component.activeTab.value
 
     Box(modifier = Modifier.fillMaxSize()) {
         when (current) {
@@ -40,20 +43,20 @@ fun MainRootComponentUi(component: MainRootComponent) {
                 .padding(bottom = 8.dp)
         ) {
             NavigationBarItem(
-                selected = current is MainRootComponent.Child.HomeChild,
-                onClick = { component.selectTab(MainConfiguration.Home) },
+                selected = activeTab == MainRootComponent.Tab.Home,
+                onClick = { component.openTab(MainRootComponent.Tab.Home) },
                 icon = { Icon(Icons.Default.Home, contentDescription = "Дом") },
                 label = { Text("Главная") }
             )
             NavigationBarItem(
-                selected = current is MainRootComponent.Child.TrainChild,
-                onClick = { component.selectTab(MainConfiguration.Train) },
+                selected = activeTab == MainRootComponent.Tab.Train,
+                onClick = { component.openTab(MainRootComponent.Tab.Train) },
                 icon = { Icon(Icons.Default.Info, contentDescription = "Тренировка") },
                 label = { Text("Тренировка") }
             )
             NavigationBarItem(
-                selected = current is MainRootComponent.Child.ProfileChild,
-                onClick = { component.selectTab(MainConfiguration.Profile) },
+                selected = activeTab == MainRootComponent.Tab.Profile,
+                onClick = { component.openTab(MainRootComponent.Tab.Profile) },
                 icon = { Icon(Icons.Default.Person, contentDescription = "Профиль") },
                 label = { Text("Профиль") }
             )
