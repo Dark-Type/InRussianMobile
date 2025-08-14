@@ -29,6 +29,7 @@ kotlin {
             dependencies {
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.decompose)
+                implementation(compose.components.resources)
                 implementation(libs.mvikotlin)
                 implementation(libs.mvikotlin.main)
                 implementation(libs.mvikotlin.coroutines)

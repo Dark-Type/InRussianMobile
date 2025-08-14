@@ -1,47 +1,156 @@
 package com.example.inrussian.root.auth.base
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.Composable
-import com.example.inrussian.components.auth.base.BaseAuthComponent
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.inrussian.components.auth.base.BaseAuthComponent
+import com.example.inrussian.ui.theme.Black
+import com.example.inrussian.ui.theme.Blue
+import com.example.inrussian.ui.theme.DarkGrey
+import com.example.inrussian.ui.theme.LightBlue
+import com.example.inrussian.ui.theme.Orange
+import inrussian.composeapp.generated.resources.Res
+import inrussian.composeapp.generated.resources.enter_with_ss
+import inrussian.composeapp.generated.resources.placeholder
+import inrussian.composeapp.generated.resources.sign_in
+import inrussian.composeapp.generated.resources.sign_in_with_vk
+import inrussian.composeapp.generated.resources.sign_in_with_yandex
+import inrussian.composeapp.generated.resources.sign_up
+import inrussian.composeapp.generated.resources.vk
+import inrussian.composeapp.generated.resources.yandex
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun BaseAuthUi(component: BaseAuthComponent) {
 
 
-
-    Column(modifier = Modifier.padding(16.dp)) {
-
-        Spacer(modifier = Modifier.fillMaxHeight(0.7f))
-
+    Column(
+        modifier = Modifier.padding(horizontal = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+        ) {
+            Image(
+                painter = painterResource(Res.drawable.placeholder),
+                "",
+                modifier = Modifier
+                    .fillMaxSize()
+            )
+        }
         Button(
             onClick = { component.onLoginClicked() },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(45.dp),
+            colors = ButtonDefaults.buttonColors()
+                .copy(containerColor = Blue, disabledContainerColor = LightBlue.copy(alpha = 0.8f)),
+            shape = RoundedCornerShape(8.dp)
         ) {
-            Text("Войти")
+            Text(stringResource(Res.string.sign_up))
         }
         Button(
             onClick = { component.onRegisterClicked() },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp)
+                .padding(top = 14.dp)
+                .height(45.dp),
+            colors = ButtonDefaults.buttonColors()
+                .copy(containerColor = Orange, disabledContainerColor = Orange.copy(alpha = 0.8f)),
+            shape = RoundedCornerShape(8.dp)
         ) {
-            Text("Регистрация")
+            Text(stringResource(Res.string.sign_in))
+
+        }
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(top = 24.dp, bottom = 12.dp)
+        ) {
+            HorizontalDivider(modifier = Modifier.weight(1f), thickness = 1.dp, color = DarkGrey)
+            Text(stringResource(Res.string.enter_with_ss), textAlign = TextAlign.Center)
+            HorizontalDivider(modifier = Modifier.weight(1f), thickness = 1.dp, color = DarkGrey)
         }
         Button(
             onClick = { component.onSsoClicked() },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp)
+                .padding(top = 14.dp)
+                .height(45.dp),
+            colors = ButtonDefaults.buttonColors()
+                .copy(
+                    containerColor = LightBlue,
+                    disabledContainerColor = LightBlue.copy(alpha = 0.8f)
+                ),
+            shape = RoundedCornerShape(8.dp)
         ) {
-            Text("Войти через SSO")
+            Icon( painterResource(Res.drawable.vk), "", modifier = Modifier.size(24.dp))
+            Spacer(Modifier.width(14.dp))
+            Text(stringResource(Res.string.sign_in_with_vk))
         }
+        Button(
+            onClick = { component.onSsoClicked() },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 14.dp, bottom = 47.dp)
+                .height(45.dp),
+            colors = ButtonDefaults.buttonColors()
+                .copy(containerColor = Black, disabledContainerColor = Orange.copy(alpha = 0.8f)),
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Icon(
+                painterResource(Res.drawable.yandex),
+                "",
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(Modifier.width(14.dp))
+            Text(stringResource(Res.string.sign_in_with_yandex))
+        }
+    }
+}
+
+class BaseAuth() : BaseAuthComponent {
+
+
+    @Composable
+    @Preview(showBackground = true, showSystemUi = true)
+    fun PreviewBaseAuthUi() {
+        BaseAuthUi(this)
+    }
+
+    override fun onLoginClicked() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onRegisterClicked() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onSsoClicked() {
+        TODO("Not yet implemented")
     }
 }
