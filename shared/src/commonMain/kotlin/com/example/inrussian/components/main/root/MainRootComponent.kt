@@ -5,7 +5,6 @@ import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
-import com.arkivanov.decompose.router.stack.navigate
 import com.arkivanov.decompose.value.Value
 import com.example.inrussian.navigation.configurations.MainConfiguration
 import com.example.inrussian.components.main.home.HomeComponent
@@ -29,7 +28,6 @@ interface MainRootComponent {
 
     enum class Tab { Home, Train, Profile }
 
-    // Keeping Child sealed interface as-is
     sealed interface Child {
         data class HomeChild(val component: HomeComponent) : Child
         data class TrainChild(val component: TrainComponent) : Child
@@ -109,7 +107,6 @@ class DefaultMainRootComponent(
     }
 }
 
-// Small extension to map Value<T> to Value<R>
 private inline fun <T : Any, R : Any> Value<T>.map(crossinline transformer: (T) -> R): Value<R> =
     object : Value<R>() {
         override val value: R get() = transformer(this@map.value)

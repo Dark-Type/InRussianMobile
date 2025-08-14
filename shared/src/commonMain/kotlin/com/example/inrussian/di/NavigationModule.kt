@@ -176,12 +176,12 @@ val navigationModule = module {
     }
     factory<ConfirmationFactory>(qualifier = QConfirmationFactory) {
         { componentContext, onOutput ->
-           DefaultConfirmationComponent(onOutput)
+            DefaultConfirmationComponent(onOutput)
         }
     }
     factory<InteractiveOnboardingFactory>(qualifier = QInteractiveOnboardingFactory) {
         { componentContext, onOutput ->
-           DefaultInteractiveOnboardingComponent(onOutput)
+            DefaultInteractiveOnboardingComponent(onOutput)
         }
     }
     factory<CourseDetailsComponentFactory>(qualifier = QCourseDetailsComponentFactory) {

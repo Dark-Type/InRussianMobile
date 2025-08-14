@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -10,6 +11,7 @@ plugins {
 }
 
 kotlin {
+    // --- Android target ---
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
@@ -17,39 +19,32 @@ kotlin {
         }
     }
 
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "Shared"
-            isStatic = true
-        }
-    }
+    // --- iOS targets ---
+    val iosX64Target = iosX64()
+    val iosArm64Target = iosArm64()
+    val iosSimArm64Target = iosSimulatorArm64()
 
     sourceSets {
-        commonMain.dependencies {
-            implementation(libs.kotlinx.coroutines.core)
-
-            implementation(libs.decompose)
-
-            implementation(libs.mvikotlin)
-            implementation(libs.mvikotlin.main)
-            implementation(libs.mvikotlin.coroutines)
-
-            implementation(libs.koin.core)
-
-            implementation(libs.kotlinx.serialization.json)
+        val commonMain by getting {
+            dependencies {
+                implementation(libs.kotlinx.coroutines.core)
+                implementation(libs.decompose)
+                implementation(libs.mvikotlin)
+                implementation(libs.mvikotlin.main)
+                implementation(libs.mvikotlin.coroutines)
+                implementation(libs.koin.core)
+                implementation(libs.kotlinx.serialization.json)
+            }
         }
-
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
-            implementation(libs.mvikotlin.main)
+        val commonTest by getting {
+            dependencies {
+                implementation(libs.kotlin.test)
+                implementation(libs.mvikotlin.main)
+            }
         }
 
         val commonComposeMain by creating {
-            dependsOn(commonMain.get())
+            dependsOn(commonMain)
             dependencies {
                 implementation(compose.runtime)
                 implementation(compose.foundation)
@@ -59,47 +54,87 @@ kotlin {
                 implementation(compose.components.uiToolingPreview)
 
                 implementation(libs.decompose.compose)
-
                 implementation(libs.koin.compose)
             }
         }
 
-        val commonIosMain by creating {
-            dependsOn(commonMain.get())
-            dependencies {
-                // iOS-specific shared dependencies if needed
-            }
-        }
-
-        androidMain {
+        val androidMain by getting {
             dependsOn(commonComposeMain)
-            dependencies {
-            }
         }
 
-        iosMain {
-            dependsOn(commonIosMain)
-            dependencies {
-                // iOS platform dependencies
-            }
+
+        val nativeMain by creating {
+            dependsOn(commonMain)
+        }
+        val nativeTest by creating {
+            dependsOn(commonTest)
         }
 
-        val androidInstrumentedTest by getting {
+        val iosMain by creating {
+            dependsOn(nativeMain)
+
             dependencies {
-                implementation(libs.mvikotlin.timetravel)
-                implementation(libs.mvikotlin.logging)
+                implementation(compose.runtime)
             }
+        }
+        val iosTest by creating {
+            dependsOn(nativeTest)
+        }
+
+        val iosX64Main by getting {
+            dependsOn(iosMain)
+        }
+        val iosArm64Main by getting {
+            dependsOn(iosMain)
+        }
+        val iosSimulatorArm64Main by getting {
+            dependsOn(iosMain)
+        }
+
+        val iosX64Test by getting {
+            dependsOn(iosTest)
+        }
+        val iosArm64Test by getting {
+            dependsOn(iosTest)
+        }
+        val iosSimulatorArm64Test by getting {
+            dependsOn(iosTest)
+        }
+    }
+
+    val xcf = XCFramework()
+    listOf(iosX64Target, iosArm64Target, iosSimArm64Target).forEach { target ->
+        target.binaries.framework {
+            baseName = "Shared"
+            isStatic = true
+            xcf.add(this)
         }
     }
 }
+
 android {
     namespace = "com.example.inrussian.shared"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
+
+    defaultConfig {
+        minSdk = libs.versions.android.minSdk.get().toInt()
+    }
+
+    sourceSets {
+        named("main") {
+            kotlin.srcDir("src/androidMain/kotlin")
+            res.srcDir("src/androidMain/res")
+            manifest.srcFile("src/androidMain/AndroidManifest.xml")
+        }
+
+        named("androidTest") {
+            kotlin.srcDir("src/androidTest/kotlin")
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
-    }
 }
+

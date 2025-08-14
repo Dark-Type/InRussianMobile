@@ -10,13 +10,11 @@ import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 
 object SharedDI {
-
     private var koinApp: KoinApplication? = null
 
     val koin: Koin
         get() = koinApp?.koin
             ?: error("Koin is not started. Call SharedDI.start(...) on platform startup first.")
-
     fun start(vararg platformModules: Module) {
         if (koinApp == null) {
             koinApp = startKoin {

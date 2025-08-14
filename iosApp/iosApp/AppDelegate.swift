@@ -8,6 +8,6 @@
 
 import UIKit
 
-class AppDelegate: NSObject, UIApplicationDelegate {
-    let rootHolder: RootHolder = RootHolder()
-}
+//class AppDelegate: NSObject, UIApplicationDelegate {
+//    let rootHolder: RootHolder = RootHolder()
+//}
