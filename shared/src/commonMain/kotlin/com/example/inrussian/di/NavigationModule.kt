@@ -43,6 +43,7 @@ val navigationModule = module {
             )
         }
     }
+
     factory<MainRootFactory>(qualifier = QMainRootFactory) {
         { componentContext, onOutput ->
             DefaultMainRootComponent(
