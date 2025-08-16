@@ -12,9 +12,12 @@
     <string name="confirm_password">Подтверждение пароля</string>
     <string name="write_email">Укажите почту, на которую придет код подтверждения</string>
     <string name="send_code">Отправить код подтверждения</string>
+    <string name="sms_code">Код из сообщения</string>
+    <string name="is_no_got_mail">Не пришло письмо?</string>
+    <string name="check_spam">Убедитесь, что сообщение на почте не было отправлено в папку спам</string>
     <string name="repeat_send_code">Отправить еще один код через</string>
     <string name="password_recovery">Восстановлениe \n пароля</string>
-
+    <string name="support_contact">Связаться с поддержкой</string>
 
 
 </resources>
