@@ -113,47 +113,50 @@ fun EnterRecoveryCodeUi(component: EnterRecoveryCodeComponent) {
         ) {
             Icon(vectorResource(Res.drawable.question), "", tint = Orange)
         }
-
-        Box(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .fillMaxSize()
-                .clickable {
-                    component.onMissClick()
-                },
-            contentAlignment = Alignment.Center,
-
-            ) {
-            Column(
+        if (state.showHint)
+            Box(
                 modifier = Modifier
-                    .padding(horizontal = 72.dp)
-                    .clip(RoundedCornerShape(18.dp))
-                    .background(LightGrey)
-                    .padding(horizontal = 16.dp)
-            ) {
-                Text(
-                    stringResource(Res.string.is_no_got_mail),
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(top = 14.dp, bottom = 4.dp),
-                    textAlign = TextAlign.Center,
-                    fontSize = 12.sp,
-                    color = DarkGrey100
-                )
-                Text(
-                    stringResource(Res.string.check_spam),
-                    Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    fontSize = 12.sp,
-                    color = DarkGrey100.copy(alpha = 0.8f)
-                )
-                Spacer(Modifier.height(14.dp))
-                HorizontalDivider()
-                TextButton(component::onSupportContactClick, modifier = Modifier.fillMaxWidth()) {
-                    Text(stringResource(Res.string.support_contact), color = LightBlue)
+                    .align(Alignment.Center)
+                    .fillMaxSize()
+                    .clickable {
+                        component.onMissClick()
+                    },
+                contentAlignment = Alignment.Center,
+
+                ) {
+                Column(
+                    modifier = Modifier
+                        .padding(horizontal = 72.dp)
+                        .clip(RoundedCornerShape(18.dp))
+                        .background(LightGrey)
+                        .padding(horizontal = 16.dp)
+                ) {
+                    Text(
+                        stringResource(Res.string.is_no_got_mail),
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 14.dp, bottom = 4.dp),
+                        textAlign = TextAlign.Center,
+                        fontSize = 12.sp,
+                        color = DarkGrey100
+                    )
+                    Text(
+                        stringResource(Res.string.check_spam),
+                        Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        fontSize = 12.sp,
+                        color = DarkGrey100.copy(alpha = 0.8f)
+                    )
+                    Spacer(Modifier.height(14.dp))
+                    HorizontalDivider()
+                    TextButton(
+                        component::onSupportContactClick,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(stringResource(Res.string.support_contact), color = LightBlue)
+                    }
                 }
             }
-        }
 
     }
 
