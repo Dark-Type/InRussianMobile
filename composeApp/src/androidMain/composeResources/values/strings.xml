@@ -13,7 +13,7 @@
     <string name="write_email">Укажите почту, на которую придет код подтверждения</string>
     <string name="send_code">Отправить код подтверждения</string>
     <string name="repeat_send_code">Отправить еще один код через</string>
-    <string name="password_recovery">Восстановление пароля</string>
+    <string name="password_recovery">Восстановлениe \n пароля</string>
 
 
 

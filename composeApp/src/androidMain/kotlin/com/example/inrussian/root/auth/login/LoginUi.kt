@@ -29,6 +29,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.inrussian.components.auth.login.LoginComponent
+import com.example.inrussian.ui.theme.CommonButton
+import com.example.inrussian.ui.theme.CommonTextField
 import com.example.inrussian.ui.theme.DarkGrey
 import com.example.inrussian.ui.theme.Orange
 import inrussian.composeapp.generated.resources.Res
@@ -86,48 +88,7 @@ fun LoginUi(component: LoginComponent) {
 }
 
 
-@Composable
-fun CommonTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: String,
-    visualTransformation: VisualTransformation? = null,
-    icon: ImageVector? = null,
-    onIconClick: () -> Unit = {},
-    placeholder: String = ""
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(label) },
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(10.dp),
-        visualTransformation = visualTransformation ?: VisualTransformation.None,
-        trailingIcon = if (icon != null) (@Composable {
-            IconButton(onIconClick) {
-                Icon(
-                    icon, "", Modifier
-                        .size(24.dp)
-                )
-            }
-        }) else null, placeholder = { Text(placeholder) }
-    )
-}
 
-@Composable
-fun CommonButton(text: String, enable: Boolean, onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
-        enabled = enable,
-        shape = RoundedCornerShape(10.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Orange,
-            disabledContainerColor = DarkGrey
-        ), modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(text, Modifier.padding(vertical = 6.dp))
-    }
-}
 
 class LoginUi() : LoginComponent {
     override fun onLogin(email: String, password: String) {
