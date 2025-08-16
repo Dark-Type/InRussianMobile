@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
-import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.inrussian.components.main.train.DefaultSectionDetailComponent
 import com.example.inrussian.components.main.train.TrainComponent
 

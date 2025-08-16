@@ -1,0 +1,41 @@
+//
+//  TabBarView.swift
+//  InRussian
+//
+//  Created by dark type on 16.08.2025.
+//
+
+import SwiftUI
+import Shared
+
+struct TabBarView: View {
+    let activeTab: MainRootComponentTab
+    let onTabSelected: (MainRootComponentTab) -> Void
+
+    var body: some View {
+        HStack {
+            TabBarItem(
+                isSelected: activeTab == .home,
+                icon: "house",
+                label: "Главная",
+                action: { onTabSelected(.home) }
+            )
+            TabBarItem(
+                isSelected: activeTab == .train,
+                icon: "book.pages",
+                label: "Тренировка",
+                action: { onTabSelected(.train) }
+            )
+            TabBarItem(
+                isSelected: activeTab == .profile,
+                icon: "person.crop.circle",
+                label: "Профиль",
+                action: { onTabSelected(.profile) }
+            )
+        }
+        .padding(.vertical, 8)
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(radius: 4)
+    }
+}
