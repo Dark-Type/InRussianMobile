@@ -77,10 +77,6 @@ typealias UpdatePasswordFactory = (ComponentContext, (UpdatePasswordOutput) -> U
 typealias RegisterFactory = (ComponentContext, (RegisterOutput) -> Unit) -> RegisterComponent
 typealias SsoPopoverFactory = (ComponentContext, (SsoPopoverOutput) -> Unit) -> SsoPopoverComponent
 
-//stores
-typealias LoginStoreFactory = (StoreFactory) -> LoginStore
-typealias RegisterStoreFactory = (StoreFactory) -> RegisterStore
-typealias RecoveryStoreFactory = (StoreFactory) -> RecoveryStore
 
 
 

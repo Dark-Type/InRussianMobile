@@ -30,6 +30,7 @@ import inrussian.composeapp.generated.resources.forgot_password
 import inrussian.composeapp.generated.resources.password
 import inrussian.composeapp.generated.resources.placeholder
 import inrussian.composeapp.generated.resources.sign_in
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -37,7 +38,7 @@ import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun LoginUi(component: LoginComponent) {
-    val state by component.state.collectAsState()
+    val state by component.state.collectAsState(Dispatchers.Main.immediate)
 
     Column(modifier = Modifier.padding(16.dp)) {
         Box(
@@ -54,7 +55,7 @@ fun LoginUi(component: LoginComponent) {
         }
         CommonTextField(
             value = state.email,
-            onValueChange = component::onEmailChange,
+            onValueChange = { component.onEmailChange(it) },
             label = stringResource(Res.string.email),
             error = state.emailError,
             icon = if (state.email.isBlank()) null else vectorResource(
@@ -67,7 +68,9 @@ fun LoginUi(component: LoginComponent) {
             onValueChange = component::onPasswordChange,
             label = stringResource(Res.string.password),
             error = state.passwordError,
-            icon = if (state.showPassword) vectorResource(Res.drawable.eye_show) else vectorResource(
+            icon = if (state.password.isBlank()) null else if (state.showPassword) vectorResource(
+                Res.drawable.eye_show
+            ) else vectorResource(
                 Res.drawable.eye_off
             ),
             onIconClick = component::onShowPasswordClick,

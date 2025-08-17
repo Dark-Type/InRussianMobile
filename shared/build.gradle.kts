@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
+    id("dev.icerock.mobile.multiplatform-resources")
 }
 
 kotlin {
@@ -20,6 +21,7 @@ kotlin {
     }
 
     // --- iOS targets ---
+
     val iosX64Target = iosX64()
     val iosArm64Target = iosArm64()
     val iosSimArm64Target = iosSimulatorArm64()
@@ -27,7 +29,9 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                api(libs.resources)
                 api(libs.kotlinx.datetime)
+                implementation(libs.kermit)
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.decompose)
                 implementation(compose.components.resources)
@@ -110,6 +114,8 @@ kotlin {
             baseName = "Shared"
             isStatic = true
             xcf.add(this)
+            export(libs.resources)
+            export("dev.icerock.moko:graphics:0.9.0")
         }
     }
 }
@@ -139,4 +145,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 }
-
+multiplatformResources{
+    multiplatformResourcesPackage = "com.exemple.inrussian.kmp_sharingresources"
+    multiplatformResourcesClassName = "SharedRes"
+}

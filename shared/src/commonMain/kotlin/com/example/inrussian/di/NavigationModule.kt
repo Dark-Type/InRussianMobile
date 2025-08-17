@@ -98,23 +98,8 @@ val navigationModule = module {
 
     factory<LoginFactory>(qualifier = QLoginFactory) {
         { componentContext, onOutput ->
-            DefaultLoginComponent(
-                componentContext = componentContext,
-                onOutput = onOutput,
-                store = get()
-            )
+            DefaultLoginComponent(componentContext, onOutput, get())
         }
-    }
-
-    factory<LoginStoreFactory>(qualifier = QLoginStoreFactory) {
-        { storeFactory ->
-            com.example.inrussian.stores.auth.login.LoginStoreFactory(
-                storeFactory = storeFactory,
-                errorDecoder = get(),
-                repository = get()
-            ).create()
-        }
-
     }
 
     factory<RegisterFactory>(qualifier = QRegisterFactory) {
@@ -125,17 +110,6 @@ val navigationModule = module {
                 store = get()
             )
         }
-    }
-
-    factory<RegisterStoreFactory>(qualifier = QRegisterStoreFactory) {
-        { storeFactory ->
-            com.example.inrussian.stores.auth.register.RegisterStoreFactory(
-                storeFactory = storeFactory,
-                errorDecoder = get(),
-                validator = get()
-            ).create()
-        }
-
     }
 
     factory<SsoPopoverFactory>(qualifier = QSsoPopoverFactory) {
@@ -165,16 +139,6 @@ val navigationModule = module {
         }
     }
 
-    factory<RecoveryStoreFactory>(qualifier = QRecoveryStoreFactory) {
-        { storeFactory ->
-            com.example.inrussian.stores.auth.recovery.RecoveryStoreFactory(
-                storeFactory = storeFactory,
-                errorDecoder = get(),
-                validator = get(),
-                repository = get()
-            ).create()
-        }
-    }
 
     factory<UpdatePasswordFactory>(qualifier = QUpdatePasswordFactory) {
         { componentContext, onOutput ->

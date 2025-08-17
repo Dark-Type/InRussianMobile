@@ -1,5 +1,6 @@
 package com.example.inrussian.stores.auth.login
 
+import co.touchlab.kermit.Logger
 import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.SimpleBootstrapper
 import com.arkivanov.mvikotlin.core.store.Store
@@ -83,7 +84,10 @@ class LoginStoreFactory(
                     }
                 }
 
-                is LoginStore.Intent.EmailChange -> dispatch(LoginStore.Msg.EmailChanged(intent.email))
+                is LoginStore.Intent.EmailChange -> {
+                    Logger.i {  "changeEmail"}
+                    dispatch(LoginStore.Msg.EmailChanged(intent.email))
+                }
                 LoginStore.Intent.EmailImageClick -> dispatch(LoginStore.Msg.EmailChanged(""))
                 is LoginStore.Intent.PasswordChange -> dispatch(
                     LoginStore.Msg.PasswordChanged(
@@ -99,10 +103,13 @@ class LoginStoreFactory(
     private object ReducerImpl : Reducer<LoginStore.State, LoginStore.Msg> {
         override fun LoginStore.State.reduce(msg: LoginStore.Msg): LoginStore.State = when (msg) {
             LoginStore.Msg.Confirm -> copy(loading = true)
-            is LoginStore.Msg.EmailChanged -> copy(
-                email = msg.email,
-                emailError = null,
-            )
+            is LoginStore.Msg.EmailChanged -> {
+                Logger.i {  "changeEmail2"}
+                copy(
+                    email = msg.email,
+                    emailError = null,
+                )
+            }
 
             is LoginStore.Msg.EmailError -> copy(emailError = msg.messageId)
             LoginStore.Msg.Loading -> copy(
@@ -110,7 +117,7 @@ class LoginStoreFactory(
             )
 
             is LoginStore.Msg.PasswordChanged -> copy(
-                email = msg.password,
+                password = msg.password,
                 passwordError = null,
             )
 

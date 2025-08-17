@@ -3,10 +3,11 @@ package com.example.inrussian.components.auth.register
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.mvikotlin.core.instancekeeper.getStore
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
+import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import com.example.inrussian.stores.auth.register.RegisterStore
 import com.example.inrussian.stores.auth.register.RegisterStore.Intent
 import com.example.inrussian.utile.componentCoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
@@ -32,9 +33,10 @@ class DefaultRegisterComponent(
     private val onOutput: (RegisterOutput) -> Unit,
     private val store: RegisterStore,
 ) : RegisterComponent, ComponentContext by componentContext {
-    override val state = MutableStateFlow(store.state)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override val state = store.stateFlow
     val scope = componentCoroutineScope()
-    private val _store = instanceKeeper.getStore { store }
+
     init {
         scope.launch {
             store.labels.collect {
@@ -82,6 +84,7 @@ class DefaultRegisterComponent(
     override fun onEmailDeleteClick() {
         store.accept(Intent.EmailImageClick)
     }
+
     companion object {
         private const val KEY = "LoginComponentState"
     }
