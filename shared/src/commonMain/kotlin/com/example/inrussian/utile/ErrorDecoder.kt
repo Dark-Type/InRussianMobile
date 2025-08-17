@@ -10,6 +10,7 @@ object ErrorDecoder {
             ErrorType.InvalidEmail -> TODO()
             ErrorType.InvalidPassword -> TODO()
             ErrorType.UnAuthorize -> TODO()
+            ErrorType.IncorrectCode -> TODO()
         }
     }
 }

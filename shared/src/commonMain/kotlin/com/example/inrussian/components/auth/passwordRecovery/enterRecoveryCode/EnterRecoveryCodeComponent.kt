@@ -1,20 +1,22 @@
 package com.example.inrussian.components.auth.passwordRecovery.enterRecoveryCode
 
 import com.arkivanov.decompose.ComponentContext
-import com.example.inrussian.models.state.EnterRecoveryCodeState
-import com.example.inrussian.repository.auth.AuthRepository
+import com.arkivanov.mvikotlin.extensions.coroutines.labels
+import com.example.inrussian.stores.auth.recovery.RecoveryStore
+import com.example.inrussian.stores.auth.recovery.RecoveryStore.Intent
+import com.example.inrussian.utile.componentCoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 interface EnterRecoveryCodeComponent {
-    val state: StateFlow<EnterRecoveryCodeState>
+    val state: StateFlow<RecoveryStore.State>
 
     fun onCodeEntered(code: String)
     fun onBackClicked()
 
     fun onQuestionClick()
 
-    fun emailChange(email: String)
     fun codeChange(code: String)
 
     fun onMissClick()
@@ -30,20 +32,25 @@ sealed class EnterRecoveryCodeOutput {
 class DefaultEnterRecoveryCodeComponent(
     componentContext: ComponentContext,
     private val onOutput: (EnterRecoveryCodeOutput) -> Unit,
-    private val authRepository: AuthRepository,
+    private val store: RecoveryStore,
 ) : EnterRecoveryCodeComponent, ComponentContext by componentContext {
-    override val state = MutableStateFlow<EnterRecoveryCodeState>(
-        EnterRecoveryCodeState(
-            email = "",
-            code = "",
-            timer = "",
-            sendButtonEnable = false,
-            showHint = false
-        )
-    )
+    override val state = MutableStateFlow(store.state)
+    val scope = componentCoroutineScope()
+
+    init {
+        scope.launch {
+            store.labels.collect {
+                when (it) {
+                    RecoveryStore.Label.SetCorrectCode -> onOutput(EnterRecoveryCodeOutput.NavigateToUpdatePassword)
+                    else -> {}
+                }
+
+            }
+        }
+    }
 
     override fun onCodeEntered(code: String) {
-        onOutput(EnterRecoveryCodeOutput.NavigateToUpdatePassword)
+        store.accept(Intent.ContinueClick)
     }
 
     override fun onBackClicked() {
@@ -51,23 +58,20 @@ class DefaultEnterRecoveryCodeComponent(
     }
 
     override fun onQuestionClick() {
-        TODO("Not yet implemented")
+        store.accept(Intent.QuestionClick)
     }
 
-    override fun emailChange(email: String) {
-        TODO("Not yet implemented")
-    }
 
     override fun codeChange(code: String) {
-        TODO("Not yet implemented")
+        store.accept(Intent.CodeChange(code))
     }
 
     override fun onMissClick() {
-        TODO("Not yet implemented")
+        store.accept(Intent.QuestionDismiss)
     }
 
     override fun onSupportContactClick() {
-        TODO("Not yet implemented")
+        store.accept(Intent.QuestionButtonClick)
     }
 
 }

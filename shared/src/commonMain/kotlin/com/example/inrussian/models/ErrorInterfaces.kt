@@ -11,3 +11,5 @@ interface NetworkError
 interface LoginError
 
 interface RegisterError
+
+interface PasswordRecoveryError

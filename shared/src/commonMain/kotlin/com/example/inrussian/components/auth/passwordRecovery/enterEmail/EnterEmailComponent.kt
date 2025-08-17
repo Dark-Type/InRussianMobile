@@ -1,25 +1,50 @@
 package com.example.inrussian.components.auth.passwordRecovery.enterEmail
 
 import com.arkivanov.decompose.ComponentContext
-import com.example.inrussian.repository.auth.AuthRepository
+import com.arkivanov.mvikotlin.extensions.coroutines.labels
+import com.example.inrussian.stores.auth.recovery.RecoveryStore
+import com.example.inrussian.utile.componentCoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
-interface EnterEmailComponent{
-    fun onEmailEntered(email: String)
+interface EnterEmailComponent {
+    val state: StateFlow<RecoveryStore.State>
+    fun omEmailChange(email: String)
     fun onBackClicked()
+    fun onContinueClick()
 }
 
 class DefaultEnterEmailComponent(
     componentContext: ComponentContext,
     private val onOutput: (EnterEmailOutput) -> Unit,
-    private val authRepository: AuthRepository
+    private val store: RecoveryStore,
 ) : EnterEmailComponent, ComponentContext by componentContext {
+    override val state = MutableStateFlow(store.state)
+    override fun omEmailChange(email: String) {
+        store.accept(RecoveryStore.Intent.EmailChange(email))
+    }
 
-    override fun onEmailEntered(email: String) {
+    val scope = componentCoroutineScope()
 
-        onOutput(EnterEmailOutput.NavigateToRecoveryCode)
+    init {
+        scope.launch {
+            store.labels.collect {
+                when (it) {
+                    RecoveryStore.Label.SetEmail -> onOutput(EnterEmailOutput.NavigateToRecoveryCode)
+                    else -> {}
+                }
+            }
+        }
     }
 
     override fun onBackClicked() {
         onOutput(EnterEmailOutput.NavigateBack)
     }
+
+    override fun onContinueClick() {
+        store.accept(RecoveryStore.Intent.ContinueClick)
+    }
+
+
 }

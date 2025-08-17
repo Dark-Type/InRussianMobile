@@ -56,6 +56,7 @@ import com.example.inrussian.components.onboarding.interactiveOnboarding.Interac
 import com.example.inrussian.components.root.RootComponent
 import com.example.inrussian.stores.auth.login.LoginStore
 import com.example.inrussian.stores.auth.login.LoginStoreFactory
+import com.example.inrussian.stores.auth.recovery.RecoveryStore
 import com.example.inrussian.stores.auth.register.RegisterStore
 import org.koin.core.qualifier.named
 
@@ -77,8 +78,9 @@ typealias RegisterFactory = (ComponentContext, (RegisterOutput) -> Unit) -> Regi
 typealias SsoPopoverFactory = (ComponentContext, (SsoPopoverOutput) -> Unit) -> SsoPopoverComponent
 
 //stores
-typealias LoginStoreFactory = (StoreFactory,) -> LoginStore
-typealias RegisterStoreFactory = (StoreFactory,) -> RegisterStore
+typealias LoginStoreFactory = (StoreFactory) -> LoginStore
+typealias RegisterStoreFactory = (StoreFactory) -> RegisterStore
+typealias RecoveryStoreFactory = (StoreFactory) -> RecoveryStore
 
 
 
@@ -91,6 +93,7 @@ val QEnterEmailFactory = named("EnterEmailFactory")
 val QEnterRecoveryCodeFactory = named("EnterRecoveryCodeFactory")
 val QUpdatePasswordFactory = named("UpdatePasswordFactory")
 val QLoginStoreFactory = named("LoginStoreFactory")
+val QRecoveryStoreFactory =named("RecoveryStoreFactory")
 
 typealias LanguageFactory = (ComponentContext, (LanguageOutput) -> Unit) -> LanguageComponent
 

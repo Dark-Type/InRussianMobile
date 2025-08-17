@@ -151,7 +151,7 @@ val navigationModule = module {
             DefaultEnterEmailComponent(
                 componentContext = componentContext,
                 onOutput = onOutput,
-                authRepository = get()
+                store = get()
             )
         }
     }
@@ -160,10 +160,22 @@ val navigationModule = module {
             DefaultEnterRecoveryCodeComponent(
                 componentContext = componentContext,
                 onOutput = onOutput,
-                authRepository = get()
+                store = get()
             )
         }
     }
+
+    factory<RecoveryStoreFactory>(qualifier = QRecoveryStoreFactory) {
+        { storeFactory ->
+            com.example.inrussian.stores.auth.recovery.RecoveryStoreFactory(
+                storeFactory = storeFactory,
+                errorDecoder = get(),
+                validator = get(),
+                repository = get()
+            ).create()
+        }
+    }
+
     factory<UpdatePasswordFactory>(qualifier = QUpdatePasswordFactory) {
         { componentContext, onOutput ->
             DefaultUpdatePasswordComponent(

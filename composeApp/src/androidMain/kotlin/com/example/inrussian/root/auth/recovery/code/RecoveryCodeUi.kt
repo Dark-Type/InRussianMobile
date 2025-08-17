@@ -30,7 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.inrussian.components.auth.passwordRecovery.enterRecoveryCode.EnterRecoveryCodeComponent
-import com.example.inrussian.models.state.EnterRecoveryCodeState
+import com.example.inrussian.stores.auth.recovery.RecoveryStore
 import com.example.inrussian.ui.theme.CommonButton
 import com.example.inrussian.ui.theme.CommonTextField
 import com.example.inrussian.ui.theme.DarkGrey100
@@ -87,13 +87,6 @@ fun EnterRecoveryCodeUi(component: EnterRecoveryCodeComponent) {
                 modifier = Modifier.padding(top = 30.dp),
             )
             CommonTextField(
-                value = state.email,
-                onValueChange = component::emailChange,
-                label = stringResource(Res.string.email),
-            )
-
-            Spacer(modifier = Modifier.height(18.dp))
-            CommonTextField(
                 value = state.code,
                 onValueChange = component::codeChange,
                 label = stringResource(Res.string.sms_code),
@@ -113,7 +106,7 @@ fun EnterRecoveryCodeUi(component: EnterRecoveryCodeComponent) {
         ) {
             Icon(vectorResource(Res.drawable.question), "", tint = Orange)
         }
-        if (state.showHint)
+        if (state.questionShow)
             Box(
                 modifier = Modifier
                     .align(Alignment.Center)
@@ -163,11 +156,7 @@ fun EnterRecoveryCodeUi(component: EnterRecoveryCodeComponent) {
 }
 
 class RegisterUi : EnterRecoveryCodeComponent {
-    override val state = MutableStateFlow<EnterRecoveryCodeState>(
-        EnterRecoveryCodeState(
-            email = "", code = "", timer = "", sendButtonEnable = false, showHint = false
-        )
-    )
+    override val state = MutableStateFlow(RecoveryStore.State())
 
     @Preview(showBackground = true, showSystemUi = true)
     @Composable
@@ -184,10 +173,6 @@ class RegisterUi : EnterRecoveryCodeComponent {
     }
 
     override fun onQuestionClick() {
-        TODO("Not yet implemented")
-    }
-
-    override fun emailChange(email: String) {
         TODO("Not yet implemented")
     }
 
