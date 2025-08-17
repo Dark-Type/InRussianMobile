@@ -1,9 +1,9 @@
-package com.example.inrussian.stores
+package com.example.inrussian.stores.auth.login
 
 import com.arkivanov.mvikotlin.core.store.Store
-import com.example.inrussian.stores.LoginStore.Intent
-import com.example.inrussian.stores.LoginStore.Label
-import com.example.inrussian.stores.LoginStore.State
+import com.example.inrussian.stores.auth.login.LoginStore.Intent
+import com.example.inrussian.stores.auth.login.LoginStore.Label
+import com.example.inrussian.stores.auth.login.LoginStore.State
 import org.jetbrains.compose.resources.StringResource
 
 interface LoginStore : Store<Intent, State, Label> {

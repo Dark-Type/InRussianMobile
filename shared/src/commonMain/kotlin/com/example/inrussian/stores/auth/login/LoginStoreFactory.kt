@@ -1,28 +1,14 @@
-package com.example.inrussian.stores
+package com.example.inrussian.stores.auth.login
 
 import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.SimpleBootstrapper
 import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
-import com.example.inrussian.components.auth.login.LoginOutput
 import com.example.inrussian.models.ErrorType
 import com.example.inrussian.models.LoginError
 import com.example.inrussian.models.models.LoginModel
 import com.example.inrussian.repository.auth.AuthRepository
-import com.example.inrussian.stores.LoginStore.Action
-import com.example.inrussian.stores.LoginStore.Intent
-import com.example.inrussian.stores.LoginStore.Label
-import com.example.inrussian.stores.LoginStore.Msg
-import com.example.inrussian.stores.LoginStore.Msg.Confirm
-import com.example.inrussian.stores.LoginStore.Msg.EmailChanged
-import com.example.inrussian.stores.LoginStore.Msg.EmailError
-import com.example.inrussian.stores.LoginStore.Msg.FinishLoading
-import com.example.inrussian.stores.LoginStore.Msg.Loading
-import com.example.inrussian.stores.LoginStore.Msg.PasswordChanged
-import com.example.inrussian.stores.LoginStore.Msg.PasswordError
-import com.example.inrussian.stores.LoginStore.Msg.PasswordTransform
-import com.example.inrussian.stores.LoginStore.State
 import com.example.inrussian.utile.ErrorDecoder
 import kotlinx.coroutines.launch
 
@@ -32,26 +18,26 @@ class LoginStoreFactory(
     private val repository: AuthRepository,
 ) {
     fun create(): LoginStore =
-        object : LoginStore, Store<Intent, State, Label> by storeFactory.create(
-            name = "AuthStore",
-            initialState = State(),
+        object : LoginStore, Store<LoginStore.Intent, LoginStore.State, LoginStore.Label> by storeFactory.create(
+            name = "LoginStore",
+            initialState = LoginStore.State(),
             bootstrapper = SimpleBootstrapper(),
             executorFactory = ::ExecutorImpl,
             reducer = ReducerImpl,
         ) {}
 
-    private inner class ExecutorImpl : CoroutineExecutor<Intent, Action, State, Msg, Label>() {
+    private inner class ExecutorImpl : CoroutineExecutor<LoginStore.Intent, LoginStore.Action, LoginStore.State, LoginStore.Msg, LoginStore.Label>() {
 
-        override fun executeAction(action: Action) {
+        override fun executeAction(action: LoginStore.Action) {
         }
 
-        override fun executeIntent(intent: Intent) {
+        override fun executeIntent(intent: LoginStore.Intent) {
             when (intent) {
-                Intent.LoginClick -> {
+                LoginStore.Intent.LoginClick -> {
                     scope.launch {
                         val state = state()
                         try {
-                            dispatch(Loading)
+                            dispatch(LoginStore.Msg.Loading)
                             val token = repository.login(
                                 LoginModel(
                                     email = state.email,
@@ -59,13 +45,13 @@ class LoginStoreFactory(
                                 )
                             ).refreshToken
                             repository.saveRefreshToken(token)
-                            publish(Label.SubmittedSuccessfully)
+                            publish(LoginStore.Label.SubmittedSuccessfully)
 
                         } catch (e: ErrorType) {
                             if (e is LoginError) {
                                 when (e) {
                                     ErrorType.InvalidEmail -> dispatch(
-                                        EmailError(
+                                        LoginStore.Msg.EmailError(
                                             errorDecoder.decode(
                                                 e
                                             )
@@ -73,7 +59,7 @@ class LoginStoreFactory(
                                     )
 
                                     ErrorType.InvalidPassword -> dispatch(
-                                        PasswordError(
+                                        LoginStore.Msg.PasswordError(
                                             errorDecoder.decode(
                                                 e
                                             )
@@ -81,7 +67,7 @@ class LoginStoreFactory(
                                     )
 
                                     ErrorType.UnAuthorize -> dispatch(
-                                        PasswordError(
+                                        LoginStore.Msg.PasswordError(
                                             errorDecoder.decode(
                                                 e
                                             )
@@ -89,46 +75,50 @@ class LoginStoreFactory(
                                     )
                                 }
                             }
-                            publish(Label.SubmissionFailed)
+                            publish(LoginStore.Label.SubmissionFailed)
 
                         }
-                        dispatch(FinishLoading)
+                        dispatch(LoginStore.Msg.FinishLoading)
 
                     }
                 }
 
-                is Intent.EmailChange -> dispatch(EmailChanged(intent.email))
-                Intent.EmailImageClick -> dispatch(EmailChanged(""))
-                is Intent.PasswordChange -> dispatch(PasswordChanged(intent.password))
-                Intent.PasswordImageClick -> dispatch(PasswordTransform)
+                is LoginStore.Intent.EmailChange -> dispatch(LoginStore.Msg.EmailChanged(intent.email))
+                LoginStore.Intent.EmailImageClick -> dispatch(LoginStore.Msg.EmailChanged(""))
+                is LoginStore.Intent.PasswordChange -> dispatch(
+                    LoginStore.Msg.PasswordChanged(
+                        intent.password
+                    )
+                )
+                LoginStore.Intent.PasswordImageClick -> dispatch(LoginStore.Msg.PasswordTransform)
             }
         }
     }
 
 
-    private object ReducerImpl : Reducer<State, Msg> {
-        override fun State.reduce(msg: Msg): State = when (msg) {
-            Confirm -> copy(loading = true)
-            is EmailChanged -> copy(
+    private object ReducerImpl : Reducer<LoginStore.State, LoginStore.Msg> {
+        override fun LoginStore.State.reduce(msg: LoginStore.Msg): LoginStore.State = when (msg) {
+            LoginStore.Msg.Confirm -> copy(loading = true)
+            is LoginStore.Msg.EmailChanged -> copy(
                 email = msg.email,
                 emailError = null,
             )
 
-            is EmailError -> copy(emailError = msg.messageId)
-            Loading -> copy(
+            is LoginStore.Msg.EmailError -> copy(emailError = msg.messageId)
+            LoginStore.Msg.Loading -> copy(
                 loading = true, emailError = null, passwordError = null,
             )
 
-            is PasswordChanged -> copy(
+            is LoginStore.Msg.PasswordChanged -> copy(
                 email = msg.password,
                 passwordError = null,
             )
 
-            is PasswordError -> copy(passwordError = msg.messageId)
+            is LoginStore.Msg.PasswordError -> copy(passwordError = msg.messageId)
 
-            PasswordTransform -> copy(showPassword = !showPassword)
-            Msg.DeleteEmail -> copy(email = "")
-            Msg.FinishLoading -> copy(loading = false)
+            LoginStore.Msg.PasswordTransform -> copy(showPassword = !showPassword)
+            LoginStore.Msg.DeleteEmail -> copy(email = "")
+            LoginStore.Msg.FinishLoading -> copy(loading = false)
         }
     }
 

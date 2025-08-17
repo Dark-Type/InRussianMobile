@@ -2,9 +2,9 @@ package com.example.inrussian.components.auth.login
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
-import com.example.inrussian.stores.LoginStore
-import com.example.inrussian.stores.LoginStore.Intent
-import com.example.inrussian.stores.LoginStore.Label
+import com.example.inrussian.stores.auth.login.LoginStore
+import com.example.inrussian.stores.auth.login.LoginStore.Intent
+import com.example.inrussian.stores.auth.login.LoginStore.Label
 import com.example.inrussian.utile.componentCoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,7 +30,7 @@ class DefaultLoginComponent(
     private val onOutput: (LoginOutput) -> Unit,
     private val store: LoginStore
 ) : LoginComponent, ComponentContext by componentContext {
-    override val state = MutableStateFlow(LoginStore.State())
+    override val state = MutableStateFlow(store.state)
     val scope = componentCoroutineScope()
 
     init {

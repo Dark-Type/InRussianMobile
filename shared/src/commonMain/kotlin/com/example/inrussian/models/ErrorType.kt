@@ -2,13 +2,12 @@ package com.example.inrussian.models
 
 sealed class ErrorType : Throwable() {
 
-    data object InvalidEmail : ErrorType(), FieldError, EmailError, AuthError,LoginError
+    data object InvalidEmail : ErrorType(), FieldError, EmailError, LoginError, RegisterError
 
-    data object InvalidPassword : ErrorType(), FieldError, PasswordError, AuthError,LoginError
+    data object InvalidPassword : ErrorType(), FieldError, PasswordError, LoginError, RegisterError
 
-    data object InvalidConfirmPassword : ErrorType(), FieldError, PasswordError, AuthError
+    data object InvalidConfirmPassword : ErrorType(), FieldError, PasswordError,  RegisterError
 
-    data object UnAuthorize : ErrorType(), NetworkError, AuthError
-    data object UnAuthorize1 : ErrorType()
+    data object UnAuthorize : ErrorType(), NetworkError
 
 }

@@ -54,8 +54,9 @@ import com.example.inrussian.components.onboarding.education.EducationOutput
 import com.example.inrussian.components.onboarding.interactiveOnboarding.InteractiveOnboardingComponent
 import com.example.inrussian.components.onboarding.interactiveOnboarding.InteractiveOnboardingOutput
 import com.example.inrussian.components.root.RootComponent
-import com.example.inrussian.stores.LoginStore
-import com.example.inrussian.stores.LoginStoreFactory
+import com.example.inrussian.stores.auth.login.LoginStore
+import com.example.inrussian.stores.auth.login.LoginStoreFactory
+import com.example.inrussian.stores.auth.register.RegisterStore
 import org.koin.core.qualifier.named
 
 typealias AuthRootFactory = (ComponentContext, (AuthOutput) -> Unit) -> AuthRootComponent
@@ -77,11 +78,13 @@ typealias SsoPopoverFactory = (ComponentContext, (SsoPopoverOutput) -> Unit) -> 
 
 //stores
 typealias LoginStoreFactory = (StoreFactory,) -> LoginStore
+typealias RegisterStoreFactory = (StoreFactory,) -> RegisterStore
 
 
 
 val QBaseAuthFactory = named("BaseAuthFactory")
 val QRegisterFactory = named("RegisterFactory")
+val QRegisterStoreFactory = named("RegisterStoreFactory")
 val QSsoPopoverFactory = named("SsoPopoverFactory")
 val QLoginFactory = named("LoginFactory")
 val QEnterEmailFactory = named("EnterEmailFactory")

@@ -18,7 +18,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.inrussian.components.auth.login.LoginComponent
-import com.example.inrussian.stores.LoginStore.State
+import com.example.inrussian.stores.auth.login.LoginStore.State
 import com.example.inrussian.ui.theme.CommonButton
 import com.example.inrussian.ui.theme.CommonTextField
 import inrussian.composeapp.generated.resources.Res
@@ -77,7 +77,7 @@ fun LoginUi(component: LoginComponent) {
         CommonButton(
             onClick = { component.onLogin(state.email, state.password) },
             text = stringResource(Res.string.sign_in),
-            enable = true,
+            enable = state.isButtonActive,
         )
         Spacer(modifier = Modifier.height(8.dp))
         TextButton(

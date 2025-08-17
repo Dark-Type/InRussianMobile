@@ -8,6 +8,6 @@ interface EmailError
 
 interface NetworkError
 
-interface AuthError
-
 interface LoginError
+
+interface RegisterError

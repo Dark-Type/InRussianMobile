@@ -1,10 +1,14 @@
 package com.example.inrussian.components.auth.register
 
 import com.arkivanov.decompose.ComponentContext
-import com.example.inrussian.models.state.RegisterState
-import com.example.inrussian.repository.auth.AuthRepository
+import com.arkivanov.mvikotlin.core.instancekeeper.getStore
+import com.arkivanov.mvikotlin.extensions.coroutines.labels
+import com.example.inrussian.stores.auth.register.RegisterStore
+import com.example.inrussian.stores.auth.register.RegisterStore.Intent
+import com.example.inrussian.utile.componentCoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 interface RegisterComponent {
     fun onRegister(email: String, password: String)
@@ -15,7 +19,7 @@ interface RegisterComponent {
     fun onShowPasswordClick()
     fun onShowConfirmPasswordClick()
     fun onEmailDeleteClick()
-    val state: StateFlow<RegisterState>
+    val state: StateFlow<RegisterStore.State>
 }
 
 sealed class RegisterOutput {
@@ -26,12 +30,28 @@ sealed class RegisterOutput {
 class DefaultRegisterComponent(
     componentContext: ComponentContext,
     private val onOutput: (RegisterOutput) -> Unit,
-    private val authRepository: AuthRepository
+    private val store: RegisterStore,
 ) : RegisterComponent, ComponentContext by componentContext {
-    override val state = MutableStateFlow(RegisterState())
+    override val state = MutableStateFlow(store.state)
+    val scope = componentCoroutineScope()
+    private val _store = instanceKeeper.getStore { store }
+    init {
+        scope.launch {
+            store.labels.collect {
+                when (it) {
+                    RegisterStore.Label.SubmittedSuccessfully ->
+                        onOutput(RegisterOutput.AuthenticationSuccess)
+                }
+            }
+        }
+        scope.launch {
+
+        }
+
+    }
 
     override fun onRegister(email: String, password: String) {
-        onOutput(RegisterOutput.AuthenticationSuccess)
+        store.accept(Intent.SignUpClick)
     }
 
     override fun onBackClicked() {
@@ -39,31 +59,30 @@ class DefaultRegisterComponent(
     }
 
     override fun changeEmail(email: String) {
-        state.value = state.value.copy(email = email)
+        store.accept(Intent.EmailChange(email))
     }
 
     override fun changePassword(password: String) {
-        state.value = state.value.copy(password = password)
+        store.accept(Intent.PasswordChange(password))
     }
 
     override fun changeConfirmPassword(confirmPassword: String) {
-        state.value = state.value.copy(confirmPassword = confirmPassword)
-
+        store.accept(Intent.ConfirmPasswordChange(confirmPassword))
     }
 
     override fun onShowPasswordClick() {
-        state.value = state.value.copy(showPassword = !state.value.showPassword)
-
+        store.accept(Intent.PasswordImageClick)
     }
 
     override fun onShowConfirmPasswordClick() {
-        state.value = state.value.copy(showConfirmPassword = !state.value.showConfirmPassword)
+        store.accept(Intent.ConfirmPasswordImageClick)
 
     }
 
     override fun onEmailDeleteClick() {
-        state.value = state.value.copy(email = "")
-
+        store.accept(Intent.EmailImageClick)
     }
-
+    companion object {
+        private const val KEY = "LoginComponentState"
+    }
 }

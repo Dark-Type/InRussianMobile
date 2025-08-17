@@ -108,7 +108,7 @@ val navigationModule = module {
 
     factory<LoginStoreFactory>(qualifier = QLoginStoreFactory) {
         { storeFactory ->
-            com.example.inrussian.stores.LoginStoreFactory(
+            com.example.inrussian.stores.auth.login.LoginStoreFactory(
                 storeFactory = storeFactory,
                 errorDecoder = get(),
                 repository = get()
@@ -122,9 +122,20 @@ val navigationModule = module {
             DefaultRegisterComponent(
                 componentContext = componentContext,
                 onOutput = onOutput,
-                authRepository = get()
+                store = get()
             )
         }
+    }
+
+    factory<RegisterStoreFactory>(qualifier = QRegisterStoreFactory) {
+        { storeFactory ->
+            com.example.inrussian.stores.auth.register.RegisterStoreFactory(
+                storeFactory = storeFactory,
+                errorDecoder = get(),
+                validator = get()
+            ).create()
+        }
+
     }
 
     factory<SsoPopoverFactory>(qualifier = QSsoPopoverFactory) {

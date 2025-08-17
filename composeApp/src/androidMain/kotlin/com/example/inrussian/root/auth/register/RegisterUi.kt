@@ -16,7 +16,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.inrussian.components.auth.register.RegisterComponent
-import com.example.inrussian.models.state.RegisterState
+import com.example.inrussian.stores.auth.register.RegisterStore
 import com.example.inrussian.ui.theme.CommonButton
 import com.example.inrussian.ui.theme.CommonTextField
 import inrussian.composeapp.generated.resources.Res
@@ -85,7 +85,7 @@ fun RegisterUi(component: RegisterComponent) {
         CommonButton(
             onClick = { component.onRegister(state.email, state.password) },
             text = stringResource(Res.string.sign_in),
-            enable = false
+            enable = state.isButtonActive
         )
         Spacer(modifier = Modifier.height(45.dp))
     }
@@ -124,7 +124,7 @@ class RegisterUi : RegisterComponent {
         TODO("Not yet implemented")
     }
 
-    override val state = MutableStateFlow(RegisterState())
+    override val state = MutableStateFlow(RegisterStore.State())
 
     @Preview(showBackground = true, showSystemUi = true)
     @Composable
