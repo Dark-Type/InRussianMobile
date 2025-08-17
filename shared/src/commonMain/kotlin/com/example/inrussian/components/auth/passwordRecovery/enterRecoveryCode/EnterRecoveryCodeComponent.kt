@@ -1,7 +1,7 @@
 package com.example.inrussian.components.auth.passwordRecovery.enterRecoveryCode
 
 import com.arkivanov.decompose.ComponentContext
-import com.example.inrussian.models.EnterRecoveryCodeState
+import com.example.inrussian.models.state.EnterRecoveryCodeState
 import com.example.inrussian.repository.auth.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

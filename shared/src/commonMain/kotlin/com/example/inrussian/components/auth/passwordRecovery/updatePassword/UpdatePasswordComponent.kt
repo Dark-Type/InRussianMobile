@@ -1,7 +1,7 @@
 package com.example.inrussian.components.auth.passwordRecovery.updatePassword
 
 import com.arkivanov.decompose.ComponentContext
-import com.example.inrussian.models.UpdatePasswordState
+import com.example.inrussian.models.state.UpdatePasswordState
 import com.example.inrussian.repository.auth.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

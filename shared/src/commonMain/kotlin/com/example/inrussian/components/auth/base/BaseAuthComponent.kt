@@ -2,10 +2,19 @@ package com.example.inrussian.components.auth.base
 
 import com.arkivanov.decompose.ComponentContext
 import com.example.inrussian.repository.auth.AuthRepository
+
 interface BaseAuthComponent {
     fun onLoginClicked()
     fun onRegisterClicked()
-    fun onSsoClicked()
+    fun onVkClicked()
+    fun onYandexClicked()
+
+    data class Routes(
+        val onSignInClick: () -> Unit,
+        val onSignUpClick: () -> Unit,
+        val onSignInWithVkClick: () -> Unit,
+        val onSignInWithYandexClick: () -> Unit,
+    )
 }
 
 class DefaultBaseAuthComponent(
@@ -22,7 +31,11 @@ class DefaultBaseAuthComponent(
         onOutput(BaseAuthOutput.NavigateToRegister)
     }
 
-    override fun onSsoClicked() {
-        onOutput(BaseAuthOutput.NavigateToSso)
+    override fun onVkClicked() {
+        onOutput(BaseAuthOutput.NavigateToVk)
+    }
+
+    override fun onYandexClicked() {
+        onOutput(BaseAuthOutput.NavigateToYandex)
     }
 }

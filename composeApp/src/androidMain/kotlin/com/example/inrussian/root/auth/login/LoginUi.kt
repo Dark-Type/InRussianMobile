@@ -8,43 +8,36 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.inrussian.components.auth.login.LoginComponent
+import com.example.inrussian.stores.LoginStore.State
 import com.example.inrussian.ui.theme.CommonButton
 import com.example.inrussian.ui.theme.CommonTextField
-import com.example.inrussian.ui.theme.DarkGrey
-import com.example.inrussian.ui.theme.Orange
 import inrussian.composeapp.generated.resources.Res
+import inrussian.composeapp.generated.resources.cancel
 import inrussian.composeapp.generated.resources.email
+import inrussian.composeapp.generated.resources.eye_off
+import inrussian.composeapp.generated.resources.eye_show
+import inrussian.composeapp.generated.resources.forgot_password
 import inrussian.composeapp.generated.resources.password
 import inrussian.composeapp.generated.resources.placeholder
 import inrussian.composeapp.generated.resources.sign_in
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun LoginUi(component: LoginComponent) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    val state by component.state.collectAsState()
 
     Column(modifier = Modifier.padding(16.dp)) {
         Box(
@@ -60,19 +53,29 @@ fun LoginUi(component: LoginComponent) {
             )
         }
         CommonTextField(
-            value = email,
-            onValueChange = { email = it },
+            value = state.email,
+            onValueChange = component::onEmailChange,
             label = stringResource(Res.string.email),
+            error = state.emailError,
+            icon = if (state.email.isBlank()) null else vectorResource(
+                Res.drawable.cancel
+            ),
+            onIconClick = component::onDeleteEmailClick,
         )
-        Spacer(modifier = Modifier.height(8.dp))
         CommonTextField(
-            value = password,
-            onValueChange = { password = it },
+            value = state.password,
+            onValueChange = component::onPasswordChange,
             label = stringResource(Res.string.password),
+            error = state.passwordError,
+            icon = if (state.showPassword) vectorResource(Res.drawable.eye_show) else vectorResource(
+                Res.drawable.eye_off
+            ),
+            onIconClick = component::onShowPasswordClick,
+            visualTransformation = if (state.showPassword) PasswordVisualTransformation() else null
         )
         Spacer(modifier = Modifier.height(16.dp))
         CommonButton(
-            onClick = { component.onLogin(email, password) },
+            onClick = { component.onLogin(state.email, state.password) },
             text = stringResource(Res.string.sign_in),
             enable = true,
         )
@@ -80,7 +83,7 @@ fun LoginUi(component: LoginComponent) {
         TextButton(
             onClick = { component.onForgotPasswordClicked() }, modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Забыли пароль?")
+            Text(stringResource(Res.string.forgot_password))
         }
         Spacer(modifier = Modifier.height(40.dp))
 
@@ -88,9 +91,8 @@ fun LoginUi(component: LoginComponent) {
 }
 
 
-
-
 class LoginUi() : LoginComponent {
+    override val state = MutableStateFlow(State())
     override fun onLogin(email: String, password: String) {
         TODO("Not yet implemented")
     }
@@ -100,6 +102,22 @@ class LoginUi() : LoginComponent {
     }
 
     override fun onBackClicked() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onShowPasswordClick() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onDeleteEmailClick() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onEmailChange(email: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onPasswordChange(password: String) {
         TODO("Not yet implemented")
     }
 

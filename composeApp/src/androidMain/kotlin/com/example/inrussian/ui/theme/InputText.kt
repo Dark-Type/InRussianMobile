@@ -10,8 +10,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun CommonTextField(
@@ -21,7 +27,8 @@ fun CommonTextField(
     icon: ImageVector? = null,
     onIconClick: () -> Unit = {},
     visualTransformation: VisualTransformation? = null,
-    placeholder: String = ""
+    placeholder: String = "",
+    error: StringResource? = null,
 ) {
     OutlinedTextField(
         value = value,
@@ -37,6 +44,15 @@ fun CommonTextField(
                         .size(24.dp)
                 )
             }
-        }) else null, placeholder = { Text(placeholder) }
+        }) else null, placeholder = { Text(placeholder) },
+        supportingText = {
+            if (error != null) Text(
+                stringResource(error), style = TextStyle(
+                    fontFamily = FontFamily.Default,
+                    fontWeight = FontWeight.W400,
+                    fontSize = 14.sp,
+                )
+            )
+        }
     )
 }

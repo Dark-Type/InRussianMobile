@@ -30,7 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.inrussian.components.auth.passwordRecovery.enterRecoveryCode.EnterRecoveryCodeComponent
-import com.example.inrussian.models.EnterRecoveryCodeState
+import com.example.inrussian.models.state.EnterRecoveryCodeState
 import com.example.inrussian.ui.theme.CommonButton
 import com.example.inrussian.ui.theme.CommonTextField
 import com.example.inrussian.ui.theme.DarkGrey100

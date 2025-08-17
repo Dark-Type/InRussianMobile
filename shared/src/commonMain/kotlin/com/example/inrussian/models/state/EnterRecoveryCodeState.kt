@@ -1,4 +1,4 @@
-package com.example.inrussian.models
+package com.example.inrussian.models.state
 
 data class EnterRecoveryCodeState(
     val email: String,

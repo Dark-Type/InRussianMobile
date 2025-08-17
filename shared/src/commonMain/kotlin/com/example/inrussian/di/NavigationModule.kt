@@ -3,12 +3,12 @@ package com.example.inrussian.di
 import com.arkivanov.decompose.ComponentContext
 import com.example.inrussian.components.auth.base.DefaultBaseAuthComponent
 import com.example.inrussian.components.auth.login.DefaultLoginComponent
-import com.example.inrussian.components.auth.ssoPopover.DefaultSsoPopoverComponent
-import com.example.inrussian.components.auth.register.DefaultRegisterComponent
 import com.example.inrussian.components.auth.passwordRecovery.enterEmail.DefaultEnterEmailComponent
 import com.example.inrussian.components.auth.passwordRecovery.enterRecoveryCode.DefaultEnterRecoveryCodeComponent
 import com.example.inrussian.components.auth.passwordRecovery.updatePassword.DefaultUpdatePasswordComponent
+import com.example.inrussian.components.auth.register.DefaultRegisterComponent
 import com.example.inrussian.components.auth.root.DefaultAuthRootComponent
+import com.example.inrussian.components.auth.ssoPopover.DefaultSsoPopoverComponent
 import com.example.inrussian.components.main.home.DefaultCourseDetailsComponent
 import com.example.inrussian.components.main.home.DefaultHomeComponent
 import com.example.inrussian.components.main.profile.DefaultAboutComponent
@@ -19,15 +19,15 @@ import com.example.inrussian.components.main.root.DefaultMainRootComponent
 import com.example.inrussian.components.main.train.DefaultSectionDetailComponent
 import com.example.inrussian.components.main.train.DefaultTasksComponent
 import com.example.inrussian.components.main.train.DefaultTrainComponent
-import com.example.inrussian.components.onboarding.language.DefaultLanguageComponent
-import com.example.inrussian.components.onboarding.root.DefaultOnboardingRootComponent
-import com.example.inrussian.components.root.DefaultRootComponent
-import com.example.inrussian.components.root.RootComponent
 import com.example.inrussian.components.onboarding.citizenship.DefaultCitizenshipComponent
 import com.example.inrussian.components.onboarding.confirmation.DefaultConfirmationComponent
 import com.example.inrussian.components.onboarding.education.DefaultEducationComponent
 import com.example.inrussian.components.onboarding.interactiveOnboarding.DefaultInteractiveOnboardingComponent
+import com.example.inrussian.components.onboarding.language.DefaultLanguageComponent
 import com.example.inrussian.components.onboarding.personalData.DefaultPersonalDataComponent
+import com.example.inrussian.components.onboarding.root.DefaultOnboardingRootComponent
+import com.example.inrussian.components.root.DefaultRootComponent
+import com.example.inrussian.components.root.RootComponent
 import org.koin.dsl.module
 
 
@@ -101,12 +101,21 @@ val navigationModule = module {
             DefaultLoginComponent(
                 componentContext = componentContext,
                 onOutput = onOutput,
-                authRepository = get()
+                store = get()
             )
         }
     }
 
+    factory<LoginStoreFactory>(qualifier = QLoginStoreFactory) {
+        { storeFactory ->
+            com.example.inrussian.stores.LoginStoreFactory(
+                storeFactory = storeFactory,
+                errorDecoder = get(),
+                repository = get()
+            ).create()
+        }
 
+    }
 
     factory<RegisterFactory>(qualifier = QRegisterFactory) {
         { componentContext, onOutput ->

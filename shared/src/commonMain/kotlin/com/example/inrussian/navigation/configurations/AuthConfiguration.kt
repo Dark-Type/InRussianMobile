@@ -14,7 +14,10 @@ sealed class AuthConfiguration {
     data object Register : AuthConfiguration()
 
     @Serializable
-    data object SsoPopover : AuthConfiguration()
+    data object VkPopover : AuthConfiguration()
+
+    @Serializable
+    data object YandexPopover : AuthConfiguration()
 
     @Serializable
     data object EnterEmail : AuthConfiguration()

@@ -40,12 +40,9 @@ import inrussian.composeapp.generated.resources.vk
 import inrussian.composeapp.generated.resources.yandex
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun BaseAuthUi(component: BaseAuthComponent) {
-
-
     Column(
         modifier = Modifier.padding(horizontal = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -92,11 +89,15 @@ fun BaseAuthUi(component: BaseAuthComponent) {
             modifier = Modifier.padding(top = 24.dp, bottom = 12.dp)
         ) {
             HorizontalDivider(modifier = Modifier.weight(1f), thickness = 1.dp, color = DarkGrey)
-            Text(stringResource(Res.string.enter_with_ss), textAlign = TextAlign.Center)
+            Text(
+                stringResource(Res.string.enter_with_ss),
+                Modifier.padding(horizontal = 10.dp),
+                textAlign = TextAlign.Center
+            )
             HorizontalDivider(modifier = Modifier.weight(1f), thickness = 1.dp, color = DarkGrey)
         }
         Button(
-            onClick = { component.onSsoClicked() },
+            onClick = { component.onVkClicked() },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 14.dp)
@@ -108,12 +109,12 @@ fun BaseAuthUi(component: BaseAuthComponent) {
                 ),
             shape = RoundedCornerShape(8.dp)
         ) {
-            Icon( painterResource(Res.drawable.vk), "", modifier = Modifier.size(24.dp))
+            Icon(painterResource(Res.drawable.vk), "", modifier = Modifier.size(24.dp))
             Spacer(Modifier.width(14.dp))
             Text(stringResource(Res.string.sign_in_with_vk))
         }
         Button(
-            onClick = { component.onSsoClicked() },
+            onClick = { component.onYandexClicked() },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 14.dp, bottom = 47.dp)
@@ -150,7 +151,13 @@ class BaseAuth() : BaseAuthComponent {
         TODO("Not yet implemented")
     }
 
-    override fun onSsoClicked() {
+    override fun onVkClicked() {
         TODO("Not yet implemented")
     }
+
+    override fun onYandexClicked() {
+        TODO("Not yet implemented")
+    }
+
+
 }

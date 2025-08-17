@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.inrussian.components.auth.passwordRecovery.updatePassword.UpdatePasswordComponent
-import com.example.inrussian.models.UpdatePasswordState
+import com.example.inrussian.models.state.UpdatePasswordState
 import com.example.inrussian.ui.theme.CommonButton
 import com.example.inrussian.ui.theme.CommonTextField
 import com.example.inrussian.ui.theme.DarkGrey

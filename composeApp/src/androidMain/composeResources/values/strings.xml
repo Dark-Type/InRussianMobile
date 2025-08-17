@@ -8,6 +8,8 @@
 
 
     <string name="email">Электронная почта</string>
+    <string name="forgot_password">Забыли пароль?</string>
+    <string name="easmail">Электронная почта</string>
     <string name="password">Пароль</string>
     <string name="confirm_password">Подтверждение пароля</string>
     <string name="write_email">Укажите почту, на которую придет код подтверждения</string>
