@@ -1,9 +1,54 @@
 package com.example.inrussian.di.main
 
+import com.example.inrussian.repository.main.BadgeRepository
+import com.example.inrussian.repository.main.MockBadgeRepository
+import com.example.inrussian.repository.main.home.HomeRepository
+import com.example.inrussian.repository.main.home.MockHomeRepository
+import com.example.inrussian.repository.main.settings.InMemorySettingsRepository
+import com.example.inrussian.repository.main.settings.SettingsRepository
+import com.example.inrussian.repository.main.train.MockTrainRepository
+import com.example.inrussian.repository.main.train.TrainRepository
+import com.example.inrussian.repository.main.user.MockUserRepository
 import org.koin.dsl.module
 import com.example.inrussian.repository.main.user.UserRepository
-import com.example.inrussian.repository.main.user.UserRepositoryImpl
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import org.koin.core.qualifier.named
+
+val QAppScope = named("AppScope")
+val QAboutText = named("AboutText")
+val QPrivacyText = named("PrivacyText")
 
 val mainModule = module {
-    single<UserRepository> { UserRepositoryImpl() }
+    single(QAppScope) {
+        CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    }
+
+    single<UserRepository> { MockUserRepository(scope = get(QAppScope)) }
+    single<BadgeRepository> { MockBadgeRepository(scope = get(QAppScope)) }
+    single<SettingsRepository> { InMemorySettingsRepository(scope = get(QAppScope)) }
+
+    single<TrainRepository> {
+        val appScope: CoroutineScope = get(named("AppScope"))
+        MockTrainRepository(scope = appScope)
+    }
+    single<HomeRepository> {
+        MockHomeRepository(scope = get(QAppScope))
+    }
+    single(QAboutText) {
+        """
+        Это учебное приложение для демонстрации архитектуры Kotlin Multiplatform, Decompose и Koin.
+        Версия: 1.0.0
+        Основные функции: обучение, тренировки, профиль пользователя.
+        """.trimIndent()
+    }
+    single(QPrivacyText) {
+        """
+        Политика конфиденциальности:
+        Мы уважаем вашу приватность. Данные используются только в демонстрационных целях,
+        не передаются третьим лицам и могут быть сброшены без уведомления.
+        Используя приложение, вы соглашаетесь с обработкой данных в учебных целях.
+        """.trimIndent()
+    }
 }

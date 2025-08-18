@@ -117,28 +117,41 @@ typealias CourseDetailsComponentFactory = (
 
 val QCourseDetailsComponentFactory = named("CourseDetailsComponentFactory")
 
-typealias SectionDetailComponentFactory = (
-    ComponentContext,
-    sectionId: String,
-    onOutput: (SectionDetailOutput) -> Unit
-) -> SectionDetailComponent
+typealias SectionDetailComponentFactory =
+            (
+            componentContext: ComponentContext,
+            sectionId: String,
+            onOutput: (SectionDetailOutput) -> Unit
+        ) -> SectionDetailComponent
 
 val QSectionDetailComponentFactory = named("SectionDetailComponentFactory")
-typealias TasksComponentFactory = (
-    ComponentContext,
-    sectionId: String,
-    option: TasksOption,
-    onOutput: (TasksOutput) -> Unit
-) -> TasksComponent
-
+typealias TasksComponentFactory =
+            (componentContext: ComponentContext,
+             sectionId: String,
+             option: TasksOption,
+             onOutput: (TasksOutput) -> Unit) -> TasksComponent
 val QTasksComponentFactory = named("TasksComponentFactory")
 val QHomeFactory = named("HomeFactory")
 val QTrainFactory = named("TrainFactory")
 val QProfileFactory = named("ProfileFactory")
 
-typealias EditProfileComponentFactory = (ComponentContext, (EditProfileOutput) -> Unit) -> EditProfileComponent
-typealias AboutComponentFactory = (ComponentContext, (AboutOutput) -> Unit) -> AboutComponent
-typealias PrivacyPolicyComponentFactory = (ComponentContext, (PrivacyPolicyOutput) -> Unit) -> PrivacyPolicyComponent
+typealias EditProfileComponentFactory =
+            (
+            componentContext: ComponentContext,
+            onOutput: (EditProfileOutput) -> Unit
+        ) -> EditProfileComponent
+
+typealias AboutComponentFactory =
+            (
+            componentContext: ComponentContext,
+            onOutput: (AboutOutput) -> Unit
+        ) -> AboutComponent
+
+typealias PrivacyPolicyComponentFactory =
+            (
+            componentContext: ComponentContext,
+            onOutput: (PrivacyPolicyOutput) -> Unit
+        ) -> PrivacyPolicyComponent
 
 val QEditProfileComponentFactory = named("EditProfileComponentFactory")
 val QAboutComponentFactory = named("AboutComponentFactory")

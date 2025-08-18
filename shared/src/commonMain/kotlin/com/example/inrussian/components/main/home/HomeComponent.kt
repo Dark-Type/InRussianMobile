@@ -6,11 +6,18 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.pushNew
+import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.example.inrussian.di.CourseDetailsComponentFactory
 import com.example.inrussian.models.Course
 import com.example.inrussian.navigation.configurations.HomeConfiguration
-import kotlin.invoke
+import com.example.inrussian.repository.main.home.HomeRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 sealed interface HomeOutput {
     data object NavigateBack : HomeOutput
@@ -30,8 +37,9 @@ interface HomeComponent {
 
 class DefaultHomeComponent(
     componentContext: ComponentContext,
+    private val repository: HomeRepository,
     private val onOutput: (HomeOutput) -> Unit,
-    private val courseDetailsComponentFactory: CourseDetailsComponentFactory,
+    private val courseDetailsComponentFactory: CourseDetailsComponentFactory
 ) : HomeComponent, ComponentContext by componentContext {
 
     private val navigation = StackNavigation<HomeConfiguration>()
@@ -57,7 +65,6 @@ class DefaultHomeComponent(
         }
     }
 
-
     private fun child(
         configuration: HomeConfiguration,
         componentContext: ComponentContext
@@ -66,10 +73,12 @@ class DefaultHomeComponent(
             is HomeConfiguration.Courses ->
                 HomeComponent.Child.CoursesChild(
                     DefaultCoursesListComponent(
-                        componentContext,
+                        componentContext = componentContext,
+                        repository = repository,
                         onCourseClick = ::onCourseSelected
                     )
                 )
+
             is HomeConfiguration.CourseDetails ->
                 HomeComponent.Child.CourseDetailsChild(
                     courseDetailsComponentFactory(
@@ -82,31 +91,66 @@ class DefaultHomeComponent(
 
     private fun onCourseDetailsOutput(output: CourseDetailsOutput) {
         when (output) {
-            is CourseDetailsOutput.NavigateBack -> onBack()
+            CourseDetailsOutput.NavigateBack -> onBack()
         }
     }
 }
 
 interface CoursesListComponent {
-    val items: List<Course>
-    fun onItemClick(courseId: String)
+    val state: Value<CoursesListState>
+
+    fun onRecommendedCourseClick(courseId: String)
+    fun onEnrolledCourseClick(courseId: String)
+    fun refresh() {}
 }
+
 
 class DefaultCoursesListComponent(
     componentContext: ComponentContext,
+    private val repository: HomeRepository,
     private val onCourseClick: (String) -> Unit
 ) : CoursesListComponent, ComponentContext by componentContext {
 
-    override val items: List<Course> = listOf(
-        Course("c1", "Intro to KMP"),
-        Course("c2", "Advanced Compose Multiplatform")
+    private val scope = CoroutineScope(Dispatchers.Main.immediate)
+
+    private val _state = MutableValue(
+        CoursesListState(
+            recommended = emptyList(),
+            enrolled = emptyList(),
+            isLoading = true
+        )
     )
+    override val state: Value<CoursesListState> = _state
 
-    override fun onItemClick(courseId: String) = onCourseClick(courseId)
+    init {
+        scope.launch {
+            combine(
+                repository.recommendedCourses,
+                repository.enrolledCourseIds
+            ) { recommended, enrolledIds ->
+                val enrolledCourses = recommended.filter { it.id in enrolledIds }
+                val recommendedOnly = recommended.filter { it.id !in enrolledIds }
+                CoursesListState(
+                    recommended = recommendedOnly,
+                    enrolled = enrolledCourses,
+                    isLoading = false
+                )
+            }.collect { newState -> _state.value = newState }
+        }
+    }
+
+    override fun onRecommendedCourseClick(courseId: String) = onCourseClick(courseId)
+    override fun onEnrolledCourseClick(courseId: String) = onCourseClick(courseId)
+
+    fun dispose() {
+        scope.cancel()
+    }
 }
-
 interface CourseDetailsComponent {
     val courseId: String
+    val state: Value<CourseDetailsState>
+
+    fun toggleEnroll()
     fun onBack()
 }
 sealed interface CourseDetailsOutput {
@@ -115,7 +159,51 @@ sealed interface CourseDetailsOutput {
 class DefaultCourseDetailsComponent(
     componentContext: ComponentContext,
     override val courseId: String,
+    private val repository: HomeRepository,
     private val onOutput: (CourseDetailsOutput) -> Unit
 ) : CourseDetailsComponent, ComponentContext by componentContext {
+
+    private val scope = CoroutineScope(Dispatchers.Main.immediate)
+
+    private val _state = MutableValue(
+        CourseDetailsState(
+            course = null,
+            isEnrolled = false,
+            sections = emptyList(),
+            progressPercent = 0,
+            isLoading = true
+        )
+    )
+    override val state: Value<CourseDetailsState> = _state
+
+    init {
+        scope.launch {
+            combine(
+                repository.courseById(courseId),
+                repository.enrolledCourseIds.map { it.contains(courseId) },
+                repository.courseSections(courseId),
+                repository.courseProgressPercent(courseId)
+            ) { course, isEnrolled, sections, progress ->
+                CourseDetailsState(
+                    course = course,
+                    isEnrolled = isEnrolled,
+                    sections = sections,
+                    progressPercent = progress,
+                    isLoading = course == null
+                )
+            }.collect { newState -> _state.value = newState }
+        }
+    }
+
+    override fun toggleEnroll() {
+        val current = _state.value
+        val c = current.course ?: return
+        if (current.isEnrolled) repository.unenroll(c.id) else repository.enroll(c.id)
+    }
+
     override fun onBack() = onOutput(CourseDetailsOutput.NavigateBack)
+
+    fun dispose() {
+        scope.cancel()
+    }
 }

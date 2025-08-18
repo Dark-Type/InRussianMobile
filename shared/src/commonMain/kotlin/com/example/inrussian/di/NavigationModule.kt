@@ -11,6 +11,7 @@ import com.example.inrussian.components.auth.passwordRecovery.updatePassword.Def
 import com.example.inrussian.components.auth.root.DefaultAuthRootComponent
 import com.example.inrussian.components.main.home.DefaultCourseDetailsComponent
 import com.example.inrussian.components.main.home.DefaultHomeComponent
+import com.example.inrussian.components.main.home.HomeOutput
 import com.example.inrussian.components.main.profile.DefaultAboutComponent
 import com.example.inrussian.components.main.profile.DefaultEditProfileComponent
 import com.example.inrussian.components.main.profile.DefaultPrivacyPolicyComponent
@@ -28,6 +29,8 @@ import com.example.inrussian.components.onboarding.confirmation.DefaultConfirmat
 import com.example.inrussian.components.onboarding.education.DefaultEducationComponent
 import com.example.inrussian.components.onboarding.interactiveOnboarding.DefaultInteractiveOnboardingComponent
 import com.example.inrussian.components.onboarding.personalData.DefaultPersonalDataComponent
+import com.example.inrussian.di.main.QAboutText
+import com.example.inrussian.di.main.QPrivacyText
 import org.koin.dsl.module
 
 
@@ -185,20 +188,22 @@ val navigationModule = module {
             DefaultInteractiveOnboardingComponent(onOutput)
         }
     }
-    factory<CourseDetailsComponentFactory>(qualifier = QCourseDetailsComponentFactory) {
+    factory<CourseDetailsComponentFactory>(QCourseDetailsComponentFactory) {
         { componentContext, courseId, onOutput ->
             DefaultCourseDetailsComponent(
                 componentContext = componentContext,
                 courseId = courseId,
+                repository = get(),
                 onOutput = onOutput
             )
         }
     }
 
-    factory<TasksComponentFactory>(qualifier = QTasksComponentFactory) {
+    factory<TasksComponentFactory>(QTasksComponentFactory) {
         { componentContext, sectionId, option, onOutput ->
             DefaultTasksComponent(
                 componentContext = componentContext,
+                repository = get(),
                 sectionId = sectionId,
                 option = option,
                 onOutput = onOutput
@@ -206,69 +211,79 @@ val navigationModule = module {
         }
     }
 
-    factory<SectionDetailComponentFactory>(qualifier = QSectionDetailComponentFactory) {
+    factory<SectionDetailComponentFactory>(QSectionDetailComponentFactory) {
         { componentContext, sectionId, onOutput ->
             DefaultSectionDetailComponent(
                 componentContext = componentContext,
+                repository = get(),
                 sectionId = sectionId,
                 onOutput = onOutput,
                 tasksFactory = get(QTasksComponentFactory)
             )
         }
     }
-    factory<EditProfileComponentFactory>(qualifier = QEditProfileComponentFactory) {
+    factory<EditProfileComponentFactory>(QEditProfileComponentFactory) {
         { componentContext, onOutput ->
             DefaultEditProfileComponent(
                 componentContext = componentContext,
+                userRepository = get(),
                 onOutput = onOutput
             )
         }
     }
 
-    factory<AboutComponentFactory>(qualifier = QAboutComponentFactory) {
+    factory<AboutComponentFactory>(QAboutComponentFactory) {
         { componentContext, onOutput ->
             DefaultAboutComponent(
                 componentContext = componentContext,
+                aboutText = get(QAboutText),
                 onOutput = onOutput
             )
         }
     }
-
-    factory<PrivacyPolicyComponentFactory>(qualifier = QPrivacyPolicyComponentFactory) {
+    factory<PrivacyPolicyComponentFactory>(QPrivacyPolicyComponentFactory) {
         { componentContext, onOutput ->
             DefaultPrivacyPolicyComponent(
                 componentContext = componentContext,
+                policyText = get(QPrivacyText),
                 onOutput = onOutput
             )
         }
     }
 
+
     factory<HomeFactory>(qualifier = QHomeFactory) {
-        { componentContext, onOutput ->
+        { componentContext: ComponentContext, onOutput: (HomeOutput) -> Unit ->
             DefaultHomeComponent(
                 componentContext = componentContext,
                 onOutput = onOutput,
                 courseDetailsComponentFactory = get(QCourseDetailsComponentFactory),
+                repository = get()
             )
         }
     }
 
-    factory<TrainFactory>(qualifier = QTrainFactory) {
+    factory<TrainFactory>(QTrainFactory) {
         { componentContext, onOutput ->
             DefaultTrainComponent(
                 componentContext = componentContext,
                 onOutput = onOutput,
                 sectionDetailComponentFactory = get(QSectionDetailComponentFactory),
+                repository = get()
             )
         }
     }
 
-    factory<ProfileFactory>(qualifier = QProfileFactory) {
+    factory<ProfileFactory>(QProfileFactory) {
         { componentContext, onOutput ->
             DefaultProfileComponent(
                 componentContext = componentContext,
                 onOutput = onOutput,
                 userRepository = get(),
+                badgeRepository = get(),
+                settingsRepository = get(),
+                aboutText = get(QAboutText),
+                privacyText = get(QPrivacyText),
                 editProfileFactory = get(QEditProfileComponentFactory),
                 aboutFactory = get(QAboutComponentFactory),
                 privacyPolicyFactory = get(QPrivacyPolicyComponentFactory)
