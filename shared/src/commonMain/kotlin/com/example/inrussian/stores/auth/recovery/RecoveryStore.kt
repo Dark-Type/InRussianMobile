@@ -4,9 +4,9 @@ import com.arkivanov.mvikotlin.core.store.Store
 import com.example.inrussian.stores.auth.recovery.RecoveryStore.Intent
 import com.example.inrussian.stores.auth.recovery.RecoveryStore.Label
 import com.example.inrussian.stores.auth.recovery.RecoveryStore.State
+import dev.icerock.moko.resources.StringResource
 import kotlinx.datetime.LocalTime
 
-import org.jetbrains.compose.resources.StringResource
 
 interface RecoveryStore : Store<Intent, State, Label> {
     sealed class Intent {

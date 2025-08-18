@@ -5,13 +5,13 @@ import com.example.inrussian.stores.auth.register.RegisterStore.State
 
 fun PersistableState.toUiState(): State = State(
     email = this.email,
-    emailError = this.emailErrorKey?.mapErrorKeyToStringResource(),
+    emailError = null,
     password = this.password,
     showPassword = this.showPassword,
-    passwordError = this.passwordErrorKey?.mapErrorKeyToStringResource(),
+    passwordError = null,
     confirmPassword = this.confirmPassword,
     showConfirmPassword = this.showConfirmPassword,
-    confirmPasswordError = this.confirmPasswordErrorKey?.mapErrorKeyToStringResource(),
+    confirmPasswordError =null,
     loading = this.loading
 )
 

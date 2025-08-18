@@ -4,7 +4,7 @@ import com.arkivanov.mvikotlin.core.store.Store
 import com.example.inrussian.stores.auth.login.LoginStore.Intent
 import com.example.inrussian.stores.auth.login.LoginStore.Label
 import com.example.inrussian.stores.auth.login.LoginStore.State
-import org.jetbrains.compose.resources.StringResource
+import dev.icerock.moko.resources.StringResource
 
 interface LoginStore : Store<Intent, State, Label> {
     sealed class Intent {

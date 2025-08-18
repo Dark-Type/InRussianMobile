@@ -15,6 +15,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import inrussian.composeapp.generated.resources.Res
+import inrussian.composeapp.generated.resources.app_language
+import inrussian.composeapp.generated.resources.`continue`
+import inrussian.composeapp.generated.resources.front_arror
+import inrussian.composeapp.generated.resources.language
+import inrussian.composeapp.generated.resources.profile
+import inrussian.composeapp.generated.resources.tell_about_u
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -28,7 +34,7 @@ fun LanguageChooseUi() {
         )
         Column(Modifier.weight(1f)) {
             Icon(vectorResource(Res.drawable.profile), "", Modifier.fillMaxSize())
-            Text(stringResource(Res.tell_about_u), Modifier.fillMaxSize())
+            Text(stringResource(Res.string.tell_about_u), Modifier.fillMaxSize())
         }
         PermissionRow()
         Row {
@@ -55,7 +61,7 @@ fun PermissionRow() {
 @Composable
 fun ContinueButton() {
     Row() {
-        Text(stringResource(Res.string.continue))
+        Text(stringResource(Res.string.`continue`))
         IconButton({}) {
             Icon(vectorResource(Res.drawable.front_arror), "")
         }

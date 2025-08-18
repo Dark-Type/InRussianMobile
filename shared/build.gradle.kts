@@ -1,3 +1,4 @@
+import dev.icerock.gradle.MRVisibility
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
@@ -30,6 +31,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(libs.resources)
+                api(libs.resources.compose)
                 api(libs.kotlinx.datetime)
                 implementation(libs.kermit)
                 implementation(libs.kotlinx.coroutines.core)
@@ -115,7 +117,7 @@ kotlin {
             isStatic = true
             xcf.add(this)
             export(libs.resources)
-            export("dev.icerock.moko:graphics:0.9.0")
+            export("dev.icerock.moko:graphics:0.10.0")
         }
     }
 }
@@ -145,7 +147,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 }
-multiplatformResources{
-    multiplatformResourcesPackage = "com.exemple.inrussian.kmp_sharingresources"
-    multiplatformResourcesClassName = "SharedRes"
+multiplatformResources {
+    resourcesPackage.set("org.example.library") // required
+    resourcesClassName.set("SharedRes") // optional, default MR
+    resourcesVisibility.set(MRVisibility.Internal) // optional, default Public
+    iosBaseLocalizationRegion.set("en") // optional, default "en"
+    iosMinimalDeploymentTarget.set("11.0")
 }

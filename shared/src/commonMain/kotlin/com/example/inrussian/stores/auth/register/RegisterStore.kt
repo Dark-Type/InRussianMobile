@@ -2,8 +2,8 @@ package com.example.inrussian.stores.auth.register
 
 import com.arkivanov.mvikotlin.core.store.Store
 import com.example.inrussian.models.ErrorKey
+import dev.icerock.moko.resources.StringResource
 import kotlinx.serialization.Serializable
-import org.jetbrains.compose.resources.StringResource
 
 interface RegisterStore : Store<RegisterStore.Intent, RegisterStore.State, RegisterStore.Label> {
     sealed class Intent {
