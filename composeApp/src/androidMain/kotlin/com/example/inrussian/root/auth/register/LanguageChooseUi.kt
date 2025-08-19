@@ -179,6 +179,10 @@ class LanguageChooseUi : LanguageComponent {
         TODO("Not yet implemented")
     }
 
+    override fun onBack() {
+        TODO("Not yet implemented")
+    }
+
     override fun clickOnToggleButton(isSelected: Boolean) {
         TODO("Not yet implemented")
     }

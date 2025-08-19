@@ -4,7 +4,6 @@ package com.example.inrussian.components.auth.login
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
-import com.example.inrussian.di.navigationModule
 import com.example.inrussian.stores.auth.login.LoginStore
 import com.example.inrussian.stores.auth.login.LoginStore.Intent
 import com.example.inrussian.stores.auth.login.LoginStore.Label
@@ -68,7 +67,6 @@ class DefaultLoginComponent(
 
     override fun onDeleteEmailClick() {
         store.accept(Intent.EmailImageClick)
-
 
     }
 

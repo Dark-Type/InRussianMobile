@@ -1,8 +1,5 @@
 package com.example.inrussian.components.onboarding.personalData
 
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-
 interface PersonalDataComponent {
     fun onNext()
 
@@ -41,6 +38,7 @@ interface PersonalDataComponent {
     fun onDataChange(date: String)
     fun dataPickerMissClick()
     fun onBack()
+    fun onContinue()
 
 }
 
