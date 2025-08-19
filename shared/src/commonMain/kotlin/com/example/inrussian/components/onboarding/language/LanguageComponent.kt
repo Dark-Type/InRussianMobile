@@ -5,6 +5,8 @@ import com.arkivanov.decompose.ComponentContext
 interface LanguageComponent {
     fun onNext()
     fun openMenu()
+
+    fun onBack()
     fun clickOnToggleButton(isSelected: Boolean)
     val state: State
 
@@ -30,6 +32,9 @@ class DefaultLanguageComponent(
 
     override fun onNext() {
         onOutput(LanguageOutput.Filled)
+    }
+    override fun onBack() {
+        onOutput(LanguageOutput.Back)
     }
 
     override fun openMenu() {

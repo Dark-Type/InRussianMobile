@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -37,8 +36,6 @@ import com.example.inrussian.ui.theme.reallyLightGrey
 import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.app_language
 import inrussian.composeapp.generated.resources.app_n_language
-import inrussian.composeapp.generated.resources.`continue`
-import inrussian.composeapp.generated.resources.front_arror
 import inrussian.composeapp.generated.resources.give_permission
 import inrussian.composeapp.generated.resources.language
 import inrussian.composeapp.generated.resources.profile
@@ -177,6 +174,10 @@ class LanguageChooseUi : LanguageComponent {
     }
 
     override fun openMenu() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onBack() {
         TODO("Not yet implemented")
     }
 
