@@ -12,7 +12,22 @@ interface PersonalDataComponent {
         val birthDate: String = "",
         val phoneNumber: String = "",
         val email: String = "",
-    )
+        val isGenderOpen: Boolean = false,
+        val showDataPicker: Boolean = false,
+    ) {
+        val isEnableContinueButton: Boolean
+            get() = surname.isNotEmpty() &&
+                    name.isNotEmpty() &&
+                    gender.isNotEmpty() &&
+                    birthDate.isNotEmpty() &&
+                    phoneNumber.isNotEmpty() &&
+                    email.isNotEmpty()
+
+    }
+
+    fun onBack()
+    fun onContinue()
+
 }
 
 sealed class PersonalDataOutput {
@@ -33,6 +48,14 @@ class DefaultPersonalDataComponent(
         phoneNumber = "",
         email = ""
     )
+
+    override fun onBack() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onContinue() {
+        TODO("Not yet implemented")
+    }
 
     override fun onNext() {
         onOutput(PersonalDataOutput.Filled)
