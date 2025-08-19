@@ -94,7 +94,7 @@ fun EnterRecoveryCodeUi(component: EnterRecoveryCodeComponent) {
             Spacer(modifier = Modifier.height(50.dp))
             CommonButton(
                 onClick = { },
-                text = stringResource(Res.string.repeat_send_code) + " " + state.timer,
+                text = stringResource(Res.string.repeat_send_code) + " " + state.timerMinute + ":" + state.timerSecond,
                 enable = false,
             )
             Spacer(modifier = Modifier.height(50.dp))

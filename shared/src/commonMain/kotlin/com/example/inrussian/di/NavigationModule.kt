@@ -24,7 +24,11 @@ import com.example.inrussian.components.onboarding.citizenship.DefaultCitizenshi
 import com.example.inrussian.components.onboarding.confirmation.DefaultConfirmationComponent
 import com.example.inrussian.components.onboarding.education.DefaultEducationComponent
 import com.example.inrussian.components.onboarding.interactiveOnboarding.DefaultInteractiveOnboardingComponent
+import com.example.inrussian.components.onboarding.language.DefaultLanguageComponent
 import com.example.inrussian.components.onboarding.personalData.DefaultPersonalDataComponent
+import com.example.inrussian.components.onboarding.root.DefaultOnboardingRootComponent
+import com.example.inrussian.components.root.DefaultRootComponent
+import com.example.inrussian.components.root.RootComponent
 import com.example.inrussian.di.main.QAboutText
 import com.example.inrussian.di.main.QPrivacyText
 import org.koin.dsl.module

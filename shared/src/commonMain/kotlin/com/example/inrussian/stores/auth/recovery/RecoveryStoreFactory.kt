@@ -32,7 +32,6 @@ import com.example.inrussian.stores.auth.recovery.RecoveryStoreFactory.ReducerIm
 import com.example.inrussian.utile.ErrorDecoder
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalTime
 
 class RecoveryStoreFactory(
     private val storeFactory: StoreFactory,
@@ -51,13 +50,17 @@ class RecoveryStoreFactory(
 
     private inner class ExecutorImpl : CoroutineExecutor<Intent, Action, State, Msg, Label>() {
         suspend fun startTimer(state: State) {
-            var localState = state
-            if (localState.timer.second != 0 || localState.timer.minute != 0) {
-                delay(100)
+            var minute = state.timerMinute
+            var second = state.timerSecond
+            while (minute != 0 || second != 0) {
+                delay(1000)
+                val (newMinute, newSecond) = backUpForSecond(minute, second)
+                minute = newMinute
+                second = newSecond
                 dispatch(Msg.UpdateTime)
-                localState = localState.copy(timer = localState.timer.backUpForSecond())
             }
         }
+
 
         override fun executeAction(action: Action) {
         }
@@ -124,12 +127,15 @@ class RecoveryStoreFactory(
 
 
     private object ReducerImpl : Reducer<State, Msg> {
-        fun LocalTime.backUpForSecond(): LocalTime =
-            LocalTime(
-                if (this.second - 1 < 0 && this.minute - 1 < 0) this.hour - 1 else this.hour,
-                if (this.second - 1 < 0) if (this.minute == 0) 59 else this.minute - 1 else this.minute,
-                if (this.second - 1 < 0) 59 else this.second - 1
-            )
+        fun backUpForSecond(minute: Int, second: Int): Pair<Int, Int> {
+            return if (minute == 0 && second == 0) {
+                0 to 0
+            } else if (second == 0) {
+                (minute - 1) to 59
+            } else {
+                minute to (second - 1)
+            }
+        }
 
         override fun State.reduce(msg: Msg): State = when (msg) {
             is CodeChanged -> copy(code = msg.code)
@@ -163,9 +169,14 @@ class RecoveryStoreFactory(
             FinishLoading -> copy(loading = false)
             Msg.QuestionClick -> copy(questionShow = true)
             Msg.QuestionDismiss -> copy(questionShow = false)
-            Msg.UpdateTime -> copy(timer = LocalTime(0,5,0))
-
-            Msg.StartTimer ->  copy(timer = timer.backUpForSecond())
+            Msg.UpdateTime -> {
+                val (newMinute, newSecond) = backUpForSecond(timerMinute, timerSecond)
+                copy(timerMinute = newMinute, timerSecond = newSecond)
+            }
+            Msg.StartTimer -> {
+                val (newMinute, newSecond) = backUpForSecond(timerMinute, timerSecond)
+                copy(timerMinute = newMinute, timerSecond = newSecond)
+            }
         }
 
     }

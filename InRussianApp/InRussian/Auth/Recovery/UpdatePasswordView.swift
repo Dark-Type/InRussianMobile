@@ -67,7 +67,7 @@ struct UpdatePasswordView: View {
                     color: AppColors.Palette.accent.color,
                     isActive: canUpdate
                 ) {
-                    component.onPasswordUpdated(newPassword: confirmPassword)
+                    component.onPasswordUpdated()
                 }
                 .padding(.bottom, 24)
             }

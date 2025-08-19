@@ -1,5 +1,4 @@
 package com.example.inrussian.models.models
-import kotlinx.datetime.*
 
 
 data class UserProfileModel(
@@ -7,8 +6,8 @@ data class UserProfileModel(
     val name: String,
     val patronymic: String?,
     val gender: Gender,
-    val dob: LocalDate,
-    val dor: LocalDate,
+    val dob: String,
+    val dor: String,
     val citizenship: List<String>,
     val nationality: String,
     val countryOfResidence: String,

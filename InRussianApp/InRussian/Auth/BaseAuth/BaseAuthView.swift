@@ -51,7 +51,7 @@ struct BaseAuthView: View {
                         color: AppColors.Palette.vk.color,
                         trailingLogo: .vk
                     ) {
-                        component.onSsoClicked()
+                        component.onVkClicked()
                     }
 
                     CustomButton(
@@ -59,7 +59,7 @@ struct BaseAuthView: View {
                         color: AppColors.Palette.yandex.color,
                         trailingLogo: .yandex
                     ) {
-                        component.onSsoClicked()
+                        component.onYandexClicked()
                     }
                 }
                 .padding(.horizontal, 28)

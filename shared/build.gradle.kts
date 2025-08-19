@@ -1,15 +1,11 @@
-import dev.icerock.gradle.MRVisibility
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.composeMultiplatform)
-    alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
-    id("dev.icerock.mobile.multiplatform-resources")
+//    id("dev.icerock.mobile.multiplatform-resources")
 }
 
 kotlin {
@@ -35,6 +31,8 @@ kotlin {
 
                 export(libs.decompose)
                 export(libs.essenty.lifecycle)
+//                export(libs.resources)
+//                export("dev.icerock.moko:graphics:0.10.0")
 
             }
         }
@@ -46,13 +44,13 @@ kotlin {
                 api(libs.decompose)
                 api(libs.essenty.lifecycle)
 
-                api(libs.resources)
-                api(libs.resources.compose)
-                api(libs.kotlinx.datetime)
+//                api(libs.resources)
+//                api(libs.resources.compose)
+//                api(libs.kotlinx.datetime)
                 implementation(libs.kermit)
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.decompose)
-                implementation(compose.components.resources)
+//                implementation(compose.components.resources)
                 implementation(libs.mvikotlin)
                 implementation(libs.mvikotlin.main)
                 implementation(libs.mvikotlin.coroutines)
@@ -89,10 +87,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 }
-multiplatformResources {
-    resourcesPackage.set("org.example.library") // required
-    resourcesClassName.set("SharedRes") // optional, default MR
-    resourcesVisibility.set(MRVisibility.Internal) // optional, default Public
-    iosBaseLocalizationRegion.set("en") // optional, default "en"
-    iosMinimalDeploymentTarget.set("11.0")
-}
+//multiplatformResources {
+//    resourcesPackage.set("org.example.library") // required
+//    resourcesClassName.set("SharedRes") // optional, default MR
+//    resourcesVisibility.set(MRVisibility.Internal) // optional, default Public
+//    iosBaseLocalizationRegion.set("en") // optional, default "en"
+//    iosMinimalDeploymentTarget.set("11.0")
+//}

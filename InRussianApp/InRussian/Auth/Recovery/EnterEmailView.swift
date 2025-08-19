@@ -64,7 +64,7 @@ struct EnterEmailView: View {
                     color: AppColors.Palette.accent.color,
                     isActive: isEmailValid
                 ) {
-                    component.onEmailEntered(email: email)
+                    component.omEmailChange(email: email)
                 }
                 .padding(.vertical, 24)
 
