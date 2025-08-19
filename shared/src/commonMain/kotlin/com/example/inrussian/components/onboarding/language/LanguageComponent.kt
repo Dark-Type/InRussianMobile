@@ -1,18 +1,22 @@
 package com.example.inrussian.components.onboarding.language
 
 import com.arkivanov.decompose.ComponentContext
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 interface LanguageComponent {
     fun onNext()
     fun openMenu()
     fun clickOnToggleButton(isSelected: Boolean)
-    val state: State
+    val state: StateFlow<State>
 
     data class State(
         val selectedLanguage: String = "",
         val hasGivenPermission: Boolean = false,
         val isOpenLanguage: Boolean = false
-    )
+    ) {
+        val isActiveContinueButton = hasGivenPermission && selectedLanguage.isNotBlank()
+    }
 }
 
 sealed class LanguageOutput {
@@ -26,18 +30,20 @@ class DefaultLanguageComponent(
 ) : LanguageComponent, ComponentContext by componentContext {
 
     override val state =
-        LanguageComponent.State(selectedLanguage = "RUSSIAN", hasGivenPermission = false)
+        MutableStateFlow(
+            LanguageComponent.State(selectedLanguage = "RUSSIAN", hasGivenPermission = false)
+        )
 
     override fun onNext() {
         onOutput(LanguageOutput.Filled)
     }
 
     override fun openMenu() {
-        TODO("Not yet implemented")
+        state.value = state.value.copy(isOpenLanguage = !state.value.isOpenLanguage)
     }
 
     override fun clickOnToggleButton(isSelected: Boolean) {
-        TODO("Not yet implemented")
+        state.value = state.value.copy(hasGivenPermission = isSelected)
     }
 
 

@@ -16,6 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.inrussian.components.onboarding.confirmation.ConfirmationComponent
 import com.example.inrussian.ui.theme.CommonButton
 import com.example.inrussian.ui.theme.lightGreen
 import inrussian.composeapp.generated.resources.Res
@@ -25,9 +26,8 @@ import inrussian.composeapp.generated.resources.success_save_date
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
-@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun FormSaveUi() {
+fun FormSaveUi(component: ConfirmationComponent) {
     Column(Modifier.padding(horizontal = 28.dp)) {
         Column(
             Modifier
@@ -45,7 +45,20 @@ fun FormSaveUi() {
                 textAlign = TextAlign.Center
             )
         }
-        CommonButton(stringResource(Res.string.`continue`), true) { }
+        CommonButton(stringResource(Res.string.`continue`), true, component::onConfirm)
         Spacer(Modifier.height(40.dp))
     }
+}
+
+class FormSaveUi : ConfirmationComponent {
+    @Preview(showBackground = true, showSystemUi = true)
+    @Composable
+    fun Preview() {
+        FormSaveUi(this)
+    }
+
+    override fun onConfirm() {
+        TODO("Not yet implemented")
+    }
+
 }

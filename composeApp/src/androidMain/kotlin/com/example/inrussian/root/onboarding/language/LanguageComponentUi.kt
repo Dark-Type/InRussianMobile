@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.inrussian.components.onboarding.language.LanguageComponent
 
+/*
 @Composable
 fun LanguageComponentUi(component: LanguageComponent) {
     val state = component.state
@@ -77,4 +78,4 @@ fun LanguageComponentUi(component: LanguageComponent) {
             Text(text = "Далее")
         }
     }
-}
+}*/

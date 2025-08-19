@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.inrussian.components.onboarding.personalData.PersonalDataComponent
 
+/*
 @Composable
 fun PersonalDataComponentUi(component: PersonalDataComponent) {
     var name by remember { mutableStateOf(component.state.name) }
@@ -91,4 +92,4 @@ fun PersonalDataComponentUi(component: PersonalDataComponent) {
             Text(text = "Далее")
         }
     }
-}
+}*/

@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,6 +18,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,19 +38,18 @@ import com.example.inrussian.ui.theme.reallyLightGrey
 import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.app_language
 import inrussian.composeapp.generated.resources.app_n_language
-import inrussian.composeapp.generated.resources.`continue`
-import inrussian.composeapp.generated.resources.front_arror
 import inrussian.composeapp.generated.resources.give_permission
 import inrussian.composeapp.generated.resources.language
 import inrussian.composeapp.generated.resources.profile
 import inrussian.composeapp.generated.resources.tell_about_u
 import inrussian.composeapp.generated.resources.to_update_data
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun LanguageChooseUi(component: LanguageComponent) {
-    val state = component.state
+    val state by component.state.collectAsState()
     Column(
         Modifier
             .background(reallyLightGrey)
@@ -61,7 +61,7 @@ fun LanguageChooseUi(component: LanguageComponent) {
                 .offset(x = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ContinueButton(state.hasGivenPermission, component::onNext)
+            ContinueButton(state.isActiveContinueButton, component::onNext)
         }
         Text(
             stringResource(Res.string.app_n_language),
@@ -170,7 +170,6 @@ fun PermissionRow(isSelected: Boolean, onClick: (Boolean) -> Unit) {
 }
 
 
-
 class LanguageChooseUi : LanguageComponent {
     override fun onNext() {
         TODO("Not yet implemented")
@@ -184,7 +183,9 @@ class LanguageChooseUi : LanguageComponent {
         TODO("Not yet implemented")
     }
 
-    override val state = LanguageComponent.State()
+    override val state = MutableStateFlow(
+        LanguageComponent.State()
+    )
 
     @Preview(showBackground = true, showSystemUi = true)
     @Composable

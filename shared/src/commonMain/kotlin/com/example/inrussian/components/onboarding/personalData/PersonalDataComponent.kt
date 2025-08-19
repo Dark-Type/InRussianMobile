@@ -1,9 +1,12 @@
 package com.example.inrussian.components.onboarding.personalData
 
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+
 interface PersonalDataComponent {
     fun onNext()
 
-    val state: State
+    val state: StateFlow<State>
 
     data class State(
         val name: String = "",
@@ -26,8 +29,18 @@ interface PersonalDataComponent {
 
     }
 
+    fun changeSurname(surname: String)
+    fun changeName(name: String)
+    fun changeThirdName(thirdName: String)
+    fun changeGender(gender: String)
+    fun changeDob(dob: String)
+    fun changePhone(phone: String)
+    fun changeEmail(email: String)
+    fun changeGenderChoose(isOpen: Boolean)
+    fun openDataPicker()
+    fun onDataChange(date: String)
+    fun dataPickerMissClick()
     fun onBack()
-    fun onContinue()
 
 }
 
@@ -40,22 +53,70 @@ class DefaultPersonalDataComponent(
     private val onOutput: (PersonalDataOutput) -> Unit
 ) : PersonalDataComponent {
 
-    override val state = PersonalDataComponent.State(
-        name = "",
-        surname = "",
-        patronymic = "",
-        gender = "",
-        birthDate = "",
-        phoneNumber = "",
-        email = ""
+    override val state = MutableStateFlow(
+        PersonalDataComponent.State(
+            name = "",
+            surname = "",
+            patronymic = "",
+            gender = "",
+            birthDate = "",
+            phoneNumber = "",
+            email = ""
+        )
     )
 
-    override fun onBack() {
-        TODO("Not yet implemented")
+    override fun changeSurname(surname: String) {
+        state.value = state.value.copy(surname = surname)
     }
 
-    override fun onContinue() {
-        TODO("Not yet implemented")
+    override fun changeName(name: String) {
+        state.value = state.value.copy(name = name)
+
+    }
+
+    override fun changeThirdName(thirdName: String) {
+        state.value = state.value.copy(patronymic = thirdName)
+
+    }
+
+    override fun changeGender(gender: String) {
+        state.value = state.value.copy(gender = gender)
+
+    }
+
+    override fun changeDob(dob: String) {
+        state.value = state.value.copy(birthDate = dob)
+
+    }
+
+    override fun changePhone(phone: String) {
+        state.value = state.value.copy(phoneNumber = phone)
+
+    }
+
+    override fun changeEmail(email: String) {
+        state.value = state.value.copy(email = email)
+
+    }
+
+    override fun changeGenderChoose(isOpen: Boolean) {
+        state.value = state.value.copy(isGenderOpen = isOpen)
+    }
+
+    override fun openDataPicker() {
+        state.value = state.value.copy(showDataPicker = true)
+    }
+
+    override fun onDataChange(date: String) {
+        state.value = state.value.copy(birthDate = date)
+    }
+
+    override fun dataPickerMissClick() {
+        state.value = state.value.copy(showDataPicker = false)
+    }
+
+    override fun onBack() {
+        onOutput(PersonalDataOutput.Back)
     }
 
     override fun onNext() {

@@ -15,11 +15,16 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,20 +36,20 @@ import com.example.inrussian.ui.theme.reallyLightGrey
 import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.activity_type
 import inrussian.composeapp.generated.resources.can_write_rus_speech
-import inrussian.composeapp.generated.resources.down_arrow
+import inrussian.composeapp.generated.resources.citizenship
 import inrussian.composeapp.generated.resources.education
 import inrussian.composeapp.generated.resources.education_placeholder
 import inrussian.composeapp.generated.resources.purpose
 import inrussian.composeapp.generated.resources.understand_rus_language
 import inrussian.composeapp.generated.resources.understand_rus_speech
 import inrussian.composeapp.generated.resources.understand_rus_text
-import inrussian.composeapp.generated.resources.which_language
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun EducationUi(component: EducationComponent) {
-    val state = component.state
+    val state by component.state.collectAsState()
     Column(
         Modifier
             .background(reallyLightGrey)
@@ -85,13 +90,16 @@ fun EducationUi(component: EducationComponent) {
                 .clip(RoundedCornerShape(12.dp))
                 .background(White)
         ) {
-            InputFormField(
-                "",
-                {},
-                stringResource(Res.string.which_language),
-                Modifier,
-                vectorResource(Res.drawable.down_arrow),
-                {})
+            ClipsContainer(
+                isOpen = state.isOpenLanguages,
+                variants = listOf("Russ", "NeRuss", "Japan"),
+                active = state.languages,
+                onClick = component::deleteLanguage,
+                onChangeExpanded = component::onChangeExpanded,
+                onAddClick = component::selectLanguage,
+                placeholder = stringResource(Res.string.citizenship)
+            )
+
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
             TextWithToggle(stringResource(Res.string.understand_rus_speech), true, {})
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
@@ -114,17 +122,21 @@ fun EducationUi(component: EducationComponent) {
 
 
 @Composable
-fun TextWithToggle(text: String, isActive: Boolean, onClick: (Boolean) -> Unit) {
+fun TextWithToggle(
+    text: String, isActive: Boolean, onClick: (Boolean) -> Unit, isRequired: Boolean = true
+) {
     Row(
-        Modifier.padding(start = 16.dp, end = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
+        Modifier.padding(start = 16.dp, end = 8.dp), verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text, fontSize = 16.sp)
+        Text(buildAnnotatedString {
+            append(text)
+            if (isRequired) withStyle(style = SpanStyle(color = Orange)) {
+                append("*")
+            }
+        }, fontSize = 16.sp)
         Spacer(Modifier.weight(1f))
         Checkbox(
-            isActive,
-            onClick,
-            colors = CheckboxDefaults.colors().copy(
+            isActive, onClick, colors = CheckboxDefaults.colors().copy(
                 checkedBoxColor = Orange,
                 checkedCheckmarkColor = White,
                 checkedBorderColor = Orange,
@@ -137,13 +149,40 @@ fun TextWithToggle(text: String, isActive: Boolean, onClick: (Boolean) -> Unit) 
 }
 
 class EducationUi : EducationComponent {
-    override val state = EducationComponent.State()
+    override val state = MutableStateFlow(
+        EducationComponent.State(languages = mutableListOf("Ural", "Oleg"))
+    )
 
     override fun onNext() {
         TODO("Not yet implemented")
     }
 
     override fun onBack() {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteLanguage(string: String) {
+        TODO("Not yet implemented")
+    }
+
+
+    override fun onChangeExpanded(boolean: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun selectLanguage(language: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun changeActivity(activity: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun changeEducation(education: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun changePurpose(purpose: String) {
         TODO("Not yet implemented")
     }
 
