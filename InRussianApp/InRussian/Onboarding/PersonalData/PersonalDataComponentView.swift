@@ -25,7 +25,6 @@ struct PersonalDataComponentView: View {
 
     init(component: PersonalDataComponent) {
         self.component = component
-
         _name = State(initialValue: component.state.name)
         _surname = State(initialValue: component.state.surname)
         _patronymic = State(initialValue: component.state.patronymic)
@@ -56,116 +55,84 @@ struct PersonalDataComponentView: View {
         return df.string(from: birthDate)
     }
 
+    private var genderLabel: Text {
+        if gender.isEmpty {
+            return Text("Пол").foregroundColor(.secondary) + Text("*").foregroundColor(.red)
+        } else {
+            return Text(gender).foregroundColor(.primary)
+        }
+    }
+
+    private var birthDateLabel: Text {
+        if birthDate == nil {
+            return Text("Дата рождения").foregroundColor(.secondary) + Text("*").foregroundColor(.red)
+        } else {
+            return Text(formattedBirthDate()).foregroundColor(.primary)
+        }
+    }
+
     var body: some View {
         ZStack {
             Color(.secondarySystemBackground).ignoresSafeArea()
 
             VStack(spacing: 24) {
+                
                 Image(systemName: "person.crop.circle")
                     .resizable()
                     .foregroundColor(AppColors.Palette.accent.color)
                     .frame(width: 120, height: 120)
-                    .padding(.top, 22)
-                Spacer().frame(height: 8)
+                    .padding(.top, 64)
+                Spacer()
 
-                VStack(spacing: 0) {
-                    // Main form background
-                    VStack(spacing: 18) {
-                        FormField(
-                            title: "Имя",
-                            text: $name,
-                            placeholder: "Введите имя",
-                            isRequired: true
-                        )
-                        FormField(
-                            title: "Фамилия",
-                            text: $surname,
-                            placeholder: "Введите фамилию",
-                            isRequired: true
-                        )
-                        FormField(
-                            title: "Отчество",
-                            text: $patronymic,
-                            placeholder: "Введите отчество",
-                            isRequired: true
-                        )
+                Form {
+                    Section {
+                        CustomAsteriskTextField(placeholder: "Имя", text: $name)
+                            .autocapitalization(.words)
+                            .listRowBackground(AppColors.Palette.componentBackground.color)
 
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack(spacing: 2) {
-                                Text("Пол")
-                                    .foregroundColor(.primary)
-                                    .font(.system(size: 16, weight: .semibold))
-                                Text("*")
-                                    .foregroundColor(.red)
-                            }
+                        CustomAsteriskTextField(placeholder: "Фамилия", text: $surname)
+                            .autocapitalization(.words)
+                            .listRowBackground(AppColors.Palette.componentBackground.color)
+
+                        TextField("Отчество", text: $patronymic)
+                            .autocapitalization(.words)
+                            .listRowBackground(AppColors.Palette.componentBackground.color)
+
+                        Button(action: { withAnimation { showGenderPicker = true } }) {
                             HStack {
-                                Text(gender.isEmpty ? "Выберите пол" : gender)
-                                    .foregroundColor(gender.isEmpty ? Color(.systemBlue) : AppColors.Palette.inactive.color)
-                                    .font(.system(size: 17))
+                                genderLabel
                                 Spacer()
                                 Image(systemName: "chevron.down")
                                     .foregroundColor(gender.isEmpty ? Color(.systemBlue) : AppColors.Palette.inactive.color)
-                                    .font(.system(size: 18, weight: .medium))
                             }
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                withAnimation { showGenderPicker = true }
-                            }
-                            .padding(.vertical, 10)
-                            .padding(.horizontal, 12)
-                            .background(Color(.systemGray6))
-                            .cornerRadius(8)
                         }
+                        .buttonStyle(.plain)
+                        .listRowBackground(AppColors.Palette.componentBackground.color)
 
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack(spacing: 2) {
-                                Text("Дата рождения")
-                                    .foregroundColor(.primary)
-                                    .font(.system(size: 16, weight: .semibold))
-                                Text("*")
-                                    .foregroundColor(.red)
-                            }
+                        Button(action: { withAnimation { showDatePicker = true } }) {
                             HStack {
-                                Text(birthDate == nil ? "Введите дату рождения" : formattedBirthDate())
-                                    .foregroundColor(birthDate == nil ? Color(.systemBlue) : AppColors.Palette.inactive.color)
-                                    .font(.system(size: 17))
+                                birthDateLabel
                                 Spacer()
                                 Image(systemName: "calendar")
                                     .foregroundColor(birthDate == nil ? Color(.systemBlue) : AppColors.Palette.inactive.color)
-                                    .font(.system(size: 20, weight: .medium))
                             }
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                withAnimation { showDatePicker = true }
-                            }
-                            .padding(.vertical, 10)
-                            .padding(.horizontal, 12)
-                            .background(Color(.systemGray6))
-                            .cornerRadius(8)
                         }
+                        .buttonStyle(.plain)
+                        .listRowBackground(AppColors.Palette.componentBackground.color)
 
-                        FormField(
-                            title: "Телефон",
-                            text: $phoneNumber,
-                            placeholder: "Введите телефон",
-                            isRequired: true,
-                            keyboardType: .phonePad
-                        )
-                        FormField(
-                            title: "Email",
-                            text: $email,
-                            placeholder: "Введите email",
-                            isRequired: true,
-                            keyboardType: .emailAddress
-                        )
+                        CustomAsteriskTextField(placeholder: "Телефон", text: $phoneNumber, keyboardType: .phonePad)
+                            .listRowBackground(AppColors.Palette.componentBackground.color)
+
+                        CustomAsteriskTextField(placeholder: "Email", text: $email, keyboardType: .emailAddress)
+                            .listRowBackground(AppColors.Palette.componentBackground.color)
                     }
-                    .padding(20)
-                    .background(AppColors.Palette.componentBackground.color)
-                    .cornerRadius(18)
-                    .padding(.horizontal, 16)
                 }
+                .scrollContentBackground(.hidden)
+                .background(Color.clear)
+                .cornerRadius(0)
+                .padding(.horizontal, 0)
+                .padding(.bottom, 36)
 
-                Spacer()
             }
 
             if showGenderPicker {
@@ -198,10 +165,8 @@ struct PersonalDataComponentView: View {
                             }
                             .padding(.vertical, 18)
                             .padding(.horizontal, 32)
-                            .background(Color.clear)
                         }
                     }
-                    Spacer()
                 }
                 .frame(maxWidth: .infinity, maxHeight: 300)
                 .background(
@@ -237,24 +202,24 @@ struct PersonalDataComponentView: View {
                     )
                     .datePickerStyle(.wheel)
                     .labelsHidden()
-                    .padding(.vertical, 18)
+                    .padding(.vertical, 0)
                     .padding(.horizontal, 32)
+                    Spacer()
                     Button("Готово") {
                         withAnimation { showDatePicker = false }
                     }
                     .font(.system(size: 20, weight: .bold))
                     .padding(.vertical, 10)
                     .padding(.horizontal, 48)
-                    Spacer()
                 }
-                .frame(maxWidth: .infinity, maxHeight: 300)
+                .frame(maxWidth: .infinity, maxHeight: 340)
                 .background(
                     RoundedRectangle(cornerRadius: 20)
                         .fill(AppColors.Palette.componentBackground.color)
                         .shadow(radius: 10)
                 )
                 .padding(.horizontal, 32)
-                .padding(.vertical, 100)
+                .padding(.vertical, 120)
                 .transition(.scale)
                 .zIndex(3)
             }
@@ -262,7 +227,6 @@ struct PersonalDataComponentView: View {
         .navigationTitle("Персональные данные")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
-        
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
                     component.onNext()
@@ -281,30 +245,25 @@ struct PersonalDataComponentView: View {
     }
 }
 
-struct FormField: View {
-    let title: String
-    @Binding var text: String
+struct CustomAsteriskTextField: View {
     let placeholder: String
-    let isRequired: Bool
+    @Binding var text: String
     var keyboardType: UIKeyboardType = .default
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack(spacing: 2) {
-                Text(title)
-                    .foregroundColor(.primary)
-                    .font(.system(size: 16, weight: .semibold))
-                if isRequired {
+        ZStack(alignment: .leading) {
+            if text.isEmpty {
+                HStack(spacing: 0) {
+                    Text(placeholder)
+                        .foregroundColor(.secondary)
                     Text("*")
                         .foregroundColor(.red)
                 }
+                .padding(.leading, 4)
             }
-            TextField(placeholder, text: $text)
+            TextField("", text: $text)
                 .keyboardType(keyboardType)
-                .padding(.vertical, 10)
-                .padding(.horizontal, 12)
-                .background(Color(.systemGray6))
-                .cornerRadius(8)
+                .autocapitalization(.none)
         }
     }
 }

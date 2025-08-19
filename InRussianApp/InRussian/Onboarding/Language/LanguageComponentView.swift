@@ -85,7 +85,7 @@ struct LanguageComponentView: View {
                     .cornerRadius(16)
 
                     HStack {
-                        Text("Язык приложения")
+                        Text("Язык приложения:")
                             .foregroundColor(.primary)
                             .font(.system(size: 18, weight: .medium))
                         Spacer()
@@ -193,7 +193,7 @@ struct LanguageComponentView: View {
                 .zIndex(5)
             }
         }
-        .navigationTitle("Язык приложения:")
+        .navigationTitle("Язык приложения")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
