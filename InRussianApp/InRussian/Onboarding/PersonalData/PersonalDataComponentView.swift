@@ -226,7 +226,19 @@ struct PersonalDataComponentView: View {
         }
         .navigationTitle("Персональные данные")
         .navigationBarTitleDisplayMode(.large)
+        .navigationBarBackButtonHidden(true)
         .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button {
+                    component.onBack()
+                } label: {
+                    HStack {
+                        Image(systemName: "chevron.left")
+                        Text("Назад")
+                    }
+                    .foregroundColor(AppColors.Palette.accent.color)
+                }
+            }
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
                     component.onNext()

@@ -17,11 +17,15 @@ struct CheckboxView: View {
             HStack {
                 Text(label)
                     .foregroundColor(.primary)
-                
+                Spacer()
                 AppImages.Checkbox.toggle(isChecked)
                     .resizable()
+                    
                     .frame(width: 24, height: 24)
+                    
             }
+            .contentShape(Rectangle())
+            .frame(minHeight: 44)
         }
         .buttonStyle(.plain)
     }

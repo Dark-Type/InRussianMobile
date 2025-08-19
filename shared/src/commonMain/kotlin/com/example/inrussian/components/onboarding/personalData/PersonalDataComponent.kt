@@ -51,7 +51,7 @@ class DefaultPersonalDataComponent(
     )
 
     override fun onBack() {
-        TODO("Not yet implemented")
+        onOutput(PersonalDataOutput.Back)
     }
 
     override fun onContinue() {

@@ -5,20 +5,19 @@
 //  Created by dark type on 16.08.2025.
 //
 
-
-import SwiftUI
 import Shared
+import SwiftUI
 
 struct EducationComponentView: View {
     let component: EducationComponent
 
+    // Options
     private let languageOptions = [
         "Русский", "Английский", "Китайский", "Узбекский", "Таджикский",
         "Хинди", "Казахский", "Французский", "Немецкий", "Испанский"
     ]
 
-    @State private var expanded: Bool = false
-    @State private var selectedLanguage: String = ""
+    // State
     @State private var languages: [String]
     @State private var understandsRussian: Bool
     @State private var speaksRussian: Bool
@@ -27,6 +26,9 @@ struct EducationComponentView: View {
     @State private var kindOfActivity: String
     @State private var education: String
     @State private var purposeOfRegistration: String
+
+    // Pickers / modals
+    @State private var showLanguagesPicker = false
 
     init(component: EducationComponent) {
         self.component = component
@@ -40,93 +42,182 @@ struct EducationComponentView: View {
         _purposeOfRegistration = State(initialValue: component.state.purposeOfRegistration)
     }
 
-    var body: some View {
-        VStack(alignment: .leading) {
-            Text("Выберите языки, которыми владеете")
-                .font(.headline)
-            Spacer().frame(height: 8)
+    // MARK: - Labels
 
-            Menu {
-                ForEach(languageOptions, id: \.self) { lang in
-                    Button(action: {
+    private var languagesPlaceholder: Text {
+        if languages.isEmpty {
+            return Text("Языки").foregroundColor(.secondary) + Text("*").foregroundColor(.red)
+        } else {
+            return Text("") 
+        }
+    }
+
+    private var isFormFilled: Bool {
+        !languages.isEmpty &&
+            !kindOfActivity.isEmpty &&
+            !education.isEmpty &&
+            !purposeOfRegistration.isEmpty
+    }
+
+    var body: some View {
+        ZStack {
+            Color(.secondarySystemBackground).ignoresSafeArea()
+
+            VStack(spacing: 24) {
+                Image(systemName: "graduationcap")
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundColor(AppColors.Palette.accent.color)
+                    .frame(width: 120, height: 120)
+                    .padding(.top, 64)
+                Spacer()
+
+                Form {
+                    Section {
+
+                        LanguageChipField(
+                            placeholder: languagesPlaceholder,
+                            selections: $languages,
+                            showPicker: $showLanguagesPicker,
+                            accent: AppColors.Palette.accent.color,
+                            backgroundColor: AppColors.Palette.componentBackground.color
+                        )
+                        .listRowBackground(AppColors.Palette.componentBackground.color)
+
+                        CheckboxView(isChecked: $understandsRussian, label: "Понимает русский")
+                            .listRowBackground(AppColors.Palette.componentBackground.color)
+                        CheckboxView(isChecked: $speaksRussian, label: "Говорит по-русски")
+                            .listRowBackground(AppColors.Palette.componentBackground.color)
+                        CheckboxView(isChecked: $readsRussian, label: "Читает по-русски")
+                            .listRowBackground(AppColors.Palette.componentBackground.color)
+                        CheckboxView(isChecked: $writesRussian, label: "Пишет по-русски")
+                            .listRowBackground(AppColors.Palette.componentBackground.color)
+
+                        CustomAsteriskTextField(placeholder: "Вид деятельности", text: $kindOfActivity)
+                            .listRowBackground(AppColors.Palette.componentBackground.color)
+                        CustomAsteriskTextField(placeholder: "Образование", text: $education)
+                            .listRowBackground(AppColors.Palette.componentBackground.color)
+                        CustomAsteriskTextField(placeholder: "Цель регистрации", text: $purposeOfRegistration)
+                            .listRowBackground(AppColors.Palette.componentBackground.color)
+                    }
+                }
+                .scrollContentBackground(.hidden)
+                .background(Color.clear)
+                .padding(.bottom, 36)
+            }
+
+            
+            if showLanguagesPicker {
+                DimmedModalBackground { withAnimation { showLanguagesPicker = false } }
+                OptionListModal(
+                    title: "Добавить язык",
+                    options: languageOptions,
+                    selected: Set(languages),
+                    allowsMultiple: true,
+                    accent: AppColors.Palette.accent.color,
+                    onSelect: { lang in
                         if !languages.contains(lang) {
                             languages.append(lang)
                         }
-                        selectedLanguage = lang
-                    }) {
-                        Text(lang)
-                    }
-                }
-            } label: {
-                HStack {
-                    Text(selectedLanguage.isEmpty ? "Язык" : selectedLanguage)
-                        .foregroundColor(selectedLanguage.isEmpty ? .gray : .primary)
-                    Spacer()
-                    Image(systemName: "chevron.down")
-                        .foregroundColor(.gray)
-                }
-                .padding(8)
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color.gray.opacity(0.5))
+                    },
+                    onRemove: { lang in
+                        languages.removeAll { $0 == lang }
+                    },
+                    onDone: { withAnimation { showLanguagesPicker = false } }
                 )
             }
-
-            Spacer().frame(height: 8)
-            Text("Выбранные языки: \(languages.joined(separator: ", "))")
-                .font(.subheadline)
-
-            Spacer().frame(height: 16)
-
-            
-            HStack {
-                CheckboxView(isChecked: $understandsRussian, label: "Понимает русский")
-            }
-            HStack {
-                CheckboxView(isChecked: $speaksRussian, label: "Говорит по-русски")
-            }
-            HStack {
-                CheckboxView(isChecked: $readsRussian, label: "Читает по-русски")
-            }
-            HStack {
-                CheckboxView(isChecked: $writesRussian, label: "Пишет по-русски")
-            }
-
-            Spacer().frame(height: 16)
-
-            TextField("Вид деятельности", text: $kindOfActivity)
-                .textFieldStyle(.roundedBorder)
-                .frame(maxWidth: .infinity)
-            Spacer().frame(height: 8)
-            TextField("Образование", text: $education)
-                .textFieldStyle(.roundedBorder)
-                .frame(maxWidth: .infinity)
-            Spacer().frame(height: 8)
-            TextField("Цель регистрации", text: $purposeOfRegistration)
-                .textFieldStyle(.roundedBorder)
-                .frame(maxWidth: .infinity)
-
-            Spacer().frame(height: 16)
-            HStack {
-                Button(action: {
+        }
+        .navigationTitle("Образование и язык")
+        .navigationBarTitleDisplayMode(.large)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button {
                     component.onBack()
-                }) {
-                    Text("Назад")
-                        .frame(maxWidth: .infinity)
+                } label: {
+                    HStack {
+                        Image(systemName: "chevron.left")
+                        Text("Назад")
+                    }
+                    .foregroundColor(AppColors.Palette.accent.color)
                 }
-                .buttonStyle(.bordered)
-
-                Spacer().frame(width: 8)
-
-                Button(action: {
+            }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
                     component.onNext()
-                }) {
-                    Text("Далее")
-                        .frame(maxWidth: .infinity)
+                } label: {
+                    HStack(spacing: 0) {
+                        Text("Далее")
+                            .font(.system(size: 17, weight: .semibold))
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 17, weight: .semibold))
+                    }
+                    .foregroundColor(isFormFilled ? AppColors.Palette.accent.color : AppColors.Palette.inactive.color)
                 }
-                .buttonStyle(.borderedProminent)
+                .disabled(!isFormFilled)
             }
         }
-        .padding(16)
     }
 }
+
+// MARK: - Language Chips Field (multi-select)
+
+struct LanguageChipField: View {
+    let placeholder: Text
+    @Binding var selections: [String]
+    @Binding var showPicker: Bool
+    let accent: Color
+    let backgroundColor: Color
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if selections.isEmpty {
+                HStack {
+                    placeholder
+                    Spacer()
+                    Image(systemName: "chevron.down")
+                        .foregroundColor(Color(.systemBlue))
+                }
+                .frame(minHeight: 44)
+                .contentShape(Rectangle())
+                .onTapGesture { withAnimation { showPicker = true } }
+            } else {
+                HStack(alignment: .top, spacing: 8) {
+                    FlowLayout(spacing: 8, runSpacing: 8,  alignment: .leading) {
+                        ForEach(selections, id: \.self) { item in
+                            ChipView(
+                                text: item,
+                                accent: accent,
+                                onRemove: {
+                                    withAnimation {
+                                        selections.removeAll { $0 == item }
+                                    }
+                                }
+                            )
+                        }
+                    }
+                    Spacer(minLength: 4)
+                    Button {
+                        withAnimation { showPicker = true }
+                    } label: {
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(accent)
+                            .padding(10)
+                            .background(
+                                Circle()
+                                    .fill(backgroundColor.opacity(0.9))
+                                    .overlay(
+                                        Circle()
+                                            .stroke(accent.opacity(0.4), lineWidth: 1)
+                                    )
+                            )
+                    }
+                    .buttonStyle(.plain)
+                }
+                .frame(minHeight: 44)
+            }
+        }
+    }
+}
+
