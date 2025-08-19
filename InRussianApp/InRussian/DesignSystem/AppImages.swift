@@ -15,8 +15,19 @@ enum AppImages {
         case inactive = "CheckboxInactive"
 
         static func toggle(_ checked: Bool) -> Image {
-            image(for: checked ? Checkbox.active : Checkbox.inactive)
+            
+            AppImages.image(for: checked ? Checkbox.active : Checkbox.inactive)
         }
+    }
+
+    enum Logo: String, RawImageAsset {
+        case app = "Logo"
+        case vk = "VKLogo"
+        case yandex = "YandexLogo"
+
+        static var appLogo: Image { AppImages.image(for: Logo.app) }
+        static var vkLogo: Image { AppImages.image(for: Logo.vk) }
+        static var yandexLogo: Image { AppImages.image(for: Logo.yandex) }
     }
 }
 

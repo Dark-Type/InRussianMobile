@@ -12,37 +12,92 @@ struct BaseAuthView: View {
     let component: BaseAuthComponent
 
     var body: some View {
-        VStack {
-            Spacer()
-                .frame(maxHeight: .infinity)
-                .layoutPriority(1)
+        ZStack {
+            AppColors.Palette.baseBackground.color
+                .ignoresSafeArea()
 
-            Button(action: {
-                component.onLoginClicked()
-            }) {
-                Text("Войти")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.borderedProminent)
-            .padding(.bottom, 8)
+            VStack(spacing: 32) {
+                Spacer()
+                
+                AppImages.Logo.appLogo
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: 400, maxHeight: 250)
+                    .padding(.top, 48)
 
-            Button(action: {
-                component.onRegisterClicked()
-            }) {
-                Text("Регистрация")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.bordered)
-            .padding(.bottom, 8)
+                Spacer()
 
-            Button(action: {
-                component.onSsoClicked()
-            }) {
-                Text("Войти через SSO")
-                    .frame(maxWidth: .infinity)
+                
+                VStack(spacing: 12) {
+                    
+                    CustomButton(
+                        text: "Зарегистрироваться",
+                        color: AppColors.Palette.secondary.color,
+                        isActivatable: false,
+                        trailingLogo: nil
+                    ) {
+                        component.onRegisterClicked()
+                    }
+
+                    
+                    CustomButton(
+                        text: "Войти",
+                        color: AppColors.Palette.accent.color,
+                        isActivatable: false,
+                        trailingLogo: nil
+                    ) {
+                        component.onLoginClicked()
+                    }
+
+                    
+                    SocialDivider()
+
+                    
+                    CustomButton(
+                        text: "Войти с VK ID",
+                        color: AppColors.Palette.vk.color,
+                        isActivatable: false,
+                        trailingLogo: .vk
+                    ) {
+                        component.onSsoClicked()
+                    }
+
+                    
+                    CustomButton(
+                        text: "Войти с Яндекс ID",
+                        color: AppColors.Palette.yandex.color,
+                        isActivatable: false,
+                        trailingLogo: .yandex
+                    ) {
+                        component.onSsoClicked()
+                    }
+                }
+                .padding(.horizontal, 28)
+                .padding(.bottom, 48)
             }
-            .buttonStyle(.bordered)
         }
-        .padding(16)
     }
 }
+
+private struct SocialDivider: View {
+    var body: some View {
+        HStack(alignment: .center) {
+            Rectangle()
+                .fill(AppColors.Palette.stroke.color)
+                .frame(height: 1)
+
+            Text("вход через\nсоциальные сети")
+                .font(.footnote)
+                .foregroundColor(AppColors.Palette.footnote.color)
+                .multilineTextAlignment(.center)
+                .frame(width: UIScreen.main.bounds.width * 0.25)
+
+            Rectangle()
+                .fill(AppColors.Palette.stroke.color)
+                .frame(height: 1)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 4)
+    }
+}
+

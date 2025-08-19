@@ -393,17 +393,6 @@ private struct CompletionDialog: View {
     }
 }
 
-private func ProgressCentered() -> some View {
-    AnyView(
-        VStack(spacing: 12) {
-            ProgressView()
-            Text("Загрузка...")
-                .font(.footnote)
-                .foregroundColor(.secondary)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    )
-}
 
 private extension TrainComponentChild {
     func hashObject() -> Int { (self as AnyObject).hash }
