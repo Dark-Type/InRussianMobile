@@ -1,7 +1,7 @@
 package com.example.inrussian.components.auth.register
 
+import co.touchlab.kermit.Logger
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.mvikotlin.core.instancekeeper.getStore
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import com.example.inrussian.stores.auth.register.RegisterStore
@@ -40,15 +40,16 @@ class DefaultRegisterComponent(
     init {
         scope.launch {
             store.labels.collect {
+                Logger.d("AuthenticationSuccess", tag = "DefaultRegisterComponent")
+                Logger.d("it: $it", tag = "DefaultRegisterComponent")
+
                 when (it) {
                     RegisterStore.Label.SubmittedSuccessfully ->
                         onOutput(RegisterOutput.AuthenticationSuccess)
                 }
             }
         }
-        scope.launch {
 
-        }
 
     }
 
@@ -78,7 +79,6 @@ class DefaultRegisterComponent(
 
     override fun onShowConfirmPasswordClick() {
         store.accept(Intent.ConfirmPasswordImageClick)
-
     }
 
     override fun onEmailDeleteClick() {

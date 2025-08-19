@@ -9,7 +9,7 @@ class Validator {
         validationList.add(password.any { it.isDigit() })
         validationList.add(password.any { it.isLetter() })
         validationList.add(password.any { !it.isLetterOrDigit() })
-        if (validationList.all { it })
+        if (!validationList.all { it })
             throw ErrorType.InvalidPassword
     }
 
@@ -19,7 +19,7 @@ class Validator {
     }
 
     fun validateEmail(email: String) {
-        if (email.matches(
+        if (!email.matches(
                 Regex("[a-z0-9!#\$%&'*+/=?^_`{|}~\\-]+(?:\\.[a-z0-9!#\$%&'*+/=?^_`{|}~\\-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
             )
         ) throw ErrorType.InvalidEmail

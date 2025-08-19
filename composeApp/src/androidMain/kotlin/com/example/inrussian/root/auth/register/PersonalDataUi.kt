@@ -26,6 +26,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.inrussian.components.onboarding.personalData.PersonalDataComponent
+import com.example.inrussian.ui.theme.BackButton
+import com.example.inrussian.ui.theme.ContinueButton
 import com.example.inrussian.ui.theme.DarkGrey
 import com.example.inrussian.ui.theme.LightBlue
 import com.example.inrussian.ui.theme.Orange
@@ -119,22 +121,6 @@ fun PersonaDataUi(component: PersonalDataComponent) {
     }
 }
 
-@Composable
-fun RowScope.BackButton(enable: Boolean, onClick: () -> Unit) {
-    IconButton(onClick) {
-        Icon(
-            vectorResource(Res.drawable.back_arrow),
-            "",
-            tint = if (enable) LightBlue else DarkGrey.copy(alpha = 0.8f)
-        )
-    }
-    Text(
-        stringResource(Res.string.back),
-        fontSize = 18.sp,
-        color = LightBlue,
-    )
-
-}
 
 @Composable
 fun InputFormField(

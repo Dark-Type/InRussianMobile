@@ -60,7 +60,7 @@ fun BaseAuthUi(component: BaseAuthComponent) {
             )
         }
         Button(
-            onClick = { component.onLoginClicked() },
+            onClick = { component.onRegisterClicked() },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(45.dp),
@@ -71,7 +71,7 @@ fun BaseAuthUi(component: BaseAuthComponent) {
             Text(stringResource(Res.string.sign_up))
         }
         Button(
-            onClick = { component.onRegisterClicked() },
+            onClick = { component.onLoginClicked() },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 14.dp)

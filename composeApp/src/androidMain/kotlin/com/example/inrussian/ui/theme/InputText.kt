@@ -1,6 +1,7 @@
 package com.example.inrussian.ui.theme
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -28,7 +29,7 @@ fun CommonTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label) },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().imePadding(),
         shape = RoundedCornerShape(10.dp),
         visualTransformation = visualTransformation ?: VisualTransformation.None,
         trailingIcon = if (icon != null) (@Composable {

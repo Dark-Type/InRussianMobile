@@ -1,5 +1,6 @@
 package com.example.inrussian.stores.auth.register
 
+import co.touchlab.kermit.Logger
 import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.SimpleBootstrapper
 import com.arkivanov.mvikotlin.core.store.Store
@@ -53,14 +54,18 @@ class RegisterStoreFactory(
                 Intent.SignUpClick -> {
                     scope.launch {
                         val state = state()
+                        Logger.d { "validate" }
                         try {
+                            Logger.d { "validate1" }
                             dispatch(Loading)
                             validator.validateEmail(state.email)
                             validator.validatePassword(state.password)
                             validator.validateConfirmPassword(state.password, state.confirmPassword)
+                            Logger.d { "validate2" }
                             publish(Label.SubmittedSuccessfully)
 
                         } catch (e: ErrorType) {
+                            Logger.d { "error: $e" }
                             if (e is RegisterError) {
                                 when (e) {
                                     ErrorType.InvalidEmail -> dispatch(
@@ -124,7 +129,7 @@ class RegisterStoreFactory(
             )
 
             is PasswordChanged -> copy(
-                email = msg.password,
+                password = msg.password,
                 passwordError = null,
             )
 

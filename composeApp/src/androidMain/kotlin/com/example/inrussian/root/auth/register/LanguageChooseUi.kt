@@ -29,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.inrussian.components.onboarding.language.LanguageComponent
+import com.example.inrussian.ui.theme.ContinueButton
 import com.example.inrussian.ui.theme.DarkGrey
 import com.example.inrussian.ui.theme.LightBlue
 import com.example.inrussian.ui.theme.Orange
@@ -169,23 +170,6 @@ fun PermissionRow(isSelected: Boolean, onClick: (Boolean) -> Unit) {
 }
 
 
-@Composable
-fun RowScope.ContinueButton(enable: Boolean, onClick: () -> Unit) {
-
-    Spacer(Modifier.weight(1f))
-    Text(
-        stringResource(Res.string.`continue`),
-        fontSize = 18.sp,
-        color = if (enable) LightBlue else DarkGrey.copy(alpha = 0.8f)
-    )
-    IconButton(onClick) {
-        Icon(
-            vectorResource(Res.drawable.front_arror),
-            "",
-            tint = if (enable) LightBlue else DarkGrey.copy(alpha = 0.8f)
-        )
-    }
-}
 
 class LanguageChooseUi : LanguageComponent {
     override fun onNext() {

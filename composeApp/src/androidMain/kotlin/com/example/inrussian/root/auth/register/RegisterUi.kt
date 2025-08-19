@@ -58,6 +58,7 @@ fun RegisterUi(component: RegisterComponent) {
                 Res.drawable.cancel
             ),
             onIconClick = component::onEmailDeleteClick,
+            error = state.emailError
         )
         Spacer(modifier = Modifier.height(8.dp))
         CommonTextField(
@@ -68,7 +69,9 @@ fun RegisterUi(component: RegisterComponent) {
                 Res.drawable.eye_off
             ),
             onIconClick = component::onShowPasswordClick,
-            visualTransformation = if (state.showPassword) PasswordVisualTransformation() else null
+            visualTransformation = if (!state.showPassword) PasswordVisualTransformation() else null,
+
+            error = state.passwordError
         )
         Spacer(modifier = Modifier.height(8.dp))
         CommonTextField(
@@ -79,7 +82,8 @@ fun RegisterUi(component: RegisterComponent) {
                 Res.drawable.eye_off
             ),
             onIconClick = component::onShowConfirmPasswordClick,
-            visualTransformation = if (state.showConfirmPassword) PasswordVisualTransformation() else null
+            visualTransformation = if (!state.showConfirmPassword) PasswordVisualTransformation() else null,
+            error = state.confirmPasswordError
         )
         Spacer(modifier = Modifier.height(57.dp))
         CommonButton(

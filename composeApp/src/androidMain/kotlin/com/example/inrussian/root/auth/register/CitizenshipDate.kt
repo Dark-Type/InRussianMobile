@@ -28,6 +28,8 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.inrussian.components.onboarding.citizenship.CitizenshipComponent
+import com.example.inrussian.ui.theme.BackButton
+import com.example.inrussian.ui.theme.ContinueButton
 import com.example.inrussian.ui.theme.DarkGrey
 import com.example.inrussian.ui.theme.Orange
 import com.example.inrussian.ui.theme.reallyLightGrey

@@ -3,6 +3,7 @@ package com.example.inrussian.root.auth.login
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,8 +20,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.inrussian.components.auth.login.LoginComponent
 import com.example.inrussian.stores.auth.login.LoginStore.State
+import com.example.inrussian.ui.theme.BackButton
 import com.example.inrussian.ui.theme.CommonButton
 import com.example.inrussian.ui.theme.CommonTextField
+import com.example.inrussian.ui.theme.DarkGrey
 import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.cancel
 import inrussian.composeapp.generated.resources.email
@@ -41,6 +44,9 @@ fun LoginUi(component: LoginComponent) {
     val state by component.state.collectAsState(Dispatchers.Main.immediate)
 
     Column(modifier = Modifier.padding(16.dp)) {
+        Row {
+            BackButton(enable = false, onClick = component::onBackClicked)
+        }
         Box(
             modifier = Modifier
                 .weight(1f)
@@ -86,7 +92,7 @@ fun LoginUi(component: LoginComponent) {
         TextButton(
             onClick = { component.onForgotPasswordClicked() }, modifier = Modifier.fillMaxWidth()
         ) {
-            Text(stringResource(Res.string.forgot_password))
+            Text(stringResource(Res.string.forgot_password), color = DarkGrey.copy(alpha = 0.4f))
         }
         Spacer(modifier = Modifier.height(40.dp))
 
