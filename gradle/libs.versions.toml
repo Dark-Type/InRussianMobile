@@ -11,16 +11,20 @@ androidx-lifecycle = "2.9.1"
 androidx-testExt = "1.3.0"
 composeMultiplatform = "1.8.2"
 koin = "4.1.0"
+kermit = "2.0.4"
 decompose = "3.3.0"
 essenty = "2.5.0"
 kotlinxSerializationJson = "1.9.0"
+mplogger = "1.0.0"
 mvikotlin = "4.3.0"
 junit = "4.13.2"
 kotlin = "2.2.0"
 kotlinxCoroutinesCore = "1.10.2"
 kotlinxSerialization = "2.2.0"
 material3 = "1.3.2"
+resourcesGenerator = "0.25.0"
 [libraries]
+kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { module = "junit:junit", version.ref = "junit" }
@@ -34,7 +38,9 @@ androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
 decompose-compose = { module = "com.arkivanov.decompose:extensions-compose", version.ref = "decompose" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+mplogger = { module = "dev.fivestar.mplogger:mplogger", version.ref = "mplogger" }
 mvikotlin = { module = "com.arkivanov.mvikotlin:mvikotlin", version.ref = "mvikotlin" }
 mvikotlin-main = { module = "com.arkivanov.mvikotlin:mvikotlin-main", version.ref = "mvikotlin" }
 mvikotlin-logging = { module = "com.arkivanov.mvikotlin:mvikotlin-logging", version.ref = "mvikotlin" }
@@ -45,6 +51,9 @@ koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 essenty-lifecycle = { group = "com.arkivanov.essenty", name = "lifecycle", version.ref = "essenty" }
+resources = { module = "dev.icerock.moko:resources", version.ref = "resourcesGenerator" }
+resources-compose = { module = "dev.icerock.moko:resources-compose", version.ref = "resourcesGenerator" }
+resources-generator = { module = "dev.icerock.moko:resources-generator", version.ref = "resourcesGenerator" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

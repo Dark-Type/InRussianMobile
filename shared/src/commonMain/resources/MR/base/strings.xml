@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="invalid_password">Пароль должен состоять из 6 символос, числа спец.символа и
+        заглавной буквы
+    </string>
+</resources>

@@ -20,10 +20,6 @@ import com.example.inrussian.components.main.root.DefaultMainRootComponent
 import com.example.inrussian.components.main.train.DefaultSectionDetailComponent
 import com.example.inrussian.components.main.train.DefaultTasksComponent
 import com.example.inrussian.components.main.train.DefaultTrainComponent
-import com.example.inrussian.components.onboarding.language.DefaultLanguageComponent
-import com.example.inrussian.components.onboarding.root.DefaultOnboardingRootComponent
-import com.example.inrussian.components.root.DefaultRootComponent
-import com.example.inrussian.components.root.RootComponent
 import com.example.inrussian.components.onboarding.citizenship.DefaultCitizenshipComponent
 import com.example.inrussian.components.onboarding.confirmation.DefaultConfirmationComponent
 import com.example.inrussian.components.onboarding.education.DefaultEducationComponent
@@ -46,7 +42,6 @@ val navigationModule = module {
             )
         }
     }
-
     factory<MainRootFactory>(qualifier = QMainRootFactory) {
         { componentContext, onOutput ->
             DefaultMainRootComponent(
@@ -102,11 +97,7 @@ val navigationModule = module {
 
     factory<LoginFactory>(qualifier = QLoginFactory) {
         { componentContext, onOutput ->
-            DefaultLoginComponent(
-                componentContext = componentContext,
-                onOutput = onOutput,
-                authRepository = get()
-            )
+            DefaultLoginComponent(componentContext, onOutput, get())
         }
     }
 
@@ -117,7 +108,7 @@ val navigationModule = module {
             DefaultRegisterComponent(
                 componentContext = componentContext,
                 onOutput = onOutput,
-                authRepository = get()
+                store = get()
             )
         }
     }
@@ -135,7 +126,7 @@ val navigationModule = module {
             DefaultEnterEmailComponent(
                 componentContext = componentContext,
                 onOutput = onOutput,
-                authRepository = get()
+                store = get()
             )
         }
     }
@@ -144,10 +135,12 @@ val navigationModule = module {
             DefaultEnterRecoveryCodeComponent(
                 componentContext = componentContext,
                 onOutput = onOutput,
-                authRepository = get()
+                store = get()
             )
         }
     }
+
+
     factory<UpdatePasswordFactory>(qualifier = QUpdatePasswordFactory) {
         { componentContext, onOutput ->
             DefaultUpdatePasswordComponent(
@@ -250,7 +243,6 @@ val navigationModule = module {
             )
         }
     }
-
 
     factory<HomeFactory>(qualifier = QHomeFactory) {
         { componentContext: ComponentContext, onOutput: (HomeOutput) -> Unit ->

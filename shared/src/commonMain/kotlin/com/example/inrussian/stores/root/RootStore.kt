@@ -9,9 +9,9 @@ import com.arkivanov.mvikotlin.core.store.StoreFactory
 interface RootStore : Store<RootIntent, RootState, RootLabel>
 
 sealed class RootIntent {
-    object ShowAuth : RootIntent()
-    object ShowOnboarding : RootIntent()
-    object ShowMain : RootIntent()
+    data object ShowAuth : RootIntent()
+    data object ShowOnboarding : RootIntent()
+    data object ShowMain : RootIntent()
 }
 
 data class RootState(

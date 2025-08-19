@@ -16,13 +16,19 @@ import com.example.inrussian.components.auth.passwordRecovery.enterEmail.EnterEm
 import com.example.inrussian.components.auth.passwordRecovery.enterRecoveryCode.EnterRecoveryCodeComponent
 import com.example.inrussian.components.auth.passwordRecovery.enterRecoveryCode.EnterRecoveryCodeOutput
 import com.example.inrussian.components.auth.passwordRecovery.updatePassword.UpdatePasswordComponent
+import com.example.inrussian.components.auth.passwordRecovery.updatePassword.UpdatePasswordOutput
 import com.example.inrussian.components.auth.register.RegisterComponent
 import com.example.inrussian.components.auth.register.RegisterOutput
-import com.example.inrussian.components.auth.root.AuthRootComponent.Child.*
+import com.example.inrussian.components.auth.root.AuthRootComponent.Child.BaseAuthChild
+import com.example.inrussian.components.auth.root.AuthRootComponent.Child.EnterEmailChild
+import com.example.inrussian.components.auth.root.AuthRootComponent.Child.EnterRecoveryCodeChild
+import com.example.inrussian.components.auth.root.AuthRootComponent.Child.LoginChild
+import com.example.inrussian.components.auth.root.AuthRootComponent.Child.RegisterChild
+import com.example.inrussian.components.auth.root.AuthRootComponent.Child.SsoPopoverChild
+import com.example.inrussian.components.auth.root.AuthRootComponent.Child.UpdatePasswordChild
 import com.example.inrussian.components.auth.ssoPopover.SsoPopoverComponent
 import com.example.inrussian.components.auth.ssoPopover.SsoPopoverOutput
 import com.example.inrussian.navigation.configurations.AuthConfiguration
-import com.example.inrussian.components.auth.passwordRecovery.updatePassword.UpdatePasswordOutput
 
 interface AuthRootComponent {
     val stack: Value<ChildStack<*, Child>>
@@ -84,7 +90,7 @@ class DefaultAuthRootComponent(
                 registerComponentFactory(componentContext, ::onRegisterOutput)
             )
 
-            is AuthConfiguration.SsoPopover -> SsoPopoverChild(
+            is AuthConfiguration.VkPopover -> SsoPopoverChild(
                 ssoPopoverComponentFactory(componentContext, ::onSsoPopoverOutput)
             )
 
@@ -99,6 +105,10 @@ class DefaultAuthRootComponent(
             is AuthConfiguration.EnterRecoveryCode -> EnterRecoveryCodeChild(
                 enterRecoveryCodeFactory(componentContext, ::onEnterRecoveryCodeOutput)
             )
+
+            AuthConfiguration.YandexPopover ->  SsoPopoverChild(
+                ssoPopoverComponentFactory(componentContext, ::onSsoPopoverOutput)
+            )
         }
     }
 
@@ -106,7 +116,8 @@ class DefaultAuthRootComponent(
         when (output) {
             is BaseAuthOutput.NavigateToLogin -> navigation.pushNew(AuthConfiguration.Login)
             is BaseAuthOutput.NavigateToRegister -> navigation.pushNew(AuthConfiguration.Register)
-            is BaseAuthOutput.NavigateToSso -> navigation.pushNew(AuthConfiguration.SsoPopover)
+            BaseAuthOutput.NavigateToVk -> navigation.pushNew(AuthConfiguration.VkPopover)
+            BaseAuthOutput.NavigateToYandex -> navigation.pushNew(AuthConfiguration.YandexPopover)
         }
 
     private fun onEnterEmailOutput(output: EnterEmailOutput): Unit =
@@ -123,6 +134,7 @@ class DefaultAuthRootComponent(
 
             is EnterRecoveryCodeOutput.NavigateBack -> navigation.pop()
         }
+
     private fun onUpdatePasswordOutput(output: UpdatePasswordOutput): Unit =
         when (output) {
             is UpdatePasswordOutput.PasswordUpdated -> onOutput(AuthOutput.NavigateToOnboarding)
