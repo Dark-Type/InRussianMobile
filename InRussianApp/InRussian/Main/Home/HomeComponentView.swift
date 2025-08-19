@@ -5,13 +5,11 @@
 //  Created by dark type on 16.08.2025.
 //
 
-
-import SwiftUI
 import Shared
+import SwiftUI
 
 struct HomeComponentView: View {
     let component: HomeComponent
-
     @StateValue private var childStack: ChildStack<AnyObject, any HomeComponentChild>
 
     init(component: HomeComponent) {
@@ -21,38 +19,24 @@ struct HomeComponentView: View {
 
     var body: some View {
         let current = childStack.active.instance
-
         Group {
-            if let coursesChild = current as? HomeComponentChildCoursesChild {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Список курсов:")
-                        .font(.headline)
-                    ForEach(coursesChild.component.items, id: \.id) { course in
-                        Button(action: {
-                            coursesChild.component.onItemClick(courseId: course.id)
-                        }) {
-                            Text(course.title)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                        .buttonStyle(.bordered)
-                    }
-                }
-            } else if let detailsChild = current as? HomeComponentChildCourseDetailsChild {
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("Детали курса: \(detailsChild.component.courseId)")
-                        .font(.headline)
-                    Button(action: {
-                        detailsChild.component.onBack()
-                    }) {
-                        Text("Назад")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.bordered)
-                }
+            if let courses = current as? HomeComponentChildCoursesChild {
+                CoursesListComponentView(component: courses.component)
+            } else if let details = current as? HomeComponentChildCourseDetailsChild {
+                CourseDetailsComponentView(component: details.component)
             } else {
                 EmptyView()
             }
         }
-        .padding()
+        .animation(.default, value: childStack.active.instance.hashObject())
+    }
+}
+
+
+// MARK: - Helpers
+
+private extension HomeComponentChild {
+    func hashObject() -> Int {
+        (self as AnyObject).hash
     }
 }
