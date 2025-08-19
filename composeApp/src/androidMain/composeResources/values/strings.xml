@@ -23,8 +23,42 @@
     <string name="update_password">Обновить пароль</string>
     <string name="choose_new_password">Пароль успешно сброшен,\nвыберете новый пароль</string>
 
-    <string name="app_language">Язык\nприложения</string>
+    <string name="app_n_language">Язык\nприложения</string>
+    <string name="app_language">Язык приложения:</string>
     <string name="tell_about_u">Для продолжения расскажите немного о себе</string>
     <string name="continue">Далее</string>
     <string name="back">Назад</string>
+    <string name="give_permission">Я даю согласие</string>
+    <string name="to_update_data">на обработку персональных данных</string>
+
+
+    <string name="personal_data">Персональные\nданные</string>
+    <string name="first_name">Имя</string>
+    <string name="second_name">Фамилия</string>
+    <string name="third_name">Отчество</string>
+    <string name="gender">Пол</string>
+    <string name="dob">Дата рождения</string>
+    <string name="phone">Номер телефона</string>
+    <string name="emeail">Электронная почта</string>
+
+    <string name="citizenship_data">Данные о\nгражданстве</string>
+    <string name="citizenship">Гражданство</string>
+    <string name="nationality">Национальность</string>
+    <string name="residence_country">В какой стране проживаете*</string>
+    <string name="residence_city">В каком городе проживаете</string>
+    <string name="study_country">В какой стране находились в период обучения</string>
+    <string name="time_of_stay">Сколько времени проживаете в России</string>
+
+    <string name="education">Образование</string>
+    <string name="which_language">Какими языками владеете</string>
+    <string name="understand_rus_speech">Понимаете ли русскую речь</string>
+    <string name="understand_rus_language">Говорите на русском языке</string>
+    <string name="understand_rus_text">Умеете читать русский текст</string>
+    <string name="can_write_rus_speech">Умеете писать на русском языке</string>
+    <string name="activity_type">Род деятельности</string>
+    <string name="purpose">Цель регистрации на платформе</string>
+
+    <string name="success_save_date">Ваши данные успешно сохранены</string>
+
+
 </resources>

@@ -1,6 +1,6 @@
 package com.example.inrussian.components.auth.login
 
-import co.touchlab.kermit.Logger
+
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
@@ -9,10 +9,8 @@ import com.example.inrussian.stores.auth.login.LoginStore.Intent
 import com.example.inrussian.stores.auth.login.LoginStore.Label
 import com.example.inrussian.utile.componentCoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlin.math.log
 
 interface LoginComponent {
     val state: StateFlow<LoginStore.State>

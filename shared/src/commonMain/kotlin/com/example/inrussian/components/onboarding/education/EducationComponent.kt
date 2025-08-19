@@ -12,7 +12,14 @@ interface EducationComponent {
         val kindOfActivity: String = "",
         val education: String = "",
         val purposeOfRegistration: String = "",
-    )
+    ) {
+        val continueEnable: Boolean
+            get() = languages.isNotEmpty() &&
+                    kindOfActivity.isNotBlank() &&
+                    education.isNotBlank() &&
+                    purposeOfRegistration.isNotBlank()
+    }
+
     fun onNext()
     fun onBack()
 }
