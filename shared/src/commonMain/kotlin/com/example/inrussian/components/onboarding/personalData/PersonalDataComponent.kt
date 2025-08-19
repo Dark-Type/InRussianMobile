@@ -2,6 +2,7 @@ package com.example.inrussian.components.onboarding.personalData
 
 interface PersonalDataComponent {
     fun onNext()
+
     val state: State
 
     data class State(

@@ -6,55 +6,86 @@
 //
 
 import SwiftUI
+
 import Shared
 
 struct EnterEmailView: View {
     let component: EnterEmailComponent
 
     @State private var email: String = ""
+    @State private var isEmailValid: Bool = false
+
+    private func validate(email: String) -> Bool {
+        let pattern = #"^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"#
+        return email.range(of: pattern, options: .regularExpression) != nil
+    }
 
     var body: some View {
-        VStack {
-            Spacer()
-                .frame(maxHeight: .infinity)
-                .layoutPriority(1)
+        ZStack {
+            AppColors.Palette.baseBackground.color
+                .ignoresSafeArea()
 
-            Text("Введите email для восстановления")
-                .font(.body)
-                .foregroundColor(.secondary)
+            VStack(spacing: 0) {
+                Spacer(minLength: 0)
 
-            Spacer().frame(height: 16)
+                AppImages.image(for: AppImages.Recovery.recovery)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: 200, maxHeight: 200)
+                    .padding(.bottom, 24)
+                
+                
 
-            TextField("Email", text: $email)
-                .textContentType(.emailAddress)
-                .autocapitalization(.none)
-                .keyboardType(.emailAddress)
-                .padding(.vertical, 4)
-                .padding(.horizontal, 8)
-                .background(Color(.secondarySystemBackground))
-                .cornerRadius(8)
-                .frame(maxWidth: .infinity)
+                Text("Восстановление пароля")
+                    .font(.title2.bold())
+                    .foregroundColor(AppColors.Palette.fontCaptive.color)
+                    .padding(.bottom, 8)
+                
+                Spacer()
 
-            Spacer().frame(height: 16)
+                Text("Укажите почту, на которую придет код подтверждения")
+                    .font(.footnote)
+                    .foregroundColor(AppColors.Palette.footnote.color)
+                    .multilineTextAlignment(.leading)
+                    .padding(.bottom, 16)
+                    .padding(.trailing, 24)
+                    
+                    
 
-            Button(action: {
-                component.onEmailEntered(email: email)
-            }) {
-                Text("Далее")
-                    .frame(maxWidth: .infinity)
+                OutlinedTextfield(
+                    text: $email,
+                    placeholder: "Электронная почта",
+                    isSecure: false
+                )
+                .padding(.bottom, 120)
+
+                CustomButton(
+                    text: "Далее",
+                    color: AppColors.Palette.accent.color,
+                    isActive: isEmailValid
+                ) {
+                    component.onEmailEntered(email: email)
+                }
+                .padding(.vertical, 24)
+
             }
-            .buttonStyle(.borderedProminent)
-
-            Spacer().frame(height: 8)
-
-            Button(action: {
-                component.onBackClicked()
-            }) {
-                Text("Назад")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.bordered)
+            .padding(.horizontal, 28)
         }
-        .padding(16)
+        .onChange(of: email) { newValue in
+            isEmailValid = validate(email: newValue)
+        }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    component.onBackClicked()
+                }) {
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(AppColors.Palette.accent.color)
+                    Text("Назад")
+                        .foregroundColor(AppColors.Palette.accent.color)
+                }
+            }
+        }
+        .navigationBarBackButtonHidden(true)
     }
 }

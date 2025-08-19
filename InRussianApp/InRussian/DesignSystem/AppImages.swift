@@ -19,6 +19,18 @@ enum AppImages {
             AppImages.image(for: checked ? Checkbox.active : Checkbox.inactive)
         }
     }
+    enum Eye: String, RawImageAsset {
+        case open = "EyeOpen"
+        case close = "EyeClosed"
+        
+        static func toggle(_ checked: Bool) -> Image {
+            
+            AppImages.image(for: checked ? Eye.open : Eye.close)
+        }
+    }
+    enum Recovery: String, RawImageAsset{
+        case recovery = "Recovery"
+    }
 
     enum Logo: String, RawImageAsset {
         case app = "Logo"

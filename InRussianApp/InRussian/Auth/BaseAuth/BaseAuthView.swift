@@ -5,8 +5,8 @@
 //  Created by dark type on 16.08.2025.
 //
 
-import SwiftUI
 import Shared
+import SwiftUI
 
 struct BaseAuthView: View {
     let component: BaseAuthComponent
@@ -18,7 +18,7 @@ struct BaseAuthView: View {
 
             VStack(spacing: 32) {
                 Spacer()
-                
+
                 AppImages.Logo.appLogo
                     .resizable()
                     .scaledToFit()
@@ -27,46 +27,36 @@ struct BaseAuthView: View {
 
                 Spacer()
 
-                
                 VStack(spacing: 12) {
-                    
                     CustomButton(
                         text: "Зарегистрироваться",
                         color: AppColors.Palette.secondary.color,
-                        isActivatable: false,
                         trailingLogo: nil
                     ) {
                         component.onRegisterClicked()
                     }
 
-                    
                     CustomButton(
                         text: "Войти",
                         color: AppColors.Palette.accent.color,
-                        isActivatable: false,
                         trailingLogo: nil
                     ) {
                         component.onLoginClicked()
                     }
 
-                    
                     SocialDivider()
 
-                    
                     CustomButton(
                         text: "Войти с VK ID",
                         color: AppColors.Palette.vk.color,
-                        isActivatable: false,
                         trailingLogo: .vk
                     ) {
                         component.onSsoClicked()
                     }
 
-                    
                     CustomButton(
                         text: "Войти с Яндекс ID",
                         color: AppColors.Palette.yandex.color,
-                        isActivatable: false,
                         trailingLogo: .yandex
                     ) {
                         component.onSsoClicked()
@@ -100,4 +90,3 @@ private struct SocialDivider: View {
         .padding(.vertical, 4)
     }
 }
-

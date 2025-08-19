@@ -14,51 +14,66 @@ struct UpdatePasswordView: View {
 
     @State private var password: String = ""
     @State private var confirmPassword: String = ""
+    @State private var showSupportCover: Bool = false
+
+    private var canUpdate: Bool {
+        !password.isEmpty && password == confirmPassword
+    }
 
     var body: some View {
-        VStack {
-            Text("Введите новый пароль")
-                .font(.body)
-                .foregroundColor(.secondary)
+        ZStack {
+            AppColors.Palette.baseBackground.color
+                .ignoresSafeArea()
 
-            Spacer().frame(height: 16)
+            VStack(spacing: 0) {
+                Spacer(minLength: 0)
 
-            SecureField("Новый пароль", text: $password)
-                .padding(.vertical, 4)
-                .padding(.horizontal, 8)
-                .background(Color(.secondarySystemBackground))
-                .cornerRadius(8)
-                .frame(maxWidth: .infinity)
+                AppImages.image(for: AppImages.Recovery.recovery)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: 200, maxHeight: 200)
+                    .padding(.bottom, 24)
 
-            Spacer().frame(height: 8)
+                Text("Восстановление пароля")
+                    .font(.title2.bold())
+                    .foregroundColor(AppColors.Palette.fontCaptive.color)
+                    .padding(.bottom, 8)
 
-            SecureField("Подтвердите пароль", text: $confirmPassword)
-                .padding(.vertical, 4)
-                .padding(.horizontal, 8)
-                .background(Color(.secondarySystemBackground))
-                .cornerRadius(8)
-                .frame(maxWidth: .infinity)
+                Spacer()
 
-            Spacer().frame(height: 16)
+                Text("Пароль успешно сброшен, выберете новый пароль")
+                    .font(.footnote)
+                    .foregroundColor(AppColors.Palette.footnote.color)
+                    .multilineTextAlignment(.leading)
+                    .padding(.bottom, 16)
+                    .padding(.horizontal, 10)
 
-            Button(action: {
-                component.onPasswordUpdated(newPassword: confirmPassword)
-            }) {
-                Text("Сохранить")
-                    .frame(maxWidth: .infinity)
+                OutlinedTextfield(
+                    text: $password,
+                    placeholder: "Новый пароль",
+                    isSecure: true
+                )
+                .padding(.bottom, 12)
+
+                OutlinedTextfield(
+                    text: $confirmPassword,
+                    placeholder: "Подтвердите пароль",
+                    isSecure: true
+                )
+                Spacer()
+
+                CustomButton(
+                    text: "Обновить пароль",
+                    color: AppColors.Palette.accent.color,
+                    isActive: canUpdate
+                ) {
+                    component.onPasswordUpdated(newPassword: confirmPassword)
+                }
+                .padding(.bottom, 24)
             }
-            .buttonStyle(.borderedProminent)
+            .padding(.horizontal, 28)
 
-            Spacer().frame(height: 8)
-
-            Button(action: {
-                component.onBackClicked()
-            }) {
-                Text("Назад")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.bordered)
         }
-        .padding(16)
+        .navigationBarBackButtonHidden(true)
     }
 }

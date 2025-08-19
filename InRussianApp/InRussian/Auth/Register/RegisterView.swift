@@ -5,60 +5,79 @@
 //  Created by dark type on 16.08.2025.
 //
 
-
-import SwiftUI
 import Shared
+import SwiftUI
+
 struct RegisterView: View {
     let component: RegisterComponent
 
     @State private var email: String = ""
     @State private var password: String = ""
+    @State private var confirmPassword: String = ""
+
+    var isRegisterActive: Bool {
+        !email.isEmpty && !password.isEmpty && password == confirmPassword
+    }
 
     var body: some View {
-        VStack {
-            Spacer()
-                .frame(maxHeight: .infinity)
-                .layoutPriority(1) 
+        ZStack {
+            AppColors.Palette.baseBackground.color
+                .ignoresSafeArea()
 
-            TextField("Email", text: $email)
-                .textContentType(.emailAddress)
-                .autocapitalization(.none)
-                .keyboardType(.emailAddress)
-                .padding(.vertical, 4)
-                .padding(.horizontal, 8)
-                .background(Color(.secondarySystemBackground))
-                .cornerRadius(8)
-                .frame(maxWidth: .infinity)
+            VStack(spacing: 0) {
+                Spacer(minLength: 0)
 
-            Spacer().frame(height: 8)
+                AppImages.Logo.appLogo
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: 400, maxHeight: 250)
+                    .padding(.bottom, 36)
 
-            SecureField("Пароль", text: $password)
-                .padding(.vertical, 4)
-                .padding(.horizontal, 8)
-                .background(Color(.secondarySystemBackground))
-                .cornerRadius(8)
-                .frame(maxWidth: .infinity)
+                Spacer(minLength: 0)
 
-            Spacer().frame(height: 16)
+                VStack(spacing: 16) {
+                    OutlinedTextfield(
+                        text: $email,
+                        placeholder: "Электронная почта",
+                        isSecure: false
+                    )
 
-            Button(action: {
-                component.onRegister(email: email, password: password)
-            }) {
-                Text("Зарегистрироваться")
-                    .frame(maxWidth: .infinity)
+                    OutlinedTextfield(
+                        text: $password,
+                        placeholder: "Пароль",
+                        isSecure: true
+                    )
+
+                    OutlinedTextfield(
+                        text: $confirmPassword,
+                        placeholder: "Подтвердите пароль",
+                        isSecure: true
+                    )
+
+                    CustomButton(
+                        text: "Зарегистрироваться",
+                        color: AppColors.Palette.accent.color,
+                        isActive: isRegisterActive
+                    ) {
+                        component.onRegister(email: email, password: password)
+                    }
+                    .padding(.top, 36)
+                }
+                .padding(.horizontal, 28)
             }
-            .buttonStyle(.borderedProminent)
-
-            Spacer().frame(height: 8)
-
-            Button(action: {
-                component.onBackClicked()
-            }) {
-                Text("Назад")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.bordered)
         }
-        .padding(16)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    component.onBackClicked()
+                }) {
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(AppColors.Palette.accent.color)
+                    Text("Назад")
+                        .foregroundColor(AppColors.Palette.accent.color)
+                }
+            }
+        }
+        .navigationBarBackButtonHidden(true)
     }
 }

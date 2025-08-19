@@ -15,60 +15,68 @@ struct LoginView: View {
     @State private var password: String = ""
 
     var body: some View {
-        VStack {
-            Spacer()
-                .frame(maxHeight: .infinity)
-                .layoutPriority(1)
+        ZStack {
+            AppColors.Palette.baseBackground.color
+                .ignoresSafeArea()
 
-            TextField("Email", text: $email)
-                .textContentType(.emailAddress)
-                .autocapitalization(.none)
-                .keyboardType(.emailAddress)
-                .padding(.vertical, 4)
-                .padding(.horizontal, 8)
-                .background(Color(.secondarySystemBackground))
-                .cornerRadius(8)
-                .frame(maxWidth: .infinity)
+            VStack(spacing: 0) {
+                Spacer(minLength: 0)
 
-            Spacer().frame(height: 8)
+                AppImages.Logo.appLogo
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: 400, maxHeight: 250)
+                    .padding(.bottom, 36)
 
-            SecureField("Пароль", text: $password)
-                .padding(.vertical, 4)
-                .padding(.horizontal, 8)
-                .background(Color(.secondarySystemBackground))
-                .cornerRadius(8)
-                .frame(maxWidth: .infinity)
+                Spacer(minLength: 0)
 
-            Spacer().frame(height: 16)
+                VStack(spacing: 16) {
+                    OutlinedTextfield(
+                        text: $email,
+                        placeholder: "Электронная почта",
+                        isSecure: false
+                    )
 
-            Button(action: {
-                component.onLogin(email: email, password: password)
-            }) {
-                Text("Войти")
-                    .frame(maxWidth: .infinity)
+                    OutlinedTextfield(
+                        text: $password,
+                        placeholder: "Пароль",
+                        isSecure: true
+                    )
+
+                    CustomButton(
+                        text: "Войти",
+                        color: AppColors.Palette.accent.color
+                    ) {
+                        component.onLogin(email: email, password: password)
+                    }
+                    .padding(.top, 36)
+
+                    Button(action: {
+                        component.onForgotPasswordClicked()
+                    }) {
+                        Text("Забыли пароль?")
+                            .font(.footnote)
+                            .foregroundColor(AppColors.Palette.footnote.color)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.top, 12)
+                }
+                .padding(.horizontal, 28)
             }
-            .buttonStyle(.borderedProminent)
-
-            Spacer().frame(height: 8)
-
-            Button(action: {
-                component.onForgotPasswordClicked()
-            }) {
-                Text("Забыли пароль?")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.plain)
-
-            Spacer().frame(height: 8)
-
-            Button(action: {
-                component.onBackClicked()
-            }) {
-                Text("Назад")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.bordered)
         }
-        .padding(16)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    component.onBackClicked()
+                }) {
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(AppColors.Palette.accent.color)
+                    Text("Назад")
+                        .foregroundColor(AppColors.Palette.accent.color)
+                }
+            }
+        }
+        .navigationBarBackButtonHidden(true)
     }
 }

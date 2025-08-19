@@ -58,13 +58,22 @@ struct OutlinedTextfield: View {
                 
                 if isSecure {
                     Button(action: { isSecureVisible.toggle() }) {
-                        Image(systemName: isSecureVisible ? "eye.slash" : "eye")
-                            .foregroundColor(AppColors.Palette.fontInactive.color)
+                        
+                        (isSecureVisible
+                            ? AppImages.image(for: AppImages.Eye.open)
+                            : AppImages.image(for: AppImages.Eye.close)
+                        )
+                        .resizable()
+                        .renderingMode(.template)
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 22, height: 22)
+                        .foregroundColor(AppColors.Palette.fontInactive.color)
                     }
                     .buttonStyle(.plain)
                 }
             }
             .padding(.horizontal, 14)
+            
         }
         .frame(height: height)
         .animation(.easeInOut(duration: 0.18), value: isFocused)

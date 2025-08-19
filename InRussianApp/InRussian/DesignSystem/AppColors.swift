@@ -13,7 +13,7 @@ enum AppColors {
     enum Palette: String, RawColorAsset {
         case accent = "AccentColor"
         case baseBackground = "BaseBackground"
-        case secondary = "SecondaryColor"
+        case secondary = "AccentSecondary"
         case vk = "VKColor"
         case yandex = "YandexColor"
         case fontCaptive = "FontCaptive"
@@ -22,6 +22,7 @@ enum AppColors {
         case inactive = "Inactive"
         case secondaryBackground = "SecondaryBackground"
         case stroke = "Stroke"
+        case componentBackground = "ComponentBackground"
 
         var color: Color { AppColors.color(for: self) }
     }
