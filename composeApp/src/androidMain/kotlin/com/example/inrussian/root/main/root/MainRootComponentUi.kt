@@ -17,6 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import com.arkivanov.decompose.router.stack.ChildStack
+import com.arkivanov.decompose.value.Value
 import com.example.inrussian.components.main.root.MainRootComponent
 import com.example.inrussian.navigation.configurations.MainConfiguration
 import com.example.inrussian.root.main.home.HomeComponentUi
@@ -62,4 +64,16 @@ fun MainRootComponentUi(component: MainRootComponent) {
             )
         }
     }
+}
+
+class MainRootComponentUi : MainRootComponent{
+    override val childStack: Value<ChildStack<*, MainRootComponent.Child>>
+        get() = TODO("Not yet implemented")
+    override val activeTab: Value<MainRootComponent.Tab>
+        get() = TODO("Not yet implemented")
+
+    override fun openTab(tab: MainRootComponent.Tab) {
+        TODO("Not yet implemented")
+    }
+
 }

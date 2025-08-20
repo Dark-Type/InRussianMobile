@@ -7,7 +7,8 @@ import com.example.inrussian.components.main.profile.UserProfile
 import com.example.inrussian.components.main.profile.UserRole
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -38,7 +39,7 @@ class MockUserRepository(
             gender = Gender.MALE,
             dob = "1995-04-12",
             dor = Clock.System.now().toString().substring(0, 10),
-            citizenship = "Россия",
+            citizenship = listOf("Россия"),
             nationality = "Русский",
             cityOfResidence = "Москва",
             education = "Высшее",

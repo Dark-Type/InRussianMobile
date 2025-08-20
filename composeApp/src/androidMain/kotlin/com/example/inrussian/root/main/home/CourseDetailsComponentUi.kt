@@ -14,9 +14,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import com.arkivanov.decompose.value.MutableValue
 import com.example.inrussian.components.main.home.CourseDetailsComponent
+import com.example.inrussian.components.main.home.CourseDetailsState
 
 @Composable
 fun CourseDetailsComponentUi(component: CourseDetailsComponent) {
@@ -35,10 +38,10 @@ fun CourseDetailsComponentUi(component: CourseDetailsComponent) {
             Text("Автор: ${course.authorId}")
             Spacer(Modifier.Companion.height(8.dp))
             LinearProgressIndicator(
-            progress = { state.progressPercent / 100f },
+                progress = { state.progressPercent / 100f },
                 color = ProgressIndicatorDefaults.linearColor,
-            trackColor = ProgressIndicatorDefaults.linearTrackColor,
-            strokeCap = ProgressIndicatorDefaults.LinearStrokeCap,
+                trackColor = ProgressIndicatorDefaults.linearTrackColor,
+                strokeCap = ProgressIndicatorDefaults.LinearStrokeCap,
             )
             Spacer(Modifier.Companion.height(4.dp))
             Text("Прогресс: ${state.progressPercent}%")
@@ -63,10 +66,10 @@ fun CourseDetailsComponentUi(component: CourseDetailsComponent) {
                 ) {
                     Text(section.title, style = MaterialTheme.typography.bodyLarge)
                     LinearProgressIndicator(
-                    progress = { sectionProgress / 100f },
+                        progress = { sectionProgress / 100f },
                         color = ProgressIndicatorDefaults.linearColor,
-                    trackColor = ProgressIndicatorDefaults.linearTrackColor,
-                    strokeCap = ProgressIndicatorDefaults.LinearStrokeCap,
+                        trackColor = ProgressIndicatorDefaults.linearTrackColor,
+                        strokeCap = ProgressIndicatorDefaults.LinearStrokeCap,
                     )
                     Text(
                         "$sectionProgress% (${section.completedLessons}/${section.totalLessons})",
@@ -80,4 +83,32 @@ fun CourseDetailsComponentUi(component: CourseDetailsComponent) {
             Text("Назад")
         }
     }
+}
+
+class CourseDetailsComponentUi() : CourseDetailsComponent {
+    override val courseId: String = ""
+    override val state = MutableValue(
+        CourseDetailsState(
+            course = null,
+            isEnrolled = false,
+            sections = emptyList(),
+            progressPercent = 0,
+            isLoading = true
+        )
+    )
+
+    override fun toggleEnroll() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onBack() {
+        TODO("Not yet implemented")
+    }
+
+    @Preview(showBackground = true, showSystemUi = true)
+    @Composable
+    fun Preview() {
+        CourseDetailsComponentUi(this)
+    }
+
 }

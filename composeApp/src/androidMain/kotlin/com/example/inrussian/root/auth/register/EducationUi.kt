@@ -110,12 +110,23 @@ fun EducationUi(component: EducationComponent) {
             TextWithToggle(stringResource(Res.string.can_write_rus_speech), true, {})
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
             InputFormField(
-                "", {}, stringResource(Res.string.activity_type), Modifier
+                state.kindOfActivity,
+                component::changeActivity,
+                stringResource(Res.string.activity_type),
+                Modifier
             )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-            InputFormField("", {}, stringResource(Res.string.education))
+            InputFormField(
+                state.education,
+                component::changeEducation,
+                stringResource(Res.string.education)
+            )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-            InputFormField("", {}, stringResource(Res.string.purpose))
+            InputFormField(
+                state.purposeOfRegistration,
+                component::changePurpose,
+                stringResource(Res.string.purpose)
+            )
         }
     }
 }

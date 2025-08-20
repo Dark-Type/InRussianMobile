@@ -15,11 +15,11 @@ import androidx.compose.ui.unit.dp
 @Composable
  fun Avatar(avatarId: String?) {
     Box(
-        modifier = Modifier.Companion
-            .size(96.dp)
+        modifier = Modifier
+            .size(116.dp)
             .clip(CircleShape)
             .background(MaterialTheme.colorScheme.surfaceVariant),
-        contentAlignment = Alignment.Companion.Center
+        contentAlignment = Alignment.Center
     ) {
         Text("A", style = MaterialTheme.typography.headlineMedium)
     }

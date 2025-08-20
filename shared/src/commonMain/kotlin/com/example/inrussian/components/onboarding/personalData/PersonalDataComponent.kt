@@ -1,5 +1,8 @@
 package com.example.inrussian.components.onboarding.personalData
 
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+
 interface PersonalDataComponent {
     fun onNext()
 
@@ -115,6 +118,10 @@ class DefaultPersonalDataComponent(
 
     override fun onBack() {
         onOutput(PersonalDataOutput.Back)
+    }
+
+    override fun onContinue() {
+        TODO("Not yet implemented")
     }
 
     override fun onNext() {

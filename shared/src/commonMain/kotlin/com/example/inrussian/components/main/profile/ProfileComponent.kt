@@ -8,15 +8,14 @@ import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.pushNew
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
-import com.example.inrussian.components.auth.root.AuthRootComponent
 import com.example.inrussian.di.AboutComponentFactory
 import com.example.inrussian.di.EditProfileComponentFactory
 import com.example.inrussian.di.PrivacyPolicyComponentFactory
-import com.example.inrussian.navigation.configurations.AuthConfiguration
-import com.example.inrussian.repository.main.user.UserRepository
 import com.example.inrussian.navigation.configurations.ProfileConfiguration
 import com.example.inrussian.repository.main.BadgeRepository
 import com.example.inrussian.repository.main.settings.SettingsRepository
+import com.example.inrussian.repository.main.user.UserRepository
+import com.example.inrussian.utile.componentCoroutineScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -130,13 +129,17 @@ class DefaultProfileComponent(
 
 
 }
+
 interface ProfileMainComponent {
     val state: Value<ProfileMainState>
     fun onEditClick()
     fun onAboutClick()
+    fun onThemeChangeClick(boolean: Boolean)
     fun onPrivacyPolicyClick()
     fun toggleNotifications()
     fun cycleTheme()
+    fun onSelectTheme(theme: AppTheme)
+    fun onNotificationSwitchClick(enable: Boolean)
 }
 
 
@@ -181,6 +184,10 @@ class DefaultProfileMainComponent(
 
     override fun onEditClick() = onEdit()
     override fun onAboutClick() = onAbout()
+    override fun onThemeChangeClick(boolean: Boolean) {
+        _state.value = _state.value.copy(isEditThemeOpen = boolean)
+    }
+
     override fun onPrivacyPolicyClick() = onPrivacy()
     override fun toggleNotifications() = settingsRepository.toggleNotifications()
 
@@ -193,13 +200,30 @@ class DefaultProfileMainComponent(
         settingsRepository.setTheme(next)
     }
 
+    override fun onSelectTheme(theme: AppTheme) {
+        _state.value = _state.value.copy(theme = theme)
+    }
+
+    override fun onNotificationSwitchClick(enable: Boolean) {
+        _state.value = state.value.copy(notificationsEnabled = enable)
+    }
+
     fun dispose() {
         scope.cancel()
     }
 }
-sealed interface EditProfileOutput { data object NavigateBack : EditProfileOutput }
-sealed interface AboutOutput { data object NavigateBack : AboutOutput }
-sealed interface PrivacyPolicyOutput { data object NavigateBack : PrivacyPolicyOutput }
+
+sealed interface EditProfileOutput {
+    data object NavigateBack : EditProfileOutput
+}
+
+sealed interface AboutOutput {
+    data object NavigateBack : AboutOutput
+}
+
+sealed interface PrivacyPolicyOutput {
+    data object NavigateBack : PrivacyPolicyOutput
+}
 
 interface EditProfileComponent {
     val state: Value<EditProfileState>
@@ -208,15 +232,42 @@ interface EditProfileComponent {
     fun updatePatronymic(value: String)
     fun updateGender(value: Gender)
     fun updateDob(value: String)
+    fun updateDor(value: String)
+    fun updateEmail(value: String)
     fun updateCitizenship(value: String)
     fun updateNationality(value: String)
     fun updateCountryOfResidence(value: String)
     fun updateCityOfResidence(value: String)
     fun updateEducation(value: String)
     fun updatePurpose(value: String)
+    fun openLanguage()
+    fun changeGender(gender: String)
+    fun changeGenderChoose(isOpen: Boolean)
+    fun openDate()
+    fun openCitizenship(isOpen: Boolean)
+    fun openTime()
     fun save()
     fun onBack()
+    fun deleteCountry(country: String)
+    fun deleteLanguage(language: String)
+    fun selectCountry(country: String)
+    fun deleteNationality(nationality: String)
+    fun selectNationality(nationality: String)
+    fun openNationality(isOpen: Boolean)
+    fun countryLiveUpdate(county: String)
+    fun cityLiveUpdate(county: String)
+    fun studyCountryUpdate(county: String)
+    fun deleteTime(time: String)
+
+    fun onChangeExpanded(boolean: Boolean)
+
+    fun selectLanguage(language: String)
+
+    fun changeActivity(activity: String)
+    fun changeEducation(education: String)
+    fun changePurpose(purpose: String)
 }
+
 interface AboutComponent {
     val state: Value<StaticTextState>
     fun onBack()
@@ -234,7 +285,7 @@ class DefaultEditProfileComponent(
     private val onOutput: (EditProfileOutput) -> Unit
 ) : EditProfileComponent, ComponentContext by componentContext {
 
-    private val scope = CoroutineScope(Dispatchers.Main.immediate)
+    private val scope = componentCoroutineScope()
 
     private val _state = MutableValue(EditProfileState(isLoading = true))
     override val state: Value<EditProfileState> = _state
@@ -263,15 +314,61 @@ class DefaultEditProfileComponent(
 
     override fun updateSurname(value: String) = update { it.copy(surname = value) }
     override fun updateName(value: String) = update { it.copy(name = value) }
-    override fun updatePatronymic(value: String) = update { it.copy(patronymic = value.ifBlank { null }) }
+    override fun updatePatronymic(value: String) =
+        update { it.copy(patronymic = value.ifBlank { null }) }
+
     override fun updateGender(value: Gender) = update { it.copy(gender = value) }
     override fun updateDob(value: String) = update { it.copy(dob = value) }
-    override fun updateCitizenship(value: String) = update { it.copy(citizenship = value.ifBlank { null }) }
-    override fun updateNationality(value: String) = update { it.copy(nationality = value.ifBlank { null }) }
-    override fun updateCountryOfResidence(value: String) = update { it.copy(countryOfResidence = value.ifBlank { null }) }
-    override fun updateCityOfResidence(value: String) = update { it.copy(cityOfResidence = value.ifBlank { null }) }
-    override fun updateEducation(value: String) = update { it.copy(education = value.ifBlank { null }) }
-    override fun updatePurpose(value: String) = update { it.copy(purposeOfRegister = value.ifBlank { null }) }
+    override fun updateDor(value: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateEmail(value: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateCitizenship(value: String) =
+        update { it.copy(citizenship = listOf(value).ifEmpty { null }) }
+
+    override fun updateNationality(value: String) =
+        update { it.copy(nationality = value.ifBlank { null }) }
+
+    override fun updateCountryOfResidence(value: String) =
+        update { it.copy(countryOfResidence = value.ifBlank { null }) }
+
+    override fun updateCityOfResidence(value: String) =
+        update { it.copy(cityOfResidence = value.ifBlank { null }) }
+
+    override fun updateEducation(value: String) =
+        update { it.copy(education = value.ifBlank { null }) }
+
+    override fun updatePurpose(value: String) =
+        update { it.copy(purposeOfRegister = value.ifBlank { null }) }
+
+    override fun openLanguage() {
+        TODO("Not yet implemented")
+    }
+
+    override fun changeGender(gender: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun changeGenderChoose(isOpen: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun openDate() {
+        TODO("Not yet implemented")
+    }
+
+    override fun openCitizenship(isOpen: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+
+    override fun openTime() {
+        TODO("Not yet implemented")
+    }
 
     override fun save() {
         val working = _state.value.workingCopy ?: return
@@ -289,11 +386,71 @@ class DefaultEditProfileComponent(
     }
 
     override fun onBack() = onOutput(EditProfileOutput.NavigateBack)
+    override fun deleteCountry(country: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteLanguage(language: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun selectCountry(country: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteNationality(nationality: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun selectNationality(nationality: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun openNationality(isOpen: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun countryLiveUpdate(county: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun cityLiveUpdate(county: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun studyCountryUpdate(county: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteTime(time: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onChangeExpanded(boolean: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun selectLanguage(language: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun changeActivity(activity: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun changeEducation(education: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun changePurpose(purpose: String) {
+        TODO("Not yet implemented")
+    }
 
     fun dispose() {
         scope.cancel()
     }
 }
+
 class DefaultAboutComponent(
     componentContext: ComponentContext,
     aboutText: String,
@@ -310,6 +467,7 @@ class DefaultAboutComponent(
 
     override fun onBack() = onOutput(AboutOutput.NavigateBack)
 }
+
 class DefaultPrivacyPolicyComponent(
     componentContext: ComponentContext,
     policyText: String,

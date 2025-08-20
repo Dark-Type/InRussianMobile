@@ -9,9 +9,9 @@ import com.arkivanov.decompose.router.stack.pushNew
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.example.inrussian.di.CourseDetailsComponentFactory
-import com.example.inrussian.models.Course
 import com.example.inrussian.navigation.configurations.HomeConfiguration
 import com.example.inrussian.repository.main.home.HomeRepository
+import com.example.inrussian.utile.componentCoroutineScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -146,6 +146,7 @@ class DefaultCoursesListComponent(
         scope.cancel()
     }
 }
+
 interface CourseDetailsComponent {
     val courseId: String
     val state: Value<CourseDetailsState>
@@ -153,9 +154,11 @@ interface CourseDetailsComponent {
     fun toggleEnroll()
     fun onBack()
 }
+
 sealed interface CourseDetailsOutput {
     data object NavigateBack : CourseDetailsOutput
 }
+
 class DefaultCourseDetailsComponent(
     componentContext: ComponentContext,
     override val courseId: String,
@@ -163,7 +166,7 @@ class DefaultCourseDetailsComponent(
     private val onOutput: (CourseDetailsOutput) -> Unit
 ) : CourseDetailsComponent, ComponentContext by componentContext {
 
-    private val scope = CoroutineScope(Dispatchers.Main.immediate)
+    private val scope = componentCoroutineScope()
 
     private val _state = MutableValue(
         CourseDetailsState(

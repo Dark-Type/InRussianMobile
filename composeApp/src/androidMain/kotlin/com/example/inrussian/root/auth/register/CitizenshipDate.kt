@@ -18,6 +18,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,13 +46,14 @@ import inrussian.composeapp.generated.resources.residence_city
 import inrussian.composeapp.generated.resources.residence_country
 import inrussian.composeapp.generated.resources.study_country
 import inrussian.composeapp.generated.resources.time_of_stay
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CitizenshipDate(component: CitizenshipComponent) {
-    var state = component.state
+    val state by component.state.collectAsState()
     Column(
         Modifier
             .background(reallyLightGrey)
@@ -94,38 +97,51 @@ fun CitizenshipDate(component: CitizenshipComponent) {
                 .background(White)
         ) {
             ClipsContainer(
-                isOpen = state.expanded,
-                variants = listOf("as", "asdasf", "ASfasfasf"),
+                isOpen = state.isCitizenshipOpen,
+                variants = listOf("Indonezia", "amsterdam", "Filipin", "Russia", "Kyrgiztan"),
                 active = state.citizenship,
                 onClick = component::deleteCountry,
-                onChangeExpanded = component::onChangeExpanded,
+                onChangeExpanded = component::openCitizenship,
                 onAddClick = component::selectCountry,
                 placeholder = stringResource(Res.string.citizenship)
             )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
             ClipsContainer(
-                isOpen = state.expanded,
-                variants = listOf("as", "asdasf", "ASfasfasf"),
+                isOpen = state.isNationalityOpen,
+                variants = listOf("Evrye", "Russian", "Kazah"),
                 active = if (state.nationality == "") listOf() else listOf(state.nationality),
-                onClick = component::deleteCountry,
-                onChangeExpanded = component::onChangeExpanded,
-                onAddClick = component::selectCountry,
+                onClick = component::deleteNationality,
+                onChangeExpanded = component::openNationality,
+                onAddClick = component::selectNationality,
                 placeholder = stringResource(Res.string.nationality)
             )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-            InputFormField("", {}, stringResource(Res.string.residence_country))
-            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-            InputFormField("", {}, stringResource(Res.string.residence_city))
-            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-            InputFormField("", {}, stringResource(Res.string.study_country))
+            InputFormField(
+                state.countryOfResidence,
+                component::countryLiveChange,
+                stringResource(Res.string.residence_country)
+            )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
             InputFormField(
-                "",
-                {},
-                stringResource(Res.string.time_of_stay),
-                Modifier,
-                vectorResource(Res.drawable.down_arrow),
-                {})
+                state.cityOfResidence,
+                component::cityLiveChange, stringResource(Res.string.residence_city)
+            )
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+            InputFormField(
+                state.countryDuringEducation,
+                component::studyCountyChange,
+                stringResource(Res.string.study_country)
+            )
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+            ClipsContainer(
+                isOpen = state.isTimeOpen,
+                variants = listOf("До 5 лет", "Меньше года", "Больше года","Около трех лет"),
+                active = if (state.nationality == "") listOf() else listOf(state.nationality),
+                onClick = component::deleteTime,
+                onChangeExpanded = component::openNationality,
+                onAddClick = component::selectNationality,
+                placeholder = stringResource(Res.string.time_of_stay)
+            )
         }
     }
 }
@@ -198,7 +214,9 @@ fun ClipsContainer(
 }
 
 class CitizenshipDate : CitizenshipComponent {
-    override val state = CitizenshipComponent.State(expanded = false)
+    override val state = MutableStateFlow(
+        CitizenshipComponent.State()
+    )
 
     override fun onNext() {
         TODO("Not yet implemented")
@@ -208,13 +226,34 @@ class CitizenshipDate : CitizenshipComponent {
         TODO("Not yet implemented")
     }
 
+    override fun countryLiveChange(country: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun cityLiveChange(city: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun studyCountyChange(country: String) {
+        TODO("Not yet implemented")
+    }
+
     override fun selectCountry(country: String) {
         TODO("Not yet implemented")
     }
 
-    override fun onChangeExpanded(expanded: Boolean) {
+    override fun openCitizenship(isOpen: Boolean) {
         TODO("Not yet implemented")
     }
+
+    override fun openNationality(isOpen: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun openTime(isOpen: Boolean) {
+        TODO("Not yet implemented")
+    }
+
 
     override fun selectNationality(string: String) {
         TODO("Not yet implemented")
@@ -225,6 +264,14 @@ class CitizenshipDate : CitizenshipComponent {
     }
 
     override fun selectTime(time: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteNationality(nationality: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteTime(time: String) {
         TODO("Not yet implemented")
     }
 

@@ -33,6 +33,7 @@
 
 
     <string name="personal_data">Персональные\nданные</string>
+    <string name="personal_data_">Персональные данные</string>
     <string name="first_name">Имя</string>
     <string name="second_name">Фамилия</string>
     <string name="third_name">Отчество</string>
@@ -60,5 +61,27 @@
 
     <string name="success_save_date">Ваши данные успешно сохранены</string>
 
+
+    <string name="profile">Профиль</string>
+    <string name="register_date">Дата регистрации:</string>
+    <string name="your_achievements">Ваши достижения</string>
+    <string name="strike">серия</string>
+    <string name="send_notification">Разрешить отправку уведомлений</string>
+    <string name="edit_theme">Изменение темы приложения</string>
+    <string name="edit_profile">Редактировать личные данные</string>
+    <string name="privacy_police">Политика конфиденциальности</string>
+    <string name="about_app">О приложении</string>
+
+    <string name="training">Тренажер</string>
+    <string name="main">Главная</string>
+
+    <string name="course_for_you">Курсы для Вас</string>
+    <string name="courses">Текущие курсы</string>
+
+    <string name="author">автор</string>
+
+    <string name="language_proficiency">Владение языком</string>
+
+    <string name="there_are_not_achievements">Пока нет достижений :(</string>
 
 </resources>

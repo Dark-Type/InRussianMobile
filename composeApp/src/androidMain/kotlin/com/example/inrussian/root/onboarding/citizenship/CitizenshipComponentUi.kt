@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.inrussian.components.onboarding.citizenship.CitizenshipComponent
 
+/*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CitizenshipComponentUi(component: CitizenshipComponent) {
@@ -123,4 +124,4 @@ fun CitizenshipComponentUi(component: CitizenshipComponent) {
             }
         }
     }
-}
+}*/

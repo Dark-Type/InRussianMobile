@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias (libs.plugins.kotlinSerialization)
 }
 
 kotlin {
@@ -22,6 +23,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.decompose)
             implementation(libs.decompose.compose)
+            implementation(libs.kotlinx.serialization.json)
         }
         commonMain.dependencies {
             implementation(compose.runtime)

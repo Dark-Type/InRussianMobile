@@ -12,8 +12,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import com.arkivanov.decompose.value.MutableValue
+import com.example.inrussian.components.main.home.CourseDetailsComponent
+import com.example.inrussian.components.main.home.CourseDetailsState
 import com.example.inrussian.components.main.home.CoursesListComponent
 
 @Composable
@@ -46,4 +50,33 @@ fun CoursesListComponentUi(component: CoursesListComponent) {
             }
         }
     }
+}
+
+class CoursesListComponentUi : CourseDetailsComponent {
+    override val courseId: String
+        get() = ""
+    override val state = MutableValue(
+        CourseDetailsState(
+            course = null,
+            isEnrolled = false,
+            sections = emptyList(),
+            progressPercent = 0,
+            isLoading = true
+        )
+    )
+
+    override fun toggleEnroll() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onBack() {
+        TODO("Not yet implemented")
+    }
+
+    @Composable
+    @Preview(showBackground = true, showSystemUi = true)
+    fun Preview() {
+        CourseDetailsComponentUi(this)
+    }
+
 }
