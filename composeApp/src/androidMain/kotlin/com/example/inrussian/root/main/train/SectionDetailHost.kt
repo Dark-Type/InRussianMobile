@@ -11,20 +11,17 @@ import com.example.inrussian.components.main.train.SectionDetailComponent
 
 @Composable
 fun SectionDetailHost(component: SectionDetailComponent) {
-    val state by component.state.subscribeAsState()
-
     val default = component as? DefaultSectionDetailComponent
     if (default == null) {
         Text("Unsupported SectionDetailComponent type")
         return
     }
-
+    val state by component.state.subscribeAsState()
     val innerStack by default.childStack.subscribeAsState()
 
     when (val inner = innerStack.active.instance) {
         is DefaultSectionDetailComponent.InnerChild.DetailsChild ->
             SectionDetailsScreen(component, state)
-
         is DefaultSectionDetailComponent.InnerChild.TasksChild ->
             TasksScreen(inner.component)
     }

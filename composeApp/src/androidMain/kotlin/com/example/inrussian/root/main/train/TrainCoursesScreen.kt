@@ -15,7 +15,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,7 +29,7 @@ fun TrainCoursesScreen(component: TrainCoursesListComponent) {
     val state by component.state.subscribeAsState()
 
     if (state.isLoading) {
-        Box(Modifier.Companion.fillMaxSize(), contentAlignment = Alignment.Companion.Center) {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
         return
@@ -42,22 +41,20 @@ fun TrainCoursesScreen(component: TrainCoursesListComponent) {
     ) {
         items(state.courses) { courseWithSections ->
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(courseWithSections.course.name, style = MaterialTheme.typography.titleMedium)
+                Text(courseWithSections.course.title, style = MaterialTheme.typography.titleMedium)
                 courseWithSections.sections.forEach { section ->
                     ElevatedCard(
                         onClick = { component.onSectionClick(section.id) },
-                        modifier = Modifier.Companion.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Column(Modifier.Companion.padding(12.dp)) {
+                        Column(Modifier.padding(12.dp)) {
                             Text(section.title, style = MaterialTheme.typography.titleSmall)
-                            Spacer(Modifier.Companion.height(8.dp))
+                            Spacer(Modifier.height(8.dp))
                             LinearProgressIndicator(
-                            progress = { section.progressPercent / 100f },
-                                color = ProgressIndicatorDefaults.linearColor,
-                            trackColor = ProgressIndicatorDefaults.linearTrackColor,
-                            strokeCap = ProgressIndicatorDefaults.LinearStrokeCap,
+                                progress = { section.progressPercent / 100f },
+                                modifier = Modifier.fillMaxWidth()
                             )
-                            Spacer(Modifier.Companion.height(4.dp))
+                            Spacer(Modifier.height(4.dp))
                             Text(
                                 "Прогресс: ${section.progressPercent}% (${section.completedTasks}/${section.totalTasks})",
                                 style = MaterialTheme.typography.labelSmall

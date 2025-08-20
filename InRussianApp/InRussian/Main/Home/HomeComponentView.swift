@@ -18,25 +18,64 @@ struct HomeComponentView: View {
     }
 
     var body: some View {
-        let current = childStack.active.instance
-        Group {
-            if let courses = current as? HomeComponentChildCoursesChild {
-                CoursesListComponentView(component: courses.component)
-            } else if let details = current as? HomeComponentChildCourseDetailsChild {
-                CourseDetailsComponentView(component: details.component)
-            } else {
-                EmptyView()
+        NavigationStack {
+            let active = childStack.active.instance
+            ZStack {
+                Color(uiColor: .secondarySystemBackground)
+                    .ignoresSafeArea()
+
+                Group {
+                    if let courses = active as? HomeComponentChildCoursesChild {
+                        CoursesListComponentView(component: courses.component)
+                            .background(Color.clear)
+                            .modifier(HomeNavTitleModifier(showTitle: true))
+                    } else if let details = active as? HomeComponentChildCourseDetailsChild {
+                        CourseDetailsComponentView(component: details.component)
+                            .background(Color.clear)
+                            .modifier(HomeNavTitleModifier(showTitle: false))
+                    } else {
+                        EmptyView()
+                            .modifier(HomeNavTitleModifier(showTitle: true))
+                    }
+                }
             }
+            .animation(.default, value: childStack.active.instance.hashObject())
         }
-        .animation(.default, value: childStack.active.instance.hashObject())
     }
 }
 
+// MARK: - Navigation Title Control
+private struct HomeNavTitleModifier: ViewModifier {
+    let showTitle: Bool
+    func body(content: Content) -> some View {
+        content
+            .if(showTitle) { view in
+                view
+                    .navigationTitle("Курсы")
+                    .navigationBarTitleDisplayMode(.large)
+            }
+            .if(!showTitle) { view in
+                view
+                    .navigationTitle("") 
+                    .navigationBarTitleDisplayMode(.inline)
+            }
+    }
+}
 
 // MARK: - Helpers
-
 private extension HomeComponentChild {
     func hashObject() -> Int {
         (self as AnyObject).hash
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func `if`<ContentOut: View>(_ condition: Bool, transform: (Self) -> ContentOut) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            self
+        }
     }
 }

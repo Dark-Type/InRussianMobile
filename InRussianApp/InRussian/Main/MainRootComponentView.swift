@@ -36,14 +36,15 @@ struct MainRootComponentView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
+            
             TabBarView(
                 activeTab: activeTab,
                 onTabSelected: { tab in component.openTab(tab: tab) }
             )
+            .frame(maxWidth: .infinity)
+            .ignoresSafeArea(.container, edges: .horizontal)
             .padding(.bottom, 8)
         }
         .edgesIgnoringSafeArea(.bottom)
     }
 }
-
-
