@@ -31,6 +31,12 @@ enum AppImages {
     enum Recovery: String, RawImageAsset{
         case recovery = "Recovery"
     }
+    enum Wrapper: String, RawImageAsset {
+        case wrapper = "Wrapper"
+    }
+    enum Mock: String, RawImageAsset {
+        case mock = "MockCourse"
+    }
 
     enum Logo: String, RawImageAsset {
         case app = "Logo"

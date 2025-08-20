@@ -64,7 +64,7 @@ struct EducationComponentView: View {
             Color(.secondarySystemBackground).ignoresSafeArea()
 
             VStack(spacing: 24) {
-                Image(systemName: "graduationcap")
+                Image(systemName: "graduationcap.circle.fill")
                     .resizable()
                     .scaledToFit()
                     .foregroundColor(AppColors.Palette.accent.color)

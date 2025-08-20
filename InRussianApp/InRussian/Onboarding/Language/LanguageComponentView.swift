@@ -197,17 +197,6 @@ struct LanguageComponentView: View {
         .navigationBarTitleDisplayMode(.large)
         .navigationBarBackButtonHidden(true)
         .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button {
-                    component.onBack()
-                } label: {
-                    HStack {
-                        Image(systemName: "chevron.left")
-                        Text("Назад")
-                    }
-                    .foregroundColor(AppColors.Palette.accent.color)
-                }
-            }
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
                     if hasPermission {

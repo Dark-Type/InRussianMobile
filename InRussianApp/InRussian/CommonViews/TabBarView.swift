@@ -33,9 +33,10 @@ struct TabBarView: View {
                 action: { onTabSelected(.profile) }
             )
         }
+        .frame(maxWidth: .infinity)
+        .frame(height: 56)
         .padding(.vertical, 8)
         .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(radius: 4)
+        
     }
 }

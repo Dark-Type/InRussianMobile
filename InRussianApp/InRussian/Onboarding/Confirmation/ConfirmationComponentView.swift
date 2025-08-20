@@ -14,17 +14,29 @@ struct ConfirmationComponentView: View {
     var body: some View {
         VStack(spacing: 32) {
             Spacer(minLength: 0)
-            Image(systemName: "checkmark.circle.fill")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .foregroundColor(Color(.systemGreen))
-                .frame(width: 200, height: 200)
-                .padding(.top, 48)
+            ZStack {
+                RoundedRectangle(cornerRadius: 40, style: .continuous)
+                    .fill(Color.white)
+                    .frame(width: 300, height: 300)
+                    
+                VStack(spacing: 10){
+                    Image(systemName: "checkmark.circle.fill")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .foregroundColor(Color(.systemGreen))
+                        .frame(width: 160, height: 160)
+                    
+                    Text("Данные успешно переданы!")
+                        .font(.largeTitle)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 16)
+                        .foregroundStyle(Color(.black))
+                    
+                }
+            }
+            .padding(.top, 64)
 
-            Text("Данные успешно переданы!")
-                .font(.largeTitle)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 16)
+            
 
             Spacer()
 
@@ -40,6 +52,7 @@ struct ConfirmationComponentView: View {
             .padding(.horizontal, 16)
             .padding(.bottom, 36)
         }
+        .background(AppColors.Palette.baseBackground.color)
         .navigationBarBackButtonHidden(true)
     }
 }
