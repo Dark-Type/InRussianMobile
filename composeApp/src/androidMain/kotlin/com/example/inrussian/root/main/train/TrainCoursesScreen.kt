@@ -31,9 +31,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.value.MutableValue
-import com.example.inrussian.components.main.train.Course
 import com.example.inrussian.components.main.train.CourseWithSections
 import com.example.inrussian.components.main.train.Section
+import com.example.inrussian.components.main.train.ShortCourse
 import com.example.inrussian.components.main.train.ThemeMeta
 import com.example.inrussian.components.main.train.TrainCoursesListComponent
 import com.example.inrussian.components.main.train.TrainCoursesState
@@ -182,7 +182,7 @@ class TrainCoursesScreen : TrainCoursesListComponent {
         TrainCoursesState(
             isLoading = false, courses = listOf(
                 CourseWithSections(
-                    course = Course(id = "", title = "Курс на патент", 85f),
+                    course = ShortCourse(id = "", title = "Курс на патент", 85f),
                     sections = listOf(
                         Section(
                             id = "",

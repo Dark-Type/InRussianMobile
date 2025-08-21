@@ -6,8 +6,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import com.arkivanov.decompose.value.Value
 import com.example.inrussian.components.main.train.DefaultSectionDetailComponent
 import com.example.inrussian.components.main.train.SectionDetailComponent
+import com.example.inrussian.components.main.train.SectionDetailState
+import com.example.inrussian.components.main.train.TasksOption
 
 @Composable
 fun SectionDetailHost(component: SectionDetailComponent) {
@@ -38,4 +41,20 @@ fun SectionDetailHost(component: SectionDetailComponent) {
             }
         )
     }
+}
+
+class SectionDetailHost: SectionDetailComponent{
+    override val sectionId: String
+        get() = TODO("Not yet implemented")
+    override val state: Value<SectionDetailState>
+        get() = TODO("Not yet implemented")
+
+    override fun openTasks(option: TasksOption) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onBack() {
+        TODO("Not yet implemented")
+    }
+
 }

@@ -25,7 +25,7 @@ import org.jetbrains.compose.resources.vectorResource
 
 
 @Composable
-fun CommonButton(text: String, enable: Boolean, onClick: () -> Unit) {
+fun CommonButton(text: String, enable: Boolean, onClick: () -> Unit,modifier: Modifier = Modifier) {
     Button(
         onClick = onClick,
         enabled = enable,
@@ -33,7 +33,7 @@ fun CommonButton(text: String, enable: Boolean, onClick: () -> Unit) {
         colors = ButtonDefaults.buttonColors(
             containerColor = Orange,
             disabledContainerColor = DarkGrey
-        ), modifier = Modifier.fillMaxWidth()
+        ), modifier = modifier.fillMaxWidth()
     ) {
         Text(text, Modifier.padding(vertical = 6.dp), color = Color.White)
     }

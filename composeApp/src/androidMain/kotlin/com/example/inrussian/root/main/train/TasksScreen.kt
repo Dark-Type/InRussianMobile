@@ -17,8 +17,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import com.arkivanov.decompose.value.Value
 import com.example.inrussian.components.main.train.TasksComponent
 import com.example.inrussian.components.main.train.TasksOption
+import com.example.inrussian.components.main.train.TasksState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,4 +65,42 @@ fun TasksScreen(component: TasksComponent) {
                 }
         }
     }
+}
+
+class TasksScreen : TasksComponent{
+    override val state: Value<TasksState>
+        get() = TODO("Not yet implemented")
+
+    override fun selectOption(optionId: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun toggleOption(optionId: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun reorderWordOrder(newOrder: List<String>) {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateTextInput(text: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun submitAnswer() {
+        TODO("Not yet implemented")
+    }
+
+    override fun nextAfterResult() {
+        TODO("Not yet implemented")
+    }
+
+    override fun markCurrentAs(correct: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onBack() {
+        TODO("Not yet implemented")
+    }
+
 }
