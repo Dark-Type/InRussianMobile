@@ -76,6 +76,11 @@ class DefaultRootComponent(
                 rootStore.accept(RootIntent.ShowOnboarding)
                 navigation.replaceAll(Configuration.Onboarding)
             }
+
+            AuthOutput.NavigateToMain -> {
+                rootStore.accept(RootIntent.ShowMain)
+                navigation.replaceAll(Configuration.Main)
+            }
         }
     }
 

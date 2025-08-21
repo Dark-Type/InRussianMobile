@@ -50,7 +50,6 @@ import inrussian.composeapp.generated.resources.language
 import inrussian.composeapp.generated.resources.profile
 import inrussian.composeapp.generated.resources.tell_about_u
 import inrussian.composeapp.generated.resources.to_update_data
-import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 

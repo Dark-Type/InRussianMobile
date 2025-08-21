@@ -29,6 +29,11 @@ struct AuthRootComponentView: View {
                 case is AuthRootComponentChild.EnterEmailChild: return "Email"
                 case is AuthRootComponentChild.EnterRecoveryCodeChild: return "Recovery Code"
                 case is AuthRootComponentChild.UpdatePasswordChild: return "Update Password"
+                case is AuthRootComponentChild.LanguageChild: return "Язык"
+                case is AuthRootComponentChild.PersonalDataChild: return "Данные"
+                case is AuthRootComponentChild.CitizenshipChild: return "Гражданство"
+                case is AuthRootComponentChild.EducationChild: return "Образование"
+                case is AuthRootComponentChild.ConfirmationChild: return "Подтверждение"
                 default: return "Unknown"
                 }
             },
@@ -48,6 +53,16 @@ struct AuthRootComponentView: View {
                     EnterRecoveryCodeView(component: enterRecovery.component)
                 } else if let updatePassword = child as? AuthRootComponentChild.UpdatePasswordChild {
                     UpdatePasswordView(component: updatePassword.component)
+                } else if let language = child as? AuthRootComponentChild.LanguageChild {
+                    LanguageComponentView(component: language.component)
+                } else if let personalData = child as? AuthRootComponentChild.PersonalDataChild {
+                    PersonalDataComponentView(component: personalData.component)
+                } else if let citizenship = child as? AuthRootComponentChild.CitizenshipChild {
+                    CitizenshipComponentView(component: citizenship.component)
+                } else if let education = child as? AuthRootComponentChild.EducationChild {
+                    EducationComponentView(component: education.component)
+                } else if let confirmation = child as? AuthRootComponentChild.ConfirmationChild {
+                    ConfirmationComponentView(component: confirmation.component)
                 } else {
                     Text("Unknown Auth Flow")
                 }

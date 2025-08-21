@@ -69,7 +69,12 @@ val navigationModule = module {
                 ssoPopoverComponentFactory = get(QSsoPopoverFactory),
                 enterEmailFactory = get(QEnterEmailFactory),
                 updatePasswordFactory = get(QUpdatePasswordFactory),
-                enterRecoveryCodeFactory = get(QEnterRecoveryCodeFactory)
+                enterRecoveryCodeFactory = get(QEnterRecoveryCodeFactory),
+                languageComponentFactory = get(QLanguageFactory),
+                personalDataComponentFactory = get(QPersonalDataFactory),
+                citizenshipComponentFactory = get(QCitizenshipFactory),
+                educationComponentFactory = get(QEducationFactory),
+                confirmationComponentFactory = get(QConfirmationFactory)
             )
         }
     }
@@ -78,11 +83,7 @@ val navigationModule = module {
             DefaultOnboardingRootComponent(
                 componentContext = componentContext,
                 onOutput = onOutput,
-                languageComponentFactory = get(QLanguageFactory),
-                personalDataComponentFactory = get(QPersonalDataFactory),
-                citizenshipComponentFactory = get(QCitizenshipFactory),
-                educationComponentFactory = get(QEducationFactory),
-                confirmationComponentFactory = get(QConfirmationFactory),
+
                 interactiveOnboardingComponentFactory = get(QInteractiveOnboardingFactory)
             )
         }

@@ -15,20 +15,6 @@ import com.example.inrussian.root.onboarding.onboarding.InteractiveOnboardingCom
 fun OnboardingRootComponentUi(component: OnboardingRootComponent) {
     val stack by component.stack.subscribeAsState()
     when (val child = stack.active.instance) {
-        is OnboardingRootComponent.Child.LanguageChild ->
-            LanguageChooseUi(child.component)
-
-        is OnboardingRootComponent.Child.PersonalDataChild ->
-            PersonaDataUi(child.component)
-
-        is OnboardingRootComponent.Child.CitizenshipChild ->
-            CitizenshipDate(child.component)
-
-        is OnboardingRootComponent.Child.EducationChild ->
-            EducationUi(child.component)
-
-        is OnboardingRootComponent.Child.ConfirmationChild ->
-            FormSaveUi(child.component)
 
         is OnboardingRootComponent.Child.InteractiveOnboardingChild ->
             InteractiveOnboardingComponentUi(child.component)
