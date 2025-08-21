@@ -378,6 +378,7 @@ fun EditProfileScreen(component: EditProfileComponent) {
                 CommonButton(stringResource(Res.string.`continue`), true, component::save)
 
             }
+            item { Spacer(Modifier.height(70.dp)) }
         }
 
         if (state.isDateOpen)

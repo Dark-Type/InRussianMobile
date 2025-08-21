@@ -7,6 +7,8 @@ import com.arkivanov.decompose.ComponentContext
 interface LanguageComponent {
     fun onNext()
     fun openMenu()
+    fun closeMenu()
+    fun selectLanguage(language: String)
     fun onBack()
     fun clickOnToggleButton(isSelected: Boolean)
     val state: Value<State>
@@ -48,7 +50,16 @@ class DefaultLanguageComponent(
         _state.value = _state.value.copy(isOpenLanguage = !_state.value.isOpenLanguage)
     }
 
+    override fun closeMenu() {
+        _state.value = _state.value.copy(isOpenLanguage = false)
+    }
+
+    override fun selectLanguage(language: String) {
+        _state.value = _state.value.copy(selectedLanguage = language)
+    }
+
     override fun clickOnToggleButton(isSelected: Boolean) {
         _state.value = _state.value.copy(hasGivenPermission = isSelected)
     }
+
 }

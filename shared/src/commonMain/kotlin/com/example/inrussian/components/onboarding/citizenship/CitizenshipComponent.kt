@@ -32,9 +32,13 @@ interface CitizenshipComponent {
     fun openNationality(isOpen: Boolean)
     fun openTime(isOpen: Boolean)
     fun selectNationality(string: String)
+
     fun deleteCountry(country: String)
+
     fun selectTime(time: String)
+
     fun deleteNationality(nationality: String)
+
     fun deleteTime(time: String)
 }
 

@@ -66,17 +66,9 @@ fun ActionButtons(component: ProfileMainComponent) {
             onSelect = { component.onSelectTheme(AppTheme.valueOf(it)) }
         )
         HorizontalDivider()
-        ProfileRow(
+        ProfileCommonRow(
             stringResource(Res.string.edit_profile),
-            state.isEditThemeOpen,
-            variants = listOf(
-                AppTheme.SYSTEM.toString(),
-                AppTheme.LIGHT.toString(),
-                AppTheme.DARK.toString()
-            ),
-            { component.onEditClick() },
-            onSelect = { component.onSelectTheme(AppTheme.valueOf(it)) }
-        )
+        ) { component.onEditClick() }
         HorizontalDivider()
 
         ProfileCommonRow(stringResource(Res.string.privacy_police), component::onAboutClick)
