@@ -2,7 +2,6 @@ package com.example.inrussian.repository.main.train
 
 import com.example.inrussian.components.main.train.AnswerType
 import com.example.inrussian.components.main.train.ContentType
-import com.example.inrussian.components.main.train.Course
 import com.example.inrussian.components.main.train.PRACTICE_TASK_TYPES
 import com.example.inrussian.components.main.train.Task
 import com.example.inrussian.components.main.train.TaskAnswerItem
@@ -12,6 +11,7 @@ import com.example.inrussian.components.main.train.TaskType
 import com.example.inrussian.components.main.train.TasksOption
 import com.example.inrussian.components.main.train.ThemeMeta
 import com.example.inrussian.components.main.train.Section
+import com.example.inrussian.components.main.train.ShortCourse
 import com.example.inrussian.components.main.train.THEORY_TASK_TYPES
 import com.example.inrussian.components.main.train.UserTaskQueueItem
 import kotlinx.coroutines.CoroutineScope
@@ -34,8 +34,8 @@ class MockTrainRepository(
 
     /* Courses */
     private val courses = listOf(
-        Course("kc1", "KMP Practice"),
-        Course("kc2", "Compose Practice")
+        ShortCourse("kc1", "KMP Practice"),
+        ShortCourse("kc2", "Compose Practice")
     )
 
     /* Sections per course */
@@ -72,7 +72,7 @@ class MockTrainRepository(
 
     /* ---------------- Interface Impl ---------------- */
 
-    override fun userCourses(): Flow<List<Course>> = flowOf(courses)
+    override fun userCourses(): Flow<List<ShortCourse>> = flowOf(courses)
 
     override fun sectionsForCourse(courseId: String): Flow<List<Section>> =
         sectionsState.map { it[courseId] ?: emptyList() }

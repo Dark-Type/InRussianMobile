@@ -10,7 +10,7 @@ import kotlin.uuid.Uuid
  * ----------------------------------------------------------- */
 
 @Serializable
-data class Course(
+data class ShortCourse(
     val id: String,
     val title: String
 )
@@ -157,7 +157,7 @@ data class TrainCoursesState(
 )
 
 data class CourseWithSections(
-    val course: Course,
+    val course: ShortCourse,
     val sections: List<Section>
 )
 

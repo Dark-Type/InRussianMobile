@@ -27,18 +27,18 @@ struct EditProfileView: View {
                     Text("Редактирование профиля")
                         .font(.title2).bold()
 
-                    Group {
-                        LabeledField("Фамилия", text: working.surname) { component.updateSurname(value: $0) }
-                        LabeledField("Имя", text: working.name) { component.updateName(value: $0) }
-                        LabeledField("Отчество", text: working.patronymic ?? "") { component.updatePatronymic(value: $0) }
-                        LabeledField("Дата рождения (YYYY-MM-DD)", text: working.dob) { component.updateDob(value: $0) }
-                        LabeledField("Гражданство", text: working.citizenship ?? "") { component.updateCitizenship(value: $0) }
-                        LabeledField("Национальность", text: working.nationality ?? "") { component.updateNationality(value: $0) }
-                        LabeledField("Страна проживания", text: working.countryOfResidence ?? "") { component.updateCountryOfResidence(value: $0) }
-                        LabeledField("Город проживания", text: working.cityOfResidence ?? "") { component.updateCityOfResidence(value: $0) }
-                        LabeledField("Образование", text: working.education ?? "") { component.updateEducation(value: $0) }
-                        LabeledField("Цель регистрации", text: working.purposeOfRegister ?? "") { component.updatePurpose(value: $0) }
-                    }
+//                    Group {
+//                        LabeledField("Фамилия", text: working.surname) { component.updateSurname(value: $0) }
+//                        LabeledField("Имя", text: working.name) { component.updateName(value: $0) }
+//                        LabeledField("Отчество", text: working.patronymic ?? "") { component.updatePatronymic(value: $0) }
+//                        LabeledField("Дата рождения (YYYY-MM-DD)", text: working.dob) { component.updateDob(value: $0) }
+//                        LabeledField("Гражданство", text: working.citizenship ?? "") { component.updateCitizenship(value: $0) }
+//                        LabeledField("Национальность", text: working.nationality ?? "") { component.updateNationality(value: $0) }
+//                        LabeledField("Страна проживания", text: working.countryOfResidence ?? "") { component.updateCountryOfResidence(value: $0) }
+//                        LabeledField("Город проживания", text: working.cityOfResidence ?? "") { component.updateCityOfResidence(value: $0) }
+//                        LabeledField("Образование", text: working.education ?? "") { component.updateEducation(value: $0) }
+//                        LabeledField("Цель регистрации", text: working.purposeOfRegister ?? "") { component.updatePurpose(value: $0) }
+//                    }
 
                     GenderPicker(selected: working.gender) {
                         component.updateGender(value: $0)

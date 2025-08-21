@@ -15,7 +15,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,9 +24,9 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.inrussian.components.onboarding.education.EducationComponent
 import com.example.inrussian.ui.theme.BackButton
 import com.example.inrussian.ui.theme.ContinueButton
@@ -43,13 +42,12 @@ import inrussian.composeapp.generated.resources.purpose
 import inrussian.composeapp.generated.resources.understand_rus_language
 import inrussian.composeapp.generated.resources.understand_rus_speech
 import inrussian.composeapp.generated.resources.understand_rus_text
-import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun EducationUi(component: EducationComponent) {
-    val state by component.state.collectAsState()
+    val state by component.state.subscribeAsState()
     Column(
         Modifier
             .background(reallyLightGrey)
@@ -159,47 +157,47 @@ fun TextWithToggle(
     }
 }
 
-class EducationUi : EducationComponent {
-    override val state = MutableStateFlow(
-        EducationComponent.State(languages = mutableListOf("Ural", "Oleg"))
-    )
-
-    override fun onNext() {
-        TODO("Not yet implemented")
-    }
-
-    override fun onBack() {
-        TODO("Not yet implemented")
-    }
-
-    override fun deleteLanguage(string: String) {
-        TODO("Not yet implemented")
-    }
-
-
-    override fun onChangeExpanded(boolean: Boolean) {
-        TODO("Not yet implemented")
-    }
-
-    override fun selectLanguage(language: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeActivity(activity: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeEducation(education: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun changePurpose(purpose: String) {
-        TODO("Not yet implemented")
-    }
-
-    @Preview(showBackground = true, showSystemUi = true)
-    @Composable
-    fun Preview() {
-        EducationUi(this)
-    }
-}
+//class EducationUi : EducationComponent {
+//    override val state = MutableStateFlow(
+//        EducationComponent.State(languages = mutableListOf("Ural", "Oleg"))
+//    )
+//
+//    override fun onNext() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun onBack() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun deleteLanguage(string: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//
+//    override fun onChangeExpanded(boolean: Boolean) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun selectLanguage(language: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun changeActivity(activity: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun changeEducation(education: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun changePurpose(purpose: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    @Preview(showBackground = true, showSystemUi = true)
+//    @Composable
+//    fun Preview() {
+//        EducationUi(this)
+//    }
+//}

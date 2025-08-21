@@ -32,14 +32,14 @@ struct EducationComponentView: View {
 
     init(component: EducationComponent) {
         self.component = component
-        _languages = State(initialValue: component.state.languages.compactMap { $0 as? String })
-        _understandsRussian = State(initialValue: component.state.understandsRussian)
-        _speaksRussian = State(initialValue: component.state.speaksRussian)
-        _readsRussian = State(initialValue: component.state.readsRussian)
-        _writesRussian = State(initialValue: component.state.writesRussian)
-        _kindOfActivity = State(initialValue: component.state.kindOfActivity)
-        _education = State(initialValue: component.state.education)
-        _purposeOfRegistration = State(initialValue: component.state.purposeOfRegistration)
+        _languages = State(initialValue: component.state.value.languages)
+        _understandsRussian = State(initialValue: component.state.value.understandsRussian)
+        _speaksRussian = State(initialValue: component.state.value.speaksRussian)
+        _readsRussian = State(initialValue: component.state.value.readsRussian)
+        _writesRussian = State(initialValue: component.state.value.writesRussian)
+        _kindOfActivity = State(initialValue: component.state.value.kindOfActivity)
+        _education = State(initialValue: component.state.value.education)
+        _purposeOfRegistration = State(initialValue: component.state.value.purposeOfRegistration)
     }
 
     // MARK: - Labels

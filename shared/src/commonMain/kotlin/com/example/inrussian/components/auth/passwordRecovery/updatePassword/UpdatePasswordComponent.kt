@@ -1,10 +1,10 @@
 package com.example.inrussian.components.auth.passwordRecovery.updatePassword
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.value.MutableValue
+import com.arkivanov.decompose.value.Value
 import com.example.inrussian.models.state.UpdatePasswordState
 import com.example.inrussian.repository.auth.AuthRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
 interface UpdatePasswordComponent {
     fun onPasswordUpdated()
@@ -13,7 +13,7 @@ interface UpdatePasswordComponent {
     fun onConfirmPasswordChange(confirmPassword: String)
     fun onShowPasswordClick()
     fun onShowConfirmPasswordClick()
-    val state: StateFlow<UpdatePasswordState>
+    val state: Value<UpdatePasswordState>
 }
 
 sealed class UpdatePasswordOutput {
@@ -51,5 +51,6 @@ class DefaultUpdatePasswordComponent(
         TODO("Not yet implemented")
     }
 
-    override val state = MutableStateFlow(UpdatePasswordState())
+    private val _state = MutableValue(UpdatePasswordState())
+    override val state: Value<UpdatePasswordState> get() = _state
 }

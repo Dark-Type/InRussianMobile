@@ -18,7 +18,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,9 +25,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.inrussian.components.onboarding.language.LanguageComponent
 import com.example.inrussian.ui.theme.ContinueButton
 import com.example.inrussian.ui.theme.DarkGrey
@@ -43,13 +42,12 @@ import inrussian.composeapp.generated.resources.language
 import inrussian.composeapp.generated.resources.profile
 import inrussian.composeapp.generated.resources.tell_about_u
 import inrussian.composeapp.generated.resources.to_update_data
-import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun LanguageChooseUi(component: LanguageComponent) {
-    val state by component.state.collectAsState()
+    val state by component.state.subscribeAsState()
     Column(
         Modifier
             .background(reallyLightGrey)
@@ -170,30 +168,30 @@ fun PermissionRow(isSelected: Boolean, onClick: (Boolean) -> Unit) {
 }
 
 
-class LanguageChooseUi : LanguageComponent {
-    override fun onNext() {
-        TODO("Not yet implemented")
-    }
-
-    override fun openMenu() {
-        TODO("Not yet implemented")
-    }
-
-    override fun onBack() {
-        TODO("Not yet implemented")
-    }
-
-    override fun clickOnToggleButton(isSelected: Boolean) {
-        TODO("Not yet implemented")
-    }
-
-    override val state = MutableStateFlow(
-        LanguageComponent.State()
-    )
-
-    @Preview(showBackground = true, showSystemUi = true)
-    @Composable
-    fun Preview() {
-        LanguageChooseUi(this)
-    }
-}
+//class LanguageChooseUi : LanguageComponent {
+//    override fun onNext() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun openMenu() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun onBack() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun clickOnToggleButton(isSelected: Boolean) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override val state = MutableStateFlow(
+//        LanguageComponent.State()
+//    )
+//
+//    @Preview(showBackground = true, showSystemUi = true)
+//    @Composable
+//    fun Preview() {
+//        LanguageChooseUi(this)
+//    }
+//}

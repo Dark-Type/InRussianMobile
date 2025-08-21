@@ -17,11 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.inrussian.components.auth.passwordRecovery.updatePassword.UpdatePasswordComponent
-import com.example.inrussian.models.state.UpdatePasswordState
 import com.example.inrussian.ui.theme.CommonButton
 import com.example.inrussian.ui.theme.CommonTextField
 import com.example.inrussian.ui.theme.DarkGrey
@@ -33,14 +32,13 @@ import inrussian.composeapp.generated.resources.eye_show
 import inrussian.composeapp.generated.resources.password
 import inrussian.composeapp.generated.resources.password_recovery
 import inrussian.composeapp.generated.resources.update_password
-import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun UpdatePasswordUi(component: UpdatePasswordComponent) {
-    val state by component.state.collectAsState()
+    val state by component.state.subscribeAsState()
 
     Column(modifier = Modifier.padding(16.dp)) {
         Column(
@@ -104,36 +102,36 @@ fun UpdatePasswordUi(component: UpdatePasswordComponent) {
     }
 }
 
-class UpdatePasswordUi : UpdatePasswordComponent {
-    override fun onPasswordUpdated() {
-        TODO("Not yet implemented")
-    }
-
-    override fun onBackClicked() {
-        TODO("Not yet implemented")
-    }
-
-    override fun onPasswordChange(password: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onConfirmPasswordChange(confirmPassword: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onShowPasswordClick() {
-        TODO("Not yet implemented")
-    }
-
-    override fun onShowConfirmPasswordClick() {
-        TODO("Not yet implemented")
-    }
-
-    override val state = MutableStateFlow(UpdatePasswordState())
-
-    @Preview(showBackground = true, showSystemUi = true)
-    @Composable
-    fun Preview() {
-        UpdatePasswordUi(this)
-    }
-}
+//class UpdatePasswordUi : UpdatePasswordComponent {
+//    override fun onPasswordUpdated() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun onBackClicked() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun onPasswordChange(password: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun onConfirmPasswordChange(confirmPassword: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun onShowPasswordClick() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun onShowConfirmPasswordClick() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override val state = MutableStateFlow(UpdatePasswordState())
+//
+//    @Preview(showBackground = true, showSystemUi = true)
+//    @Composable
+//    fun Preview() {
+//        UpdatePasswordUi(this)
+//    }
+//}

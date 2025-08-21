@@ -11,7 +11,7 @@ import com.arkivanov.decompose.value.Value
 import com.example.inrussian.di.CourseDetailsComponentFactory
 import com.example.inrussian.navigation.configurations.HomeConfiguration
 import com.example.inrussian.repository.main.home.HomeRepository
-import com.example.inrussian.utile.componentCoroutineScope
+import com.example.inrussian.utils.componentCoroutineScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map

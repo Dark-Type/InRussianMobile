@@ -27,8 +27,8 @@ struct LanguageComponentView: View {
 
     init(component: LanguageComponent) {
         self.component = component
-        _selectedLanguage = State(initialValue: component.state.selectedLanguage)
-        _hasPermission = State(initialValue: component.state.hasGivenPermission)
+        _selectedLanguage = State(initialValue: component.state.value.selectedLanguage)
+        _hasPermission = State(initialValue: component.state.value.hasGivenPermission)
     }
 
     private func displayName(for value: String) -> String {

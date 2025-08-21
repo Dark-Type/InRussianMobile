@@ -29,7 +29,7 @@ import com.example.inrussian.stores.auth.recovery.RecoveryStore.Msg.PasswordErro
 import com.example.inrussian.stores.auth.recovery.RecoveryStore.Msg.PasswordTransform
 import com.example.inrussian.stores.auth.recovery.RecoveryStore.State
 import com.example.inrussian.stores.auth.recovery.RecoveryStoreFactory.ReducerImpl.backUpForSecond
-import com.example.inrussian.utile.ErrorDecoder
+import com.example.inrussian.utils.ErrorDecoder
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -180,11 +180,4 @@ class RecoveryStoreFactory(
         }
 
     }
-
-
-    companion object {
-        private const val TAG = "AuthStoreFactory"
-    }
-
-
 }

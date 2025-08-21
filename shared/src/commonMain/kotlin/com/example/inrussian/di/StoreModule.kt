@@ -11,7 +11,7 @@ import com.example.inrussian.stores.auth.register.RegisterStore
 import com.example.inrussian.stores.auth.register.RegisterStoreFactory
 import com.example.inrussian.stores.root.RootStore
 import com.example.inrussian.stores.root.RootStoreFactory
-import com.example.inrussian.utile.ErrorDecoder
+import com.example.inrussian.utils.ErrorDecoder
 import org.koin.dsl.module
 
 val storeModule = module {

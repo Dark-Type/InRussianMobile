@@ -1,16 +1,17 @@
 package com.example.inrussian.components.auth.passwordRecovery.enterRecoveryCode
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.value.Value
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
 import com.example.inrussian.stores.auth.recovery.RecoveryStore
 import com.example.inrussian.stores.auth.recovery.RecoveryStore.Intent
-import com.example.inrussian.utile.componentCoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import com.example.inrussian.utils.asValue
+import com.example.inrussian.utils.componentCoroutineScope
+
 import kotlinx.coroutines.launch
 
 interface EnterRecoveryCodeComponent {
-    val state: StateFlow<RecoveryStore.State>
+    val state: Value<RecoveryStore.State>
 
     fun onCodeEntered(code: String)
     fun onBackClicked()
@@ -34,7 +35,7 @@ class DefaultEnterRecoveryCodeComponent(
     private val onOutput: (EnterRecoveryCodeOutput) -> Unit,
     private val store: RecoveryStore,
 ) : EnterRecoveryCodeComponent, ComponentContext by componentContext {
-    override val state = MutableStateFlow(store.state)
+    override val state = store.asValue()
     val scope = componentCoroutineScope()
 
     init {
@@ -51,6 +52,7 @@ class DefaultEnterRecoveryCodeComponent(
 
     override fun onCodeEntered(code: String) {
         store.accept(Intent.ContinueClick)
+        onOutput(EnterRecoveryCodeOutput.NavigateToUpdatePassword)
     }
 
     override fun onBackClicked() {
@@ -60,7 +62,6 @@ class DefaultEnterRecoveryCodeComponent(
     override fun onQuestionClick() {
         store.accept(Intent.QuestionClick)
     }
-
 
     override fun codeChange(code: String) {
         store.accept(Intent.CodeChange(code))
