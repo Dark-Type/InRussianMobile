@@ -88,7 +88,7 @@ class DefaultCitizenshipComponent(
     }
 
     override fun openCitizenship(isOpen: Boolean) {
-        state.value = state.value
+        state.value = state.value.copy(isCitizenshipOpen = isOpen)
     }
 
     override fun openNationality(isOpen: Boolean) {

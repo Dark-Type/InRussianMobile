@@ -1,5 +1,6 @@
 package com.example.inrussian.root.main.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -62,12 +63,13 @@ fun CourseDetailsComponentUi(component: CourseDetailsComponent) {
     ) {
         item() {
             Box(Modifier.fillMaxWidth()) {
-                Icon(
+                Image(
                     painterResource(Res.drawable.recommended_image_mock),
                     "",
                     Modifier
                         .height(height = 350.dp)
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
+
                 )
                 IconButton(
                     component::onBack,

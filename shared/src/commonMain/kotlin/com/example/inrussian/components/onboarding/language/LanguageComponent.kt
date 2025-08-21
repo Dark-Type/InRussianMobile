@@ -7,7 +7,8 @@ import kotlinx.coroutines.flow.StateFlow
 interface LanguageComponent {
     fun onNext()
     fun openMenu()
-
+    fun closeMenu()
+    fun selectLanguage(language: String)
     fun onBack()
     fun clickOnToggleButton(isSelected: Boolean)
     val state: StateFlow<State>
@@ -39,12 +40,21 @@ class DefaultLanguageComponent(
     override fun onNext() {
         onOutput(LanguageOutput.Filled)
     }
+
     override fun onBack() {
         onOutput(LanguageOutput.Back)
     }
 
     override fun openMenu() {
         state.value = state.value.copy(isOpenLanguage = !state.value.isOpenLanguage)
+    }
+
+    override fun closeMenu() {
+        TODO("Not yet implemented")
+    }
+
+    override fun selectLanguage(language: String) {
+        TODO("Not yet implemented")
     }
 
     override fun clickOnToggleButton(isSelected: Boolean) {
