@@ -125,8 +125,10 @@ fun LanguageChooseUi(component: LanguageComponent) {
                     "",
                     tint = LightBlue
                 )
-    val state by component.state.collectAsState()
-    Box() {
+            }
+        }
+    }
+    Box {
         Column(
             Modifier
                 .background(reallyLightGrey)
@@ -268,30 +270,30 @@ fun PermissionRow(isSelected: Boolean, onClick: (Boolean) -> Unit) {
 }
 
 
-class LanguageChooseUi : LanguageComponent {
-    override fun onNext() {
-        TODO("Not yet implemented")
-    }
-
-    override fun openMenu() {
-        TODO("Not yet implemented")
-    }
-
-    override fun onBack() {
-        TODO("Not yet implemented")
-    }
-
-    override fun clickOnToggleButton(isSelected: Boolean) {
-        TODO("Not yet implemented")
-    }
-
-    override val state = MutableStateFlow(
-        LanguageComponent.State()
-    )
-
-    @Preview(showBackground = true, showSystemUi = true)
-    @Composable
-    fun Preview() {
-        LanguageChooseUi(this)
-    }
-}
+//class LanguageChooseUi : LanguageComponent {
+//    override fun onNext() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun openMenu() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun onBack() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun clickOnToggleButton(isSelected: Boolean) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override val state = MutableStateFlow(
+//        LanguageComponent.State()
+//    )
+//
+//    @Preview(showBackground = true, showSystemUi = true)
+//    @Composable
+//    fun Preview() {
+//        LanguageChooseUi(this)
+//    }
+//}
