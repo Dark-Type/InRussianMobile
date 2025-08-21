@@ -24,9 +24,11 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import com.arkivanov.decompose.value.MutableValue
 import com.example.inrussian.components.onboarding.education.EducationComponent
 import com.example.inrussian.ui.theme.BackButton
 import com.example.inrussian.ui.theme.ContinueButton
@@ -157,47 +159,47 @@ fun TextWithToggle(
     }
 }
 
-//class EducationUi : EducationComponent {
-//    override val state = MutableStateFlow(
-//        EducationComponent.State(languages = mutableListOf("Ural", "Oleg"))
-//    )
-//
-//    override fun onNext() {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun onBack() {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun deleteLanguage(string: String) {
-//        TODO("Not yet implemented")
-//    }
-//
-//
-//    override fun onChangeExpanded(boolean: Boolean) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun selectLanguage(language: String) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun changeActivity(activity: String) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun changeEducation(education: String) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun changePurpose(purpose: String) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    @Preview(showBackground = true, showSystemUi = true)
-//    @Composable
-//    fun Preview() {
-//        EducationUi(this)
-//    }
-//}
+class EducationUi : EducationComponent {
+    override val state = MutableValue(
+        EducationComponent.State(languages = mutableListOf("Ural", "Oleg"), isOpenLanguages = true)
+    )
+
+    override fun onNext() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onBack() {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteLanguage(string: String) {
+        TODO("Not yet implemented")
+    }
+
+
+    override fun onChangeExpanded(boolean: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun selectLanguage(language: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun changeActivity(activity: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun changeEducation(education: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun changePurpose(purpose: String) {
+        TODO("Not yet implemented")
+    }
+
+    @Preview(showBackground = true, showSystemUi = true)
+    @Composable
+    fun Preview() {
+        EducationUi(this)
+    }
+}

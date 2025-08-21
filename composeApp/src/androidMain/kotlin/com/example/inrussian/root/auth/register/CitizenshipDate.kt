@@ -24,10 +24,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import com.arkivanov.decompose.value.MutableValue
 import com.example.inrussian.components.onboarding.citizenship.CitizenshipComponent
 import com.example.inrussian.ui.theme.BackButton
 import com.example.inrussian.ui.theme.ContinueButton
@@ -133,7 +135,7 @@ fun CitizenshipDate(component: CitizenshipComponent) {
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
             ClipsContainer(
                 isOpen = state.isTimeOpen,
-                variants = listOf("До 5 лет", "Меньше года", "Больше года","Около трех лет"),
+                variants = listOf("До 5 лет", "Меньше года", "Больше года", "Около трех лет"),
                 active = if (state.selectedTime == "") listOf() else listOf(state.timeSpentInRussia),
                 onClick = component::deleteTime,
                 onChangeExpanded = component::openTime,
@@ -211,71 +213,71 @@ fun ClipsContainer(
     }
 }
 
-//class CitizenshipDate : CitizenshipComponent {
-//    override val state = MutableStateFlow(
-//        CitizenshipComponent.State()
-//    )
-//
-//    override fun onNext() {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun onBack() {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun countryLiveChange(country: String) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun cityLiveChange(city: String) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun studyCountyChange(country: String) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun selectCountry(country: String) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun openCitizenship(isOpen: Boolean) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun openNationality(isOpen: Boolean) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun openTime(isOpen: Boolean) {
-//        TODO("Not yet implemented")
-//    }
-//
-//
-//    override fun selectNationality(string: String) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun deleteCountry(country: String) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun selectTime(time: String) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun deleteNationality(nationality: String) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun deleteTime(time: String) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    @Preview(showBackground = true, showSystemUi = true)
-//    @Composable
-//    fun Preview() {
-//        CitizenshipDate(this)
-//    }
-//}
+class CitizenshipDate : CitizenshipComponent {
+    override val state = MutableValue(
+        CitizenshipComponent.State(isNationalityOpen = true)
+    )
+
+    override fun onNext() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onBack() {
+        TODO("Not yet implemented")
+    }
+
+    override fun countryLiveChange(country: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun cityLiveChange(city: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun studyCountyChange(country: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun selectCountry(country: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun openCitizenship(isOpen: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun openNationality(isOpen: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun openTime(isOpen: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+
+    override fun selectNationality(string: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteCountry(country: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun selectTime(time: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteNationality(nationality: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteTime(time: String) {
+        TODO("Not yet implemented")
+    }
+
+    @Preview(showBackground = true, showSystemUi = true)
+    @Composable
+    fun Preview() {
+        CitizenshipDate(this)
+    }
+}

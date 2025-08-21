@@ -78,10 +78,10 @@ enum class AnswerType {
 
 @Serializable
 data class Task(
-    val id: String,
-    val sectionId: String,
-    val themeId: String,
-    val type: TaskType,
+    val id: String = "",
+    val sectionId: String = "",
+    val themeId: String = "",
+    val type: TaskType = TaskType.READ_AND_CHOOSE,
     val text: String? = null,
     val isTraining: Boolean = false,
     val answer: TaskAnswerItem? = null
@@ -126,8 +126,8 @@ data class TaskAnswerItem @OptIn(ExperimentalUuidApi::class) constructor(
 /* Aggregated task used in TasksComponent state */
 data class FullTask(
     val task: Task,
-    val contents: List<TaskContentItem>,
-    val options: List<TaskAnswerOptionItem>,
+    val contents: List<TaskContentItem> = emptyList(),
+    val options: List<TaskAnswerOptionItem> = emptyList(),
     val answer: TaskAnswerItem? = task.answer
 )
 

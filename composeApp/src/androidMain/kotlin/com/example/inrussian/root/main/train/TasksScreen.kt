@@ -17,10 +17,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.arkivanov.decompose.value.Value
+import com.arkivanov.decompose.value.MutableValue
 import com.example.inrussian.components.main.train.TasksComponent
 import com.example.inrussian.components.main.train.TasksOption
 import com.example.inrussian.components.main.train.TasksState
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,6 +60,7 @@ fun TasksScreen(component: TasksComponent) {
                 Box(Modifier.padding(padding)) {
                     ContinueQueueTasks(state, component)
                 }
+
             TasksOption.All, TasksOption.Theory, TasksOption.Practice ->
                 Box(Modifier.padding(padding)) {
                     FilteredTasksList(state, component)
@@ -67,12 +69,13 @@ fun TasksScreen(component: TasksComponent) {
     }
 }
 
-class TasksScreen : TasksComponent{
-    override val state: Value<TasksState>
-        get() = TODO("Not yet implemented")
+class TasksScreen : TasksComponent {
+    override val state = MutableValue(
+        TasksState(isLoading = true, option = TasksOption.Continue, sectionId = "sectionId")
+    )
 
     override fun selectOption(optionId: String) {
-        TODO("Not yet implemented")
+       state.value = state.value.copy()
     }
 
     override fun toggleOption(optionId: String) {
@@ -101,6 +104,12 @@ class TasksScreen : TasksComponent{
 
     override fun onBack() {
         TODO("Not yet implemented")
+    }
+
+    @Composable
+    @Preview
+    fun Preview() {
+        TasksScreen(this)
     }
 
 }

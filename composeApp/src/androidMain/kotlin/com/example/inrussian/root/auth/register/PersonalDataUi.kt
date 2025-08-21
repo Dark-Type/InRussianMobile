@@ -19,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,12 +34,15 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import com.arkivanov.decompose.value.MutableValue
 import com.example.inrussian.components.onboarding.personalData.PersonalDataComponent
 import com.example.inrussian.ui.theme.BackButton
 import com.example.inrussian.ui.theme.ContinueButton
+import com.example.inrussian.ui.theme.DarkGrey
 import com.example.inrussian.ui.theme.Orange
 import com.example.inrussian.ui.theme.reallyLightGrey
 import inrussian.composeapp.generated.resources.Res
@@ -169,17 +171,18 @@ fun PersonaDataUi(component: PersonalDataComponent) {
                     .clip(RoundedCornerShape(10.dp))
                     .background(White)
                     .align(Alignment.Center)
-                    .shadow(1.dp)
+                    .shadow(1.dp, shape = RoundedCornerShape(10.dp))
             ) {
                 TextButton({
                     component.changeGender("Мужской")
                     component.changeGenderChoose(false)
-                }) { Text("Мужской") }
+                }) { Text("Мужской", color = DarkGrey.copy(0.8f)) }
+                HorizontalDivider()
                 TextButton({
                     component.changeGender("Женский")
                     component.changeGenderChoose(false)
                 }
-                ) { Text("Женский") }
+                ) { Text("Женский", color = DarkGrey.copy(0.8f)) }
             }
     }
 
@@ -250,69 +253,69 @@ fun DataPickerSimple(onSelect: (String) -> Unit) {
 }
 
 
-//class PersonalDataUi() : PersonalDataComponent {
-//    @Preview(showBackground = true, showSystemUi = true)
-//    @Composable
-//    fun Preview() {
-//        PersonaDataUi(this)
-//    }
-//
-//    override fun onNext() {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override val state = MutableStateFlow(PersonalDataComponent.State(isGenderOpen = true))
-//    override fun changeSurname(surname: String) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun changeName(name: String) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun changeThirdName(thirdName: String) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun changeGender(gender: String) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun changeDob(dob: String) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun changePhone(phone: String) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun changeEmail(email: String) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun changeGenderChoose(isOpen: Boolean) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun openDataPicker() {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun onDataChange(date: String) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun dataPickerMissClick() {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun onBack() {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun onContinue() {
-//        TODO("Not yet implemented")
-//    }
-//
-//
-//}
+class PersonalDataUi() : PersonalDataComponent {
+    @Preview(showBackground = true, showSystemUi = true)
+    @Composable
+    fun Preview() {
+        PersonaDataUi(this)
+    }
+
+    override fun onNext() {
+        TODO("Not yet implemented")
+    }
+
+    override val state = MutableValue(PersonalDataComponent.State(isGenderOpen = true))
+    override fun changeSurname(surname: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun changeName(name: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun changeThirdName(thirdName: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun changeGender(gender: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun changeDob(dob: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun changePhone(phone: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun changeEmail(email: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun changeGenderChoose(isOpen: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun openDataPicker() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onDataChange(date: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun dataPickerMissClick() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onBack() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onContinue() {
+        TODO("Not yet implemented")
+    }
+
+
+}

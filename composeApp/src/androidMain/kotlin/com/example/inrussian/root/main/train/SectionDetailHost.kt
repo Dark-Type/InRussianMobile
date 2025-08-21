@@ -5,8 +5,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.tooling.preview.Preview
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.arkivanov.decompose.value.Value
+import com.arkivanov.decompose.value.MutableValue
 import com.example.inrussian.components.main.train.DefaultSectionDetailComponent
 import com.example.inrussian.components.main.train.SectionDetailComponent
 import com.example.inrussian.components.main.train.SectionDetailState
@@ -25,6 +26,7 @@ fun SectionDetailHost(component: SectionDetailComponent) {
     when (val inner = innerStack.active.instance) {
         is DefaultSectionDetailComponent.InnerChild.DetailsChild ->
             SectionDetailsScreen(component, state)
+
         is DefaultSectionDetailComponent.InnerChild.TasksChild ->
             TasksScreen(inner.component)
     }
@@ -43,11 +45,10 @@ fun SectionDetailHost(component: SectionDetailComponent) {
     }
 }
 
-class SectionDetailHost: SectionDetailComponent{
+class SectionDetailHost : SectionDetailComponent {
     override val sectionId: String
-        get() = TODO("Not yet implemented")
-    override val state: Value<SectionDetailState>
-        get() = TODO("Not yet implemented")
+        get() = ""
+    override val state = MutableValue(SectionDetailState(isLoading = true, section = null))
 
     override fun openTasks(option: TasksOption) {
         TODO("Not yet implemented")
@@ -57,4 +58,9 @@ class SectionDetailHost: SectionDetailComponent{
         TODO("Not yet implemented")
     }
 
+    @Preview
+    @Composable
+    fun Preview() {
+        SectionDetailHost(this)
+    }
 }

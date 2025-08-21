@@ -13,7 +13,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -27,13 +26,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.arkivanov.decompose.value.MutableValue
 import com.example.inrussian.components.main.train.AnswerType
 import com.example.inrussian.components.main.train.ContentType
 import com.example.inrussian.components.main.train.FullTask
+import com.example.inrussian.components.main.train.Task
 import com.example.inrussian.components.main.train.TaskContentItem
 import com.example.inrussian.components.main.train.TaskType
 import com.example.inrussian.components.main.train.TasksComponent
+import com.example.inrussian.components.main.train.TasksOption
 import com.example.inrussian.components.main.train.TasksState
 
 @Composable
@@ -82,6 +85,7 @@ private fun Header(fullTask: FullTask, showQueueMeta: Boolean, remainingInQueue:
     val label = when (fullTask.task.type) {
         TaskType.LISTEN_AND_CHOOSE,
         TaskType.READ_AND_CHOOSE -> "ТЕОРИЯ"
+
         else -> "ПРАКТИКА"
     }
     Row(
@@ -265,7 +269,10 @@ private fun AnswerBlock(
         }
 
         AnswerType.TEXT_INPUT -> {
-            var local by remember(state.sectionId, fullTask.task.id) { mutableStateOf(state.textInput) }
+            var local by remember(
+                state.sectionId,
+                fullTask.task.id
+            ) { mutableStateOf(state.textInput) }
             OutlinedTextField(
                 value = local,
                 onValueChange = {
@@ -362,5 +369,51 @@ fun SubmissionArea(state: TasksState, component: TasksComponent) {
                 modifier = Modifier.weight(1f)
             ) { Text("Ответить") }
         }
+    }
+}
+
+class TaskUiPrimitives : TasksComponent {
+    override val state = MutableValue(
+        TasksState(isLoading = false, option = TasksOption.Theory, sectionId = "sectionId", filteredTasks = listOf(
+            FullTask(Task("")))),
+
+    )
+
+    override fun selectOption(optionId: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun toggleOption(optionId: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun reorderWordOrder(newOrder: List<String>) {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateTextInput(text: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun submitAnswer() {
+        TODO("Not yet implemented")
+    }
+
+    override fun nextAfterResult() {
+        TODO("Not yet implemented")
+    }
+
+    override fun markCurrentAs(correct: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onBack() {
+        TODO("Not yet implemented")
+    }
+
+    @Composable
+    @Preview
+    fun Preview() {
+        FilteredTasksList(state.value, this)
     }
 }
