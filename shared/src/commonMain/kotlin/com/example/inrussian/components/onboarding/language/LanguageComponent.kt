@@ -50,11 +50,11 @@ class DefaultLanguageComponent(
     }
 
     override fun closeMenu() {
-        TODO("Not yet implemented")
+        state.value = state.value.copy(isOpenLanguage = false)
     }
 
     override fun selectLanguage(language: String) {
-        TODO("Not yet implemented")
+        state.value = state.value.copy(selectedLanguage = language)
     }
 
     override fun clickOnToggleButton(isSelected: Boolean) {

@@ -136,7 +136,7 @@ fun CitizenshipDate(component: CitizenshipComponent) {
             ClipsContainer(
                 isOpen = state.isTimeOpen,
                 variants = listOf("До 5 лет", "Меньше года", "Больше года","Около трех лет"),
-                active = if (state.selectedTime == "") listOf() else listOf(state.selectedTime),
+                active = if (state.selectedTime == "") listOf() else listOf(state.timeSpentInRussia),
                 onClick = component::deleteTime,
                 onChangeExpanded = component::openTime,
                 onAddClick = component::selectTime,
