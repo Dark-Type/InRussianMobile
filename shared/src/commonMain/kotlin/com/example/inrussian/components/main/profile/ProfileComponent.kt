@@ -15,7 +15,7 @@ import com.example.inrussian.navigation.configurations.ProfileConfiguration
 import com.example.inrussian.repository.main.BadgeRepository
 import com.example.inrussian.repository.main.settings.SettingsRepository
 import com.example.inrussian.repository.main.user.UserRepository
-import com.example.inrussian.utile.componentCoroutineScope
+import com.example.inrussian.utils.componentCoroutineScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel

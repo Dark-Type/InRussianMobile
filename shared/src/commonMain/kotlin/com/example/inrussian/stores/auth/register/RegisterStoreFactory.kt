@@ -25,7 +25,7 @@ import com.example.inrussian.stores.auth.register.RegisterStore.Msg.PasswordChan
 import com.example.inrussian.stores.auth.register.RegisterStore.Msg.PasswordError
 import com.example.inrussian.stores.auth.register.RegisterStore.Msg.PasswordTransform
 import com.example.inrussian.stores.auth.register.RegisterStore.State
-import com.example.inrussian.utile.ErrorDecoder
+import com.example.inrussian.utils.ErrorDecoder
 import kotlinx.coroutines.launch
 
 class RegisterStoreFactory(
@@ -142,10 +142,5 @@ class RegisterStoreFactory(
             is Msg.ConfirmPasswordError -> copy(confirmPasswordError = msg.messageId)
             ConfirmPasswordTransform -> copy(showConfirmPassword = !showConfirmPassword)
         }
-    }
-
-
-    companion object {
-        private const val TAG = "AuthStoreFactory"
     }
 }

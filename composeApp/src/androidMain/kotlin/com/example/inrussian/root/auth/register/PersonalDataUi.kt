@@ -35,9 +35,9 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.inrussian.components.onboarding.personalData.PersonalDataComponent
 import com.example.inrussian.ui.theme.BackButton
 import com.example.inrussian.ui.theme.ContinueButton
@@ -55,7 +55,6 @@ import inrussian.composeapp.generated.resources.phone
 import inrussian.composeapp.generated.resources.profile
 import inrussian.composeapp.generated.resources.second_name
 import inrussian.composeapp.generated.resources.third_name
-import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import java.util.Calendar
@@ -63,7 +62,7 @@ import java.util.Date
 
 @Composable
 fun PersonaDataUi(component: PersonalDataComponent) {
-    val state by component.state.collectAsState()
+    val state by component.state.subscribeAsState()
     Box() {
 
         Column(
@@ -251,69 +250,69 @@ fun DataPickerSimple(onSelect: (String) -> Unit) {
 }
 
 
-class PersonalDataUi() : PersonalDataComponent {
-    @Preview(showBackground = true, showSystemUi = true)
-    @Composable
-    fun Preview() {
-        PersonaDataUi(this)
-    }
-
-    override fun onNext() {
-        TODO("Not yet implemented")
-    }
-
-    override val state = MutableStateFlow(PersonalDataComponent.State(isGenderOpen = true))
-    override fun changeSurname(surname: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeName(name: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeThirdName(thirdName: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeGender(gender: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeDob(dob: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun changePhone(phone: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeEmail(email: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeGenderChoose(isOpen: Boolean) {
-        TODO("Not yet implemented")
-    }
-
-    override fun openDataPicker() {
-        TODO("Not yet implemented")
-    }
-
-    override fun onDataChange(date: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun dataPickerMissClick() {
-        TODO("Not yet implemented")
-    }
-
-    override fun onBack() {
-        TODO("Not yet implemented")
-    }
-
-    override fun onContinue() {
-        TODO("Not yet implemented")
-    }
-
-
-}
+//class PersonalDataUi() : PersonalDataComponent {
+//    @Preview(showBackground = true, showSystemUi = true)
+//    @Composable
+//    fun Preview() {
+//        PersonaDataUi(this)
+//    }
+//
+//    override fun onNext() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override val state = MutableStateFlow(PersonalDataComponent.State(isGenderOpen = true))
+//    override fun changeSurname(surname: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun changeName(name: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun changeThirdName(thirdName: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun changeGender(gender: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun changeDob(dob: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun changePhone(phone: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun changeEmail(email: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun changeGenderChoose(isOpen: Boolean) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun openDataPicker() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun onDataChange(date: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun dataPickerMissClick() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun onBack() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun onContinue() {
+//        TODO("Not yet implemented")
+//    }
+//
+//
+//}

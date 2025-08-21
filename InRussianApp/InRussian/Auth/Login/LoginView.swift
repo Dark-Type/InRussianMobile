@@ -10,9 +10,13 @@ import SwiftUI
 
 struct LoginView: View {
     let component: LoginComponent
+    @StateValue private var state: LoginStoreState
 
-    @State private var email: String = ""
-    @State private var password: String = ""
+    init(component: LoginComponent) {
+        self.component = component
+
+        self._state = StateValue(component.state)
+    }
 
     var body: some View {
         ZStack {
@@ -31,25 +35,68 @@ struct LoginView: View {
                 Spacer(minLength: 0)
 
                 VStack(spacing: 16) {
-                    OutlinedTextfield(
-                        text: $email,
-                        placeholder: "Электронная почта",
-                        isSecure: false
-                    )
+                    HStack {
+                        OutlinedTextfield(
+                            text: Binding(
+                                get: { state.email },
+                                set: { component.onEmailChange(email: $0) }
+                            ),
+                            placeholder: "Электронная почта",
+                            isSecure: false
+                        )
 
-                    OutlinedTextfield(
-                        text: $password,
-                        placeholder: "Пароль",
-                        isSecure: true
-                    )
+                        if !state.email.isEmpty {
+                            Button(action: {
+                                component.onDeleteEmailClick()
+                            }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundColor(AppColors.Palette.footnote.color)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+
+                    if let emailError = state.emailError {
+                        Text(emailError)
+                            .font(.caption)
+                            .foregroundColor(.red)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+
+                    HStack {
+                        OutlinedTextfield(
+                            text: Binding(
+                                get: { state.password },
+                                set: { component.onPasswordChange(password: $0) }
+                            ),
+                            placeholder: "Пароль",
+                            isSecure: !state.showPassword
+                        )
+
+//                        Button(action: {
+//                            component.onShowPasswordClick()
+//                        }) {
+//                            Image(systemName: state.showPassword ? "eye.slash" : "eye")
+//                                .foregroundColor(AppColors.Palette.footnote.color)
+//                        }
+//                        .buttonStyle(.plain)
+                    }
+
+                    if let passwordError = state.passwordError {
+                        Text(passwordError)
+                            .font(.caption)
+                            .foregroundColor(.red)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
 
                     CustomButton(
-                        text: "Войти",
+                        text: state.loading ? "Вход..." : "Войти",
                         color: AppColors.Palette.accent.color
                     ) {
-                        component.onLogin(email: email, password: password)
+                        component.onLogin(email: state.email, password: state.password)
                     }
                     .padding(.top, 36)
+                    .disabled(!state.isButtonActive || state.loading)
 
                     Button(action: {
                         component.onForgotPasswordClicked()
@@ -61,6 +108,7 @@ struct LoginView: View {
                     }
                     .buttonStyle(.plain)
                     .padding(.top, 12)
+                    .disabled(state.loading)
                 }
                 .padding(.horizontal, 28)
             }
@@ -70,11 +118,14 @@ struct LoginView: View {
                 Button(action: {
                     component.onBackClicked()
                 }) {
-                    Image(systemName: "chevron.left")
-                        .foregroundColor(AppColors.Palette.accent.color)
-                    Text("Назад")
-                        .foregroundColor(AppColors.Palette.accent.color)
+                    HStack(spacing: 4) {
+                        Image(systemName: "chevron.left")
+                            .foregroundColor(AppColors.Palette.accent.color)
+                        Text("Назад")
+                            .foregroundColor(AppColors.Palette.accent.color)
+                    }
                 }
+                .disabled(state.loading)
             }
         }
         .navigationBarBackButtonHidden(true)

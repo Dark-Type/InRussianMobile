@@ -12,14 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.inrussian.components.auth.login.LoginComponent
-import com.example.inrussian.stores.auth.login.LoginStore.State
 import com.example.inrussian.ui.theme.BackButton
 import com.example.inrussian.ui.theme.CommonButton
 import com.example.inrussian.ui.theme.CommonTextField
@@ -33,15 +31,13 @@ import inrussian.composeapp.generated.resources.forgot_password
 import inrussian.composeapp.generated.resources.password
 import inrussian.composeapp.generated.resources.placeholder
 import inrussian.composeapp.generated.resources.sign_in
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun LoginUi(component: LoginComponent) {
-    val state by component.state.collectAsState(Dispatchers.Main.immediate)
+    val state by component.state.subscribeAsState()
 
     Column(modifier = Modifier.padding(16.dp)) {
         Row {
@@ -100,39 +96,40 @@ fun LoginUi(component: LoginComponent) {
 }
 
 
-class LoginUi() : LoginComponent {
-    override val state = MutableStateFlow(State())
-    override fun onLogin(email: String, password: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onForgotPasswordClicked() {
-        TODO("Not yet implemented")
-    }
-
-    override fun onBackClicked() {
-        TODO("Not yet implemented")
-    }
-
-    override fun onShowPasswordClick() {
-        TODO("Not yet implemented")
-    }
-
-    override fun onDeleteEmailClick() {
-        TODO("Not yet implemented")
-    }
-
-    override fun onEmailChange(email: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onPasswordChange(password: String) {
-        TODO("Not yet implemented")
-    }
-
-    @Preview(showBackground = true, showSystemUi = true)
-    @Composable
-    fun PreviewLoginUi() {
-        LoginUi(this)
-    }
-}
+//class LoginUi() : LoginComponent {
+//    override val stateFlow = MutableStateFlow(State())
+//    override val stateValue =
+//    override fun onLogin(email: String, password: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun onForgotPasswordClicked() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun onBackClicked() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun onShowPasswordClick() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun onDeleteEmailClick() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun onEmailChange(email: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun onPasswordChange(password: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    @Preview(showBackground = true, showSystemUi = true)
+//    @Composable
+//    fun PreviewLoginUi() {
+//        LoginUi(this)
+//    }
+//}

@@ -1,4 +1,4 @@
-package com.example.inrussian.utile
+package com.example.inrussian.utils
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.Lifecycle

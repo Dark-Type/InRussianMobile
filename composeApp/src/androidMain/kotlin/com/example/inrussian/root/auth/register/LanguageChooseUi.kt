@@ -25,7 +25,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,9 +33,9 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.inrussian.components.onboarding.language.LanguageComponent
 import com.example.inrussian.ui.theme.ContinueButton
 import com.example.inrussian.ui.theme.DarkGrey
@@ -57,8 +56,79 @@ import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun LanguageChooseUi(component: LanguageComponent) {
-    val state by component.state.collectAsState()
-    Box() {
+    val state by component.state.subscribeAsState()
+    Column(
+        Modifier
+            .background(reallyLightGrey)
+            .padding(horizontal = 22.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .offset(x = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ContinueButton(state.isActiveContinueButton, component::onNext)
+        }
+        Text(
+            stringResource(Res.string.app_n_language),
+            fontSize = 40.sp,
+            fontWeight = FontWeight.W600
+        )
+        Column(
+            Modifier.weight(0.8f),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                vectorResource(Res.drawable.profile),
+                "",
+                Modifier
+                    .fillMaxWidth(0.5f)
+                    .padding(bottom = 22.dp),
+                tint = Orange
+            )
+            Text(
+                stringResource(Res.string.tell_about_u),
+                fontSize = 20.sp,
+                color = DarkGrey.copy(alpha = 0.8f),
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.W600,
+                lineHeight = 30.sp
+            )
+        }
+        Spacer(Modifier.weight(0.1f))
+        PermissionRow(state.hasGivenPermission, component::clickOnToggleButton)
+        Spacer(Modifier.height(18.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 74.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(White)
+                .padding(horizontal = 16.dp)
+                .padding(vertical = 8.dp)
+        ) {
+            Text(
+                stringResource(Res.string.app_language),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.W400
+            )
+            Spacer(Modifier.weight(1f))
+            Text(
+                state.selectedLanguage, fontSize = 16.sp, fontWeight = FontWeight.W400
+            )
+            IconButton(component::openMenu) {
+                Icon(
+                    vectorResource(Res.drawable.language),
+                    "",
+                    tint = LightBlue
+                )
+            }
+        }
+    }
+    Box {
         Column(
             Modifier
                 .background(reallyLightGrey)
@@ -151,7 +221,6 @@ fun LanguageChooseUi(component: LanguageComponent) {
         }
 
     }
-
 }
 
 @Composable
@@ -201,38 +270,30 @@ fun PermissionRow(isSelected: Boolean, onClick: (Boolean) -> Unit) {
 }
 
 
-class LanguageChooseUi : LanguageComponent {
-    override fun onNext() {
-        TODO("Not yet implemented")
-    }
-
-    override fun openMenu() {
-        TODO("Not yet implemented")
-    }
-
-    override fun closeMenu() {
-        TODO("Not yet implemented")
-    }
-
-    override fun selectLanguage(language: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onBack() {
-        TODO("Not yet implemented")
-    }
-
-    override fun clickOnToggleButton(isSelected: Boolean) {
-        TODO("Not yet implemented")
-    }
-
-    override val state = MutableStateFlow(
-        LanguageComponent.State(isOpenLanguage = true)
-    )
-
-    @Preview(showBackground = true, showSystemUi = true)
-    @Composable
-    fun Preview() {
-        LanguageChooseUi(this)
-    }
-}
+//class LanguageChooseUi : LanguageComponent {
+//    override fun onNext() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun openMenu() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun onBack() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun clickOnToggleButton(isSelected: Boolean) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override val state = MutableStateFlow(
+//        LanguageComponent.State()
+//    )
+//
+//    @Preview(showBackground = true, showSystemUi = true)
+//    @Composable
+//    fun Preview() {
+//        LanguageChooseUi(this)
+//    }
+//}

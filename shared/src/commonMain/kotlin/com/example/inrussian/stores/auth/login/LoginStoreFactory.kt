@@ -10,7 +10,7 @@ import com.example.inrussian.models.ErrorType
 import com.example.inrussian.models.LoginError
 import com.example.inrussian.models.models.LoginModel
 import com.example.inrussian.repository.auth.AuthRepository
-import com.example.inrussian.utile.ErrorDecoder
+import com.example.inrussian.utils.ErrorDecoder
 import kotlinx.coroutines.launch
 
 class LoginStoreFactory(

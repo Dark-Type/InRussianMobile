@@ -1,8 +1,8 @@
 package com.example.inrussian.components.onboarding.language
 
+import com.arkivanov.decompose.value.Value
+import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.ComponentContext
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
 interface LanguageComponent {
     fun onNext()
@@ -11,14 +11,15 @@ interface LanguageComponent {
     fun selectLanguage(language: String)
     fun onBack()
     fun clickOnToggleButton(isSelected: Boolean)
-    val state: StateFlow<State>
+    val state: Value<State>
 
     data class State(
         val selectedLanguage: String = "",
         val hasGivenPermission: Boolean = false,
         val isOpenLanguage: Boolean = false
     ) {
-        val isActiveContinueButton = hasGivenPermission && selectedLanguage.isNotBlank()
+        val isActiveContinueButton: Boolean
+            get() = hasGivenPermission && selectedLanguage.isNotBlank()
     }
 }
 
@@ -32,10 +33,10 @@ class DefaultLanguageComponent(
     private val onOutput: (LanguageOutput) -> Unit
 ) : LanguageComponent, ComponentContext by componentContext {
 
-    override val state =
-        MutableStateFlow(
-            LanguageComponent.State(selectedLanguage = "RUSSIAN", hasGivenPermission = false)
-        )
+    private val _state = MutableValue(
+        LanguageComponent.State(selectedLanguage = "RUSSIAN", hasGivenPermission = false)
+    )
+    override val state: Value<LanguageComponent.State> get() = _state
 
     override fun onNext() {
         onOutput(LanguageOutput.Filled)
@@ -46,19 +47,19 @@ class DefaultLanguageComponent(
     }
 
     override fun openMenu() {
-        state.value = state.value.copy(isOpenLanguage = !state.value.isOpenLanguage)
+        _state.value = _state.value.copy(isOpenLanguage = !_state.value.isOpenLanguage)
     }
 
     override fun closeMenu() {
-        state.value = state.value.copy(isOpenLanguage = false)
+        _state.value = _state.value.copy(isOpenLanguage = false)
     }
 
     override fun selectLanguage(language: String) {
-        state.value = state.value.copy(selectedLanguage = language)
+        _state.value = _state.value.copy(selectedLanguage = language)
     }
 
     override fun clickOnToggleButton(isSelected: Boolean) {
-        state.value = state.value.copy(hasGivenPermission = isSelected)
+        _state.value = _state.value.copy(hasGivenPermission = isSelected)
     }
 
 }

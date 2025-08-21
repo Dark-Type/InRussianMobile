@@ -25,13 +25,13 @@ struct PersonalDataComponentView: View {
 
     init(component: PersonalDataComponent) {
         self.component = component
-        _name = State(initialValue: component.state.name)
-        _surname = State(initialValue: component.state.surname)
-        _patronymic = State(initialValue: component.state.patronymic)
-        _gender = State(initialValue: component.state.gender)
-        _phoneNumber = State(initialValue: component.state.phoneNumber)
-        _email = State(initialValue: component.state.email)
-        if let isoDate = ISO8601DateFormatter().date(from: component.state.birthDate) {
+        _name = State(initialValue: component.state.value.name)
+        _surname = State(initialValue: component.state.value.surname)
+        _patronymic = State(initialValue: component.state.value.patronymic)
+        _gender = State(initialValue: component.state.value.gender)
+        _phoneNumber = State(initialValue: component.state.value.phoneNumber)
+        _email = State(initialValue: component.state.value.email)
+        if let isoDate = ISO8601DateFormatter().date(from: component.state.value.birthDate) {
             _birthDate = State(initialValue: isoDate)
         } else {
             _birthDate = State(initialValue: nil)

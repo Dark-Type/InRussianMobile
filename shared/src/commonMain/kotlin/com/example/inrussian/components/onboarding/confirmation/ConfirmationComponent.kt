@@ -14,5 +14,4 @@ class DefaultConfirmationComponent(
     override fun onConfirm() {
         onOutput(ConfirmationOutput.Confirmed)
     }
-
 }

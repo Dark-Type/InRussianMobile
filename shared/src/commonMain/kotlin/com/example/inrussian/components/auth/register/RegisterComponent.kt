@@ -1,14 +1,13 @@
 package com.example.inrussian.components.auth.register
 
-import co.touchlab.kermit.Logger
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.value.Value
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
-import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import com.example.inrussian.stores.auth.register.RegisterStore
 import com.example.inrussian.stores.auth.register.RegisterStore.Intent
-import com.example.inrussian.utile.componentCoroutineScope
+import com.example.inrussian.utils.asValue
+import com.example.inrussian.utils.componentCoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 interface RegisterComponent {
@@ -20,7 +19,7 @@ interface RegisterComponent {
     fun onShowPasswordClick()
     fun onShowConfirmPasswordClick()
     fun onEmailDeleteClick()
-    val state: StateFlow<RegisterStore.State>
+    val state: Value<RegisterStore.State>
 }
 
 sealed class RegisterOutput {
@@ -34,23 +33,18 @@ class DefaultRegisterComponent(
     private val store: RegisterStore,
 ) : RegisterComponent, ComponentContext by componentContext {
     @OptIn(ExperimentalCoroutinesApi::class)
-    override val state = store.stateFlow
+    override val state = store.asValue()
     val scope = componentCoroutineScope()
 
     init {
         scope.launch {
             store.labels.collect {
-                Logger.d("AuthenticationSuccess", tag = "DefaultRegisterComponent")
-                Logger.d("it: $it", tag = "DefaultRegisterComponent")
-
                 when (it) {
                     RegisterStore.Label.SubmittedSuccessfully ->
                         onOutput(RegisterOutput.AuthenticationSuccess)
                 }
             }
         }
-
-
     }
 
     override fun onRegister(email: String, password: String) {
@@ -83,9 +77,5 @@ class DefaultRegisterComponent(
 
     override fun onEmailDeleteClick() {
         store.accept(Intent.EmailImageClick)
-    }
-
-    companion object {
-        private const val KEY = "LoginComponentState"
     }
 }

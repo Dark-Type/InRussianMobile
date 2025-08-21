@@ -42,13 +42,13 @@ struct CitizenshipComponentView: View {
 
     init(component: CitizenshipComponent) {
         self.component = component
-        _citizenships = State(initialValue: component.state.citizenship.compactMap { $0 as? String })
-        _nationality = State(initialValue: component.state.nationality)
-        _countryOfResidence = State(initialValue: component.state.countryOfResidence)
-        _cityOfResidence = State(initialValue: component.state.cityOfResidence)
-        _countryDuringEducation = State(initialValue: component.state.countryDuringEducation)
+        _citizenships = State(initialValue: component.state.value.citizenship)
+        _nationality = State(initialValue: component.state.value.nationality)
+        _countryOfResidence = State(initialValue: component.state.value.countryOfResidence)
+        _cityOfResidence = State(initialValue: component.state.value.cityOfResidence)
+        _countryDuringEducation = State(initialValue: component.state.value.countryDuringEducation)
         _timeSpentInRussia = State(initialValue:
-            TimeSpentInRussia.allCases.first(where: { $0.rawValue == component.state.timeSpentInRussia })
+                                    TimeSpentInRussia.allCases.first(where: { $0.rawValue == component.state.value.timeSpentInRussia })
         )
     }
 

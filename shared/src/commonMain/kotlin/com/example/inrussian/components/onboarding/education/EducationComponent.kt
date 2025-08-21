@@ -1,10 +1,10 @@
 package com.example.inrussian.components.onboarding.education
 
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import com.arkivanov.decompose.value.MutableValue
+import com.arkivanov.decompose.value.Value
 
 interface EducationComponent {
-    val state: StateFlow<State>
+    val state: Value<State>
 
     data class State(
         val languages: List<String> = listOf(),
@@ -44,18 +44,20 @@ class DefaultEducationComponent(
     private val onOutput: (EducationOutput) -> Unit
 ) : EducationComponent {
 
-    override val state = MutableStateFlow(
+    private val _state = MutableValue(
         EducationComponent.State(
-            languages = mutableListOf(),
+            languages = listOf(),
             understandsRussian = false,
             speaksRussian = false,
             readsRussian = false,
             writesRussian = false,
             kindOfActivity = "",
             education = "",
-            purposeOfRegistration = ""
+            purposeOfRegistration = "",
+            isOpenLanguages = false
         )
     )
+    override val state: Value<EducationComponent.State> get() = _state
 
     override fun onNext() {
         onOutput(EducationOutput.Filled)
@@ -66,30 +68,28 @@ class DefaultEducationComponent(
     }
 
     override fun deleteLanguage(string: String) {
-        state.value = state.value.copy(languages = state.value.languages.filter { it != string })
-
+        _state.value = _state.value.copy(languages = _state.value.languages.filter { it != string })
     }
 
     override fun onChangeExpanded(boolean: Boolean) {
-        state.value = state.value.copy(isOpenLanguages = boolean)
+        _state.value = _state.value.copy(isOpenLanguages = boolean)
     }
 
     override fun selectLanguage(language: String) {
-        state.value = state.value.copy(
-            languages = state.value.languages.toMutableList().apply { add(language) })
+        _state.value = _state.value.copy(
+            languages = _state.value.languages.toMutableList().apply { add(language) }
+        )
     }
 
     override fun changeActivity(activity: String) {
-        state.value = state.value.copy(kindOfActivity = activity)
+        _state.value = _state.value.copy(kindOfActivity = activity)
     }
 
     override fun changeEducation(education: String) {
-        state.value = state.value.copy(education = education)
-
+        _state.value = _state.value.copy(education = education)
     }
 
     override fun changePurpose(purpose: String) {
-        state.value = state.value.copy(purposeOfRegistration = purpose)
-
+        _state.value = _state.value.copy(purposeOfRegistration = purpose)
     }
 }

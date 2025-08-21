@@ -5,9 +5,8 @@
 //  Created by dark type on 16.08.2025.
 //
 
-
-import SwiftUI
 import Shared
+import SwiftUI
 
 struct EnterRecoveryCodeView: View {
     let component: EnterRecoveryCodeComponent
@@ -16,6 +15,12 @@ struct EnterRecoveryCodeView: View {
     @State private var showSupportCover: Bool = false
 
     private let targetCode = "code"
+
+    init(component: EnterRecoveryCodeComponent) {
+        self.component = component
+        _code = State(initialValue: component.state.value.code)
+        _showSupportCover = State(initialValue: component.state.value.questionShow)
+    }
 
     var body: some View {
         ZStack {
@@ -51,18 +56,29 @@ struct EnterRecoveryCodeView: View {
                     isSecure: false
                 )
                 .padding(.bottom, 24)
-                
+                .disabled(component.state.value.loading)
+
+                if let error = component.state.value.emailError {
+                    Text(error)
+                        .font(.caption)
+                        .foregroundColor(.red)
+                        .padding(.bottom, 16)
+                }
+
                 Spacer()
-                
 
                 TimerButton(
                     initialSeconds: 300,
                     inactiveColor: AppColors.Palette.inactive.color,
                     activeColor: AppColors.Palette.accent.color
-                ) {
-                    
+                ) {}
+                    .padding(.bottom, 24)
+
+                if component.state.value.loading {
+                    ProgressView()
+                        .scaleEffect(1.2)
+                        .padding(.top, 16)
                 }
-                .padding(.bottom, 24)
             }
             .padding(.horizontal, 28)
 
@@ -71,7 +87,10 @@ struct EnterRecoveryCodeView: View {
                     .ignoresSafeArea()
                     .transition(.opacity)
                     .onTapGesture {
-                        withAnimation { showSupportCover = false }
+                        withAnimation {
+                            showSupportCover = false
+                            component.onMissClick()
+                        }
                     }
                     .zIndex(2)
 
@@ -95,7 +114,8 @@ struct EnterRecoveryCodeView: View {
                         .foregroundColor(AppColors.Palette.accent.color)
                         .padding(.bottom, 24)
                         .onTapGesture {
-                            
+                            component.onSupportContactClick()
+                            withAnimation { showSupportCover = false }
                         }
                 }
                 .background(
@@ -110,8 +130,14 @@ struct EnterRecoveryCodeView: View {
             }
         }
         .onChange(of: code) { newValue in
+            component.codeChange(code: newValue)
             if newValue == targetCode {
                 component.onCodeEntered(code: newValue)
+            }
+        }
+        .onChange(of: component.state.value.questionShow) { newValue in
+            withAnimation {
+                showSupportCover = newValue
             }
         }
         .toolbar {
@@ -119,21 +145,27 @@ struct EnterRecoveryCodeView: View {
                 Button(action: {
                     component.onBackClicked()
                 }) {
-                    Image(systemName: "chevron.left")
-                        .foregroundColor(AppColors.Palette.accent.color)
-                    Text("Назад")
-                        .foregroundColor(AppColors.Palette.accent.color)
+                    HStack {
+                        Image(systemName: "chevron.left")
+                        Text("Назад")
+                    }
+                    .foregroundColor(AppColors.Palette.accent.color)
                 }
+                .disabled(component.state.value.loading)
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
-                    withAnimation { showSupportCover = true }
+                    withAnimation {
+                        showSupportCover = true
+                        component.onQuestionClick()
+                    }
                 }) {
                     Image(systemName: "questionmark.circle")
                         .foregroundColor(AppColors.Palette.accent.color)
                         .imageScale(.large)
                 }
                 .accessibilityLabel("Помощь")
+                .disabled(component.state.value.loading)
             }
         }
         .navigationBarBackButtonHidden(true)
