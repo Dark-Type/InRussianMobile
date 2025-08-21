@@ -253,7 +253,7 @@ class DefaultSectionDetailComponent(
 /* ---------------- Tasks Component (interactive) ---------------- */
 
 data class TasksState(
-    val isLoading: Boolean,
+    val isLoading: Boolean = false,
     val option: TasksOption,
     val sectionId: String,
     val totalTasks: Int = 0,

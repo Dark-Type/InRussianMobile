@@ -12,7 +12,8 @@ import kotlin.uuid.Uuid
 @Serializable
 data class ShortCourse(
     val id: String,
-    val title: String
+    val title: String,
+    val percent: Float = 0f,
 )
 
 @Serializable
