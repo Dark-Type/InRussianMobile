@@ -88,4 +88,13 @@
 
     <string name="y_enrolled">Вы присоединились</string>
     <string name="enroll">Присоединиться</string>
+
+    <string name="confirm">Подтвердить</string>
+    <string name="continue_education">Продолжить освоение</string>
+    <string name="speaker">Спикер</string>
+    <string name="theoretical">Теоретические карточки</string>
+    <string name="practice">Практические карточки</string>
+    <string name="mastered">Освоено</string>
+    <string name="on_mastered">На освоении</string>
+    <string name="not_passed">Не пройдено</string>
 </resources>
