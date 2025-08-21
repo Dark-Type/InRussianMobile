@@ -4,16 +4,16 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Course(
-    val id: String,
-    val name: String,
-    val posterId: String?,
-    val description: String?,
-    val authorId: String,
-    val authorUrl: String?,
-    val language: String,
-    val isPublished: Boolean,
-    val createdAt: String,
-    val updatedAt: String
+    val id: String = "",
+    val name: String = "",
+    val posterId: String? = null,
+    val description: String? = null,
+    val authorId: String = "",
+    val authorUrl: String? = null,
+    val language: String = "",
+    val isPublished: Boolean = false,
+    val createdAt: String = "",
+    val updatedAt: String = ""
 )
 
 

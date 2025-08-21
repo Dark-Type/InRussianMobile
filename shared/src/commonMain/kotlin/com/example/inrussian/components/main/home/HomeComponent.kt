@@ -12,8 +12,6 @@ import com.example.inrussian.di.CourseDetailsComponentFactory
 import com.example.inrussian.navigation.configurations.HomeConfiguration
 import com.example.inrussian.repository.main.home.HomeRepository
 import com.example.inrussian.utile.componentCoroutineScope
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -111,7 +109,7 @@ class DefaultCoursesListComponent(
     private val onCourseClick: (String) -> Unit
 ) : CoursesListComponent, ComponentContext by componentContext {
 
-    private val scope = CoroutineScope(Dispatchers.Main.immediate)
+    private val scope = componentCoroutineScope()
 
     private val _state = MutableValue(
         CoursesListState(
@@ -153,6 +151,10 @@ interface CourseDetailsComponent {
 
     fun toggleEnroll()
     fun onBack()
+
+    fun showInfo()
+
+    fun signUp()
 }
 
 sealed interface CourseDetailsOutput {
@@ -205,6 +207,13 @@ class DefaultCourseDetailsComponent(
     }
 
     override fun onBack() = onOutput(CourseDetailsOutput.NavigateBack)
+    override fun showInfo() {
+        TODO("Not yet implemented")
+    }
+
+    override fun signUp() {
+        TODO("Not yet implemented")
+    }
 
     fun dispose() {
         scope.cancel()

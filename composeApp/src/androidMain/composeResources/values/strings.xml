@@ -84,4 +84,8 @@
 
     <string name="there_are_not_achievements">Пока нет достижений :(</string>
 
+    <string name="post">Опубликован</string>
+
+    <string name="y_enrolled">Вы присоединились</string>
+    <string name="enroll">Присоединиться</string>
 </resources>
