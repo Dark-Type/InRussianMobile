@@ -1,17 +1,25 @@
 package com.example.inrussian.root.main.train
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -24,10 +32,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.value.MutableValue
 import com.example.inrussian.components.main.train.AnswerType
 import com.example.inrussian.components.main.train.ContentType
@@ -38,6 +48,14 @@ import com.example.inrussian.components.main.train.TaskType
 import com.example.inrussian.components.main.train.TasksComponent
 import com.example.inrussian.components.main.train.TasksOption
 import com.example.inrussian.components.main.train.TasksState
+import com.example.inrussian.ui.theme.Orange
+import inrussian.composeapp.generated.resources.Res
+import inrussian.composeapp.generated.resources.attention
+import inrussian.composeapp.generated.resources.book
+import inrussian.composeapp.generated.resources.headphones
+import inrussian.composeapp.generated.resources.list_checkbox
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun TaskCard(
@@ -53,16 +71,18 @@ fun TaskCard(
     onTextChange: (String) -> Unit
 ) {
     Card(
-        Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium
-    ) {
+        Modifier
+            .fillMaxWidth()
+            .background(White),
+
+        ) {
         Column(
             Modifier
                 .padding(16.dp)
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Header(fullTask, showQueueMeta, remainingInQueue)
+            Header(fullTask, showQueueMeta, {})
 
             ContentsBlock(fullTask)
 
@@ -81,25 +101,50 @@ fun TaskCard(
 }
 
 @Composable
-private fun Header(fullTask: FullTask, showQueueMeta: Boolean, remainingInQueue: Int) {
-    val label = when (fullTask.task.type) {
-        TaskType.LISTEN_AND_CHOOSE,
-        TaskType.READ_AND_CHOOSE -> "ТЕОРИЯ"
-
-        else -> "ПРАКТИКА"
-    }
-    Row(
-        Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+private fun Header(fullTask: FullTask, showQueueMeta: Boolean, onClick: (String) -> Unit) {
+    Column(
+        Modifier
+            .clip(RoundedCornerShape(12.dp))
+            .background(White)
+            .padding(horizontal = 10.dp)
+            .padding(bottom = 16.dp)
     ) {
-        Text(label, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.SemiBold)
-        if (showQueueMeta) {
-            Text("В очереди: $remainingInQueue", style = MaterialTheme.typography.labelSmall)
+        Row {
+            Spacer(Modifier.width(2.dp))
+            Image(painterResource(Res.drawable.book), "", Modifier.size(25.dp, 35.dp))
+            Spacer(Modifier.width(8.dp))
+            when (fullTask.task.type) {
+                TaskType.LISTEN_AND_CHOOSE -> Image(
+                    painterResource(Res.drawable.headphones),
+                    "",
+                    Modifier.size(25.dp, 35.dp)
+                )
+
+                TaskType.READ_AND_CHOOSE -> Image(
+                    painterResource(Res.drawable.list_checkbox),
+                    "",
+                    Modifier.size(25.dp, 35.dp)
+                )
+
+                else -> Spacer(Modifier.width(8.dp))
+            }
+
+            Spacer(Modifier.weight(1f))
+            IconButton(
+                { onClick(fullTask.task.id) }, Modifier
+                    .padding(top = 16.dp)
+                    .size(33.dp)
+            ) {
+                Icon(
+                    vectorResource(Res.drawable.attention), "", tint = Orange
+                )
+            }
         }
-    }
-    fullTask.task.text?.let {
-        Text(it, style = MaterialTheme.typography.titleMedium)
+        Spacer(Modifier.height(4.dp))
+        Text(
+            fullTask.task.text ?: "",
+            fontSize = 16.sp
+        )
     }
 }
 
@@ -120,19 +165,25 @@ private fun ContentsBlock(fullTask: FullTask) {
 
 @Composable
 private fun AudioStub(item: TaskContentItem) {
-    Surface(
-        tonalElevation = 2.dp,
-        shape = MaterialTheme.shapes.small
+    Column(
+        Modifier
+            .clip(RoundedCornerShape(12.dp))
+            .background(White)
+            .padding(16.dp)
     ) {
-        Row(
-            Modifier
-                .padding(8.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(item.description ?: "Аудио", style = MaterialTheme.typography.bodyMedium)
-            Text("▶", style = MaterialTheme.typography.bodyMedium)
-        }
+        SpeakerItem(
+            false,
+            item.description ?: "",
+            item.translation ?: "",
+            "1"
+        )
+        Spacer(Modifier.height(24.dp))
+        SpeakerItem(
+            true,
+            "Нет, я учусь в Сибирском Государственном Медицинском университете.",
+            "不，我在西伯利亚国立医科大学学习。",
+            "2"
+        )
     }
 }
 
@@ -373,11 +424,23 @@ fun SubmissionArea(state: TasksState, component: TasksComponent) {
 }
 
 class TaskUiPrimitives : TasksComponent {
-    override val state = MutableValue(
-        TasksState(isLoading = false, option = TasksOption.Theory, sectionId = "sectionId", filteredTasks = listOf(
-            FullTask(Task("")))),
+    @Composable
+    @Preview(showBackground = true, showSystemUi = true)
+    fun Preview() {
+        FilteredTasksList(state.value, this)
+    }
 
-    )
+    override val state = MutableValue(
+        TasksState(
+            isLoading = false,
+            option = TasksOption.Theory,
+            sectionId = "sectionId",
+            activeFullTask =
+                FullTask(Task(""))
+
+        ),
+
+        )
 
     override fun selectOption(optionId: String) {
         TODO("Not yet implemented")
@@ -411,9 +474,5 @@ class TaskUiPrimitives : TasksComponent {
         TODO("Not yet implemented")
     }
 
-    @Composable
-    @Preview
-    fun Preview() {
-        FilteredTasksList(state.value, this)
-    }
+
 }

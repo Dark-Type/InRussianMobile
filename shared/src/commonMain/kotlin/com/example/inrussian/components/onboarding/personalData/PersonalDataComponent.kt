@@ -1,7 +1,7 @@
 package com.example.inrussian.components.onboarding.personalData
 
-import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.MutableValue
+import com.arkivanov.decompose.value.Value
 
 interface PersonalDataComponent {
     fun onNext()
@@ -103,6 +103,7 @@ class DefaultPersonalDataComponent(
 
     override fun onDataChange(date: String) {
         _state.value = _state.value.copy(birthDate = date)
+        _state.value = _state.value.copy(showDataPicker = false)
     }
 
     override fun dataPickerMissClick() {

@@ -13,10 +13,12 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.unit.dp
 import com.example.inrussian.components.main.train.TasksComponent
 import com.example.inrussian.components.main.train.TasksOption
 import com.example.inrussian.components.main.train.TasksState
+import com.example.inrussian.ui.theme.Orange
 
 @Composable
 fun FilteredTasksList(state: TasksState, component: TasksComponent) {
@@ -36,7 +38,11 @@ fun FilteredTasksList(state: TasksState, component: TasksComponent) {
 
         LinearProgressIndicator(
             progress = { state.progressPercent / 100f },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(5.dp),
+            color = Orange,
+            trackColor = White
         )
         Text(
             "Прогресс секции: ${state.progressPercent}% " +
