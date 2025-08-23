@@ -38,7 +38,7 @@ class DefaultLoginComponent(
             store.labels.collect {
                 when (it) {
                     Label.SubmissionFailed -> Unit
-                    Label.SubmittedSuccessfully -> onOutput(LoginOutput.AuthenticationSuccess)
+                    Label.SubmittedSuccessfully -> onOutput(LoginOutput.NavigateToOnboarding)
                 }
             }
         }
