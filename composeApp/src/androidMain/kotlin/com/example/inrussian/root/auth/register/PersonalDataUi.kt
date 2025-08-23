@@ -1,13 +1,16 @@
 package com.example.inrussian.root.auth.register
 
 import android.app.DatePickerDialog
+import android.widget.DatePicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -18,6 +21,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -163,15 +167,16 @@ fun PersonaDataUi(component: PersonalDataComponent) {
                 )
             }
         }
-        if (state.showDataPicker)
-            DataPickerSimple(component::onDataChange)
+        DataPickerSimple(state.showDataPicker, component::onDataChange)
         if (state.isGenderOpen)
             Column(
                 Modifier
+                    .offset(120.dp, 220.dp)
                     .clip(RoundedCornerShape(10.dp))
                     .background(White)
                     .align(Alignment.Center)
                     .shadow(1.dp, shape = RoundedCornerShape(10.dp))
+                    .width(IntrinsicSize.Min)
             ) {
                 TextButton({
                     component.changeGender("Мужской")
@@ -228,7 +233,7 @@ fun InputFormField(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DataPickerSimple(onSelect: (String) -> Unit) {
+fun DataPickerSimple(showDataPicker: Boolean, onSelect: (String) -> Unit) {
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
     val year = calendar.get(Calendar.YEAR)
@@ -239,16 +244,29 @@ fun DataPickerSimple(onSelect: (String) -> Unit) {
 
     var date by remember { mutableStateOf("") }
 
-    val datePicker = DatePickerDialog(
-        context, { _, mYear, mMonth, mDayOfMonth ->
-            date = "$mDayOfMonth-${mMonth + 1}-$mYear"
-        }, year, month, day
-    )
+    val datePicker = remember {
+        DatePickerDialog(
+            context,
+            DatePickerDialog.OnDateSetListener { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
+                date = "$mDayOfMonth-${mMonth + 1}-$mYear"
+            },
+            year,
+            month,
+            day
+        )
+    }
 
-    datePicker.show()
+    LaunchedEffect(showDataPicker) {
+        if (showDataPicker)
+            datePicker.show()
+    }
+
+    DisposableEffect(datePicker) {
+        onDispose { datePicker.dismiss() }
+    }
+
     LaunchedEffect(date) {
-        if (date.isNotBlank())
-            onSelect(date)
+        if (date.isNotBlank()) onSelect(date)
     }
 }
 
