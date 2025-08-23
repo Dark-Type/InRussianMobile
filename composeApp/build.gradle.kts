@@ -24,6 +24,7 @@ kotlin {
             implementation(libs.decompose)
             implementation(libs.decompose.compose)
             implementation(libs.kotlinx.serialization.json)
+            implementation(libs.koin.core)
         }
         commonMain.dependencies {
             implementation(compose.runtime)

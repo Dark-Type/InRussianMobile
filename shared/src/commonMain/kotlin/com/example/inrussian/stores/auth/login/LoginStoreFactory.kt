@@ -39,13 +39,14 @@ class LoginStoreFactory(
                         val state = state()
                         try {
                             dispatch(LoginStore.Msg.Loading)
-                            val token = repository.login(
-                                LoginModel(
-                                    email = state.email,
-                                    password = state.password
-                                )
-                            ).refreshToken
-                            repository.saveRefreshToken(token)
+//                            val token = repository.login(
+//                                LoginModel(
+//                                    email = state.email,
+//                                    password = state.password
+//                                )
+//                            ).refreshToken
+//                            repository.saveRefreshToken(token)
+                            // ВЕРНУТЬ ПРИ ЗАЦЕПЕ API
                             publish(LoginStore.Label.SubmittedSuccessfully)
 
                         } catch (e: ErrorType) {

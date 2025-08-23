@@ -15,6 +15,7 @@ object SharedDI {
     val koin: Koin
         get() = koinApp?.koin
             ?: error("Koin is not started. Call SharedDI.start(...) on platform startup first.")
+
     fun start(vararg platformModules: Module) {
         if (koinApp == null) {
             koinApp = startKoin {

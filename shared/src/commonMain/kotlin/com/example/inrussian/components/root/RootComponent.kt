@@ -14,6 +14,7 @@ import com.example.inrussian.components.main.root.MainOutput
 import com.example.inrussian.components.onboarding.root.OnboardingRootComponent
 import com.example.inrussian.components.onboarding.root.OnboardingOutput
 import com.example.inrussian.navigation.configurations.Configuration
+import com.example.inrussian.platformInterfaces.UserConfigurationStorage
 import com.example.inrussian.stores.root.RootIntent
 import org.koin.core.component.KoinComponent
 import com.example.inrussian.stores.root.RootStore
@@ -37,14 +38,18 @@ class DefaultRootComponent(
 ) : RootComponent, ComponentContext by componentContext, KoinComponent {
 
     private val rootStore: RootStore by inject()
+    private val userConfigStorage: UserConfigurationStorage by inject()
 
     private val navigation = StackNavigation<Configuration>()
+
+    private val initial: Configuration =
+        userConfigStorage.get() ?: Configuration.Auth
 
     override val stack: Value<ChildStack<*, RootComponent.Child>> =
         childStack(
             source = navigation,
             serializer = Configuration.serializer(),
-            initialConfiguration = Configuration.Auth,
+            initialConfiguration = initial,
             handleBackButton = true,
             childFactory = ::child
         )
@@ -70,16 +75,20 @@ class DefaultRootComponent(
             )
         }
 
+    // Centralized navigation: ensures we save the state after every switch.
+    private fun navigateTo(configuration: Configuration, intent: RootIntent) {
+        rootStore.accept(intent)
+        userConfigStorage.save(configuration)
+        navigation.replaceAll(configuration)
+    }
+
     private fun onAuthOutput(output: AuthOutput) {
         when (output) {
             is AuthOutput.NavigateToOnboarding -> {
-                rootStore.accept(RootIntent.ShowOnboarding)
-                navigation.replaceAll(Configuration.Onboarding)
+                navigateTo(Configuration.Onboarding, RootIntent.ShowOnboarding)
             }
-
             AuthOutput.NavigateToMain -> {
-                rootStore.accept(RootIntent.ShowMain)
-                navigation.replaceAll(Configuration.Main)
+                navigateTo(Configuration.Main, RootIntent.ShowMain)
             }
         }
     }
@@ -87,13 +96,10 @@ class DefaultRootComponent(
     private fun onOnboardingOutput(output: OnboardingOutput) {
         when (output) {
             is OnboardingOutput.NavigateToMain -> {
-                rootStore.accept(RootIntent.ShowMain)
-                navigation.replaceAll(Configuration.Main)
+                navigateTo(Configuration.Main, RootIntent.ShowMain)
             }
-
             OnboardingOutput.Back -> {
-                rootStore.accept(RootIntent.ShowAuth)
-                navigation.replaceAll(Configuration.Auth)
+                navigateTo(Configuration.Auth, RootIntent.ShowAuth)
             }
         }
     }
@@ -101,8 +107,7 @@ class DefaultRootComponent(
     private fun onMainOutput(output: MainOutput) {
         when (output) {
             is MainOutput.NavigateBack -> {
-                rootStore.accept(RootIntent.ShowAuth)
-                navigation.replaceAll(Configuration.Auth)
+                navigateTo(Configuration.Auth, RootIntent.ShowAuth)
             }
         }
     }

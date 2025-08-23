@@ -181,7 +181,7 @@ class DefaultAuthRootComponent(
     private fun onLoginOutput(output: LoginOutput): Unit =
         when (output) {
             is LoginOutput.NavigateToEnterEmail -> navigation.pushNew(AuthConfiguration.EnterEmail)
-            is LoginOutput.AuthenticationSuccess -> navigation.pushNew(AuthConfiguration.LanguageEmpty)
+            is LoginOutput.NavigateToOnboarding -> onOutput(AuthOutput.NavigateToOnboarding)
             is LoginOutput.NavigateBack -> navigation.pop()
         }
 
