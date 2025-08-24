@@ -50,7 +50,7 @@ class MockTrainRepository(
         FullTaskMode(
             id = "a4049d03-1ed6-4ade-9de8-15391acca01e",
             taskType = listOf(TaskType.CONNECT_IMAGE),
-            taskBody = TaskBody.TextTask(
+            taskBody = TaskBody.ImageTask(
                 variant = listOf(
                     Pair(
                         "зонт1",

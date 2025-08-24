@@ -18,8 +18,8 @@ import com.example.inrussian.components.main.profile.DefaultPrivacyPolicyCompone
 import com.example.inrussian.components.main.profile.DefaultProfileComponent
 import com.example.inrussian.components.main.root.DefaultMainRootComponent
 import com.example.inrussian.components.main.train.DefaultSectionDetailComponent
-import com.example.inrussian.components.main.train.DefaultTasksComponent
 import com.example.inrussian.components.main.train.DefaultTrainComponent
+import com.example.inrussian.components.main.train.TrainComponent
 import com.example.inrussian.components.main.train.TrainComponentImpl
 import com.example.inrussian.components.onboarding.citizenship.DefaultCitizenshipComponent
 import com.example.inrussian.components.onboarding.confirmation.DefaultConfirmationComponent
@@ -32,6 +32,7 @@ import com.example.inrussian.components.root.DefaultRootComponent
 import com.example.inrussian.components.root.RootComponent
 import com.example.inrussian.di.main.QAboutText
 import com.example.inrussian.di.main.QPrivacyText
+import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 
 
@@ -198,14 +199,13 @@ val navigationModule = module {
         }
     }
 
-    factory<TasksComponentFactory>(QTasksComponentFactory) {
-        { componentContext, sectionId, option, onOutput ->
-            DefaultTasksComponent(
+    factory<TrainComponentFactory>(QTrainComponentFactory) {
+        { componentContext, sectionId, onOutput ->
+            TrainComponentImpl(
                 componentContext = componentContext,
-                repository = get(),
-                sectionId = sectionId,
-                option = option,
-                onOutput = onOutput
+                onOutput = onOutput,
+                store = get { parametersOf(sectionId) },
+                courseId = sectionId
             )
         }
     }
@@ -217,20 +217,11 @@ val navigationModule = module {
                 repository = get(),
                 sectionId = sectionId,
                 onOutput = onOutput,
-                tasksFactory = get(QTasksComponentFactory)
+                tasksFactory = get(QTrainComponentFactory)
             )
         }
     }
 
-    factory<TrainComponentFactory>(QTrainComponentFactory) {
-        { componentContext, sectionId, onOutput ->
-            TrainComponentImpl(
-                componentContext = componentContext,
-                storeModule =
-
-            )
-        }
-    }
     factory<EditProfileComponentFactory>(QEditProfileComponentFactory) {
         { componentContext, onOutput ->
             DefaultEditProfileComponent(

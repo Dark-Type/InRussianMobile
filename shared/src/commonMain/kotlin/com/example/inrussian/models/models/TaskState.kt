@@ -12,4 +12,7 @@ sealed interface TaskState {
     data object Incorrect : TaskState
     @Serializable
     data object NotSelected : TaskState
+
+    @Serializable
+    data object Connect : TaskState
 }

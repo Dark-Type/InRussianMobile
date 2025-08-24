@@ -43,6 +43,7 @@ fun ImageConnectTask(
                 TaskState.Incorrect -> Red
                 TaskState.NotSelected -> White
                 TaskState.Selected -> Orange
+                TaskState.Connect -> Orange.copy(0.5f)
             }
 
             if (index % 2 == 0)

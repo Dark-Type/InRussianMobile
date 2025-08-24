@@ -2,7 +2,6 @@ package com.example.inrussian.stores.main.train
 
 import com.arkivanov.mvikotlin.core.store.Store
 import com.example.inrussian.models.models.FullTaskMode
-import com.example.inrussian.models.models.task.Task
 import com.example.inrussian.stores.main.train.TrainStore.Intent
 import com.example.inrussian.stores.main.train.TrainStore.Label
 import com.example.inrussian.stores.main.train.TrainStore.State
@@ -12,6 +11,7 @@ import com.example.inrussian.utils.queueOf
 interface TrainStore : Store<Intent, State, Label> {
     sealed interface Intent {
         data class ContinueClick(val isPass: Boolean) : Intent
+        data class UpdateTasks(val tasks: List<FullTaskMode>)
     }
 
     data class State(

@@ -44,7 +44,7 @@ class DefaultRootComponent(
         childStack(
             source = navigation,
             serializer = Configuration.serializer(),
-            initialConfiguration = Configuration.Auth,
+            initialConfiguration = Configuration.Main,
             handleBackButton = true,
             childFactory = ::child
         )

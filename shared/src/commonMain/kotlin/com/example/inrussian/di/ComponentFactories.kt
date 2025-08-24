@@ -33,10 +33,10 @@ import com.example.inrussian.components.main.root.MainOutput
 import com.example.inrussian.components.main.root.MainRootComponent
 import com.example.inrussian.components.main.train.SectionDetailComponent
 import com.example.inrussian.components.main.train.SectionDetailOutput
-import com.example.inrussian.components.main.train.TasksComponent
 import com.example.inrussian.components.main.train.TasksOption
 import com.example.inrussian.components.main.train.TasksOutput
 import com.example.inrussian.components.main.train.TrainComponent
+import com.example.inrussian.components.main.train.TrainComponentCopy
 import com.example.inrussian.components.main.train.TrainComponentImpl
 import com.example.inrussian.components.main.train.TrainOutput
 import com.example.inrussian.components.onboarding.citizenship.CitizenshipComponent
@@ -134,7 +134,7 @@ typealias TrainComponentFactory =
             componentContext: ComponentContext,
             sectionId: String,
             onOutput: (SectionDetailOutput) -> Unit
-        ) -> TrainComponent
+        ) -> TrainComponentCopy
 
 val QTrainComponentFactory = named("TrainComponentFactory")
 
@@ -146,14 +146,6 @@ typealias TrainStoreFactory =
         ) -> TrainComponentImpl
 
 val QTrainStoreFactory = named("TrainStoreFactory")
-
-typealias TasksComponentFactory =
-            (
-            componentContext: ComponentContext,
-            sectionId: String,
-            option: TasksOption,
-            onOutput: (TasksOutput) -> Unit
-        ) -> TasksComponent
 
 val QTasksComponentFactory = named("TasksComponentFactory")
 val QHomeFactory = named("HomeFactory")

@@ -28,7 +28,7 @@ fun SectionDetailHost(component: SectionDetailComponent) {
             SectionDetailsScreen(component, state)
 
         is DefaultSectionDetailComponent.InnerChild.TasksChild ->
-            TasksScreen(inner.component)
+            TaskUi(inner.component)
     }
 
     if (state.showCompletionDialog) {

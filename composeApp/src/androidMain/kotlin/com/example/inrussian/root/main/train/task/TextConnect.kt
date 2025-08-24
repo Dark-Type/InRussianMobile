@@ -1,18 +1,16 @@
 package com.example.inrussian.root.main.train.task
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.unit.dp
-import com.example.inrussian.models.models.task.Task
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import com.example.inrussian.components.main.train.tasks.TextConnectTaskComponent
 import com.example.inrussian.models.models.TaskState
 import com.example.inrussian.models.models.task.TextTaskModel
 import com.example.inrussian.ui.theme.Green
@@ -24,59 +22,41 @@ import com.example.inrussian.ui.theme.TabSide
 
 @Composable
 fun TextConnect(
-    elements: List<Task> = listOf<Task>(
-        TextTaskModel(
-            "",
-            "какой даун это придумал",
-            state = TaskState.Selected
-        ),
-        TextTaskModel(
-            "",
-            "какой даун это придумал",
-            state = TaskState.Correct
-        ),
-        TextTaskModel(
-            "",
-            "какой даун это придумал",
-            state = TaskState.Correct
-        ),
-        TextTaskModel(
-            "",
-            "какой даун это придумал"
-        ),
-        TextTaskModel(
-            "",
-            "какой даун это придумал"
-        ),
-        TextTaskModel(
-            "",
-            "какой даун это придумал"
-        ),
-    )
+    textComponent: TextConnectTaskComponent
 ) {
-    Box(Modifier.fillMaxSize())
+    val state by textComponent.state.subscribeAsState()
     LazyVerticalStaggeredGrid(
         StaggeredGridCells.Fixed(2),
         overscrollEffect = null,
         verticalItemSpacing = 12.dp,
         horizontalArrangement = Arrangement.spacedBy(90.dp)
     ) {
-        itemsIndexed(elements) { index, element ->
-            val workElement = (element as TextTaskModel)
-            val color = when (workElement.state) {
-                TaskState.Correct -> Green
-                TaskState.Incorrect -> Red
-                TaskState.NotSelected -> White
-                TaskState.Selected -> Orange
-            }
-
+        items(state.elements.size * 2) { index ->
             if (index % 2 == 0)
-                PuzzleLayoutIn(TabSide.RIGHT, background = color, onClick = {}) {
-                    Text(workElement.text)
+                PuzzleLayoutIn(
+                    TabSide.RIGHT,
+                    background = when (state.elements[index / 2].first.state) {
+                        TaskState.Correct -> Green
+                        TaskState.Incorrect -> Red
+                        TaskState.NotSelected -> White
+                        TaskState.Selected -> Orange
+                        TaskState.Connect -> Orange.copy(0.5f)
+                    },
+                    onClick = { textComponent.onTaskClick(state.elements[index / 2].first.id) }) {
+                    Text((state.elements[index / 2].first as TextTaskModel).text)
                 }
             else
-                PuzzleLayoutOut(onClick = {}, color = color) {
-                    Text(workElement.text)
+                PuzzleLayoutOut(
+                    onClick = { textComponent.onTaskClick(state.elements[index / 2].second.id) },
+                    color = when (state.elements[index / 2].second.state) {
+                        TaskState.Correct -> Green
+                        TaskState.Incorrect -> Red
+                        TaskState.NotSelected -> White
+                        TaskState.Selected -> Orange
+                        TaskState.Connect -> Orange.copy(0.5f)
+                    }
+                ) {
+                    Text((state.elements[index / 2].second as TextTaskModel).text)
                 }
         }
     }

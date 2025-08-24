@@ -74,6 +74,7 @@ fun AudioConnect(
                 TaskState.Incorrect -> Red to White
                 TaskState.NotSelected -> White to Black
                 TaskState.Selected -> Orange to White
+                TaskState.Connect -> Orange.copy(0.5f) to White
             }
 
             if (index % 2 == 0)

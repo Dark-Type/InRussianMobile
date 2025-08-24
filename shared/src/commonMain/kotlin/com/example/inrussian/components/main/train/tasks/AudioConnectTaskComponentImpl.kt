@@ -17,42 +17,46 @@ import kotlin.uuid.Uuid
 class AudioConnectTaskComponentImpl(
     context: ComponentContext,
     private val onContinueClicked: (Boolean) -> Unit,
-    listImageTasks: TaskBody.AudioTask
+    listAudioTasks: TaskBody.AudioTask
 ) : ImageConnectTaskComponent, ComponentContext by context {
     val correctList = mutableListOf<Pair<Task, Task>>()
     override val state = MutableValue(ImageConnectTaskComponent.State())
     val scope = componentCoroutineScope()
 
     init {
-        val list = MutableList<Task?>(listImageTasks.variant.size) { null }
+        val list = MutableList<Pair<Task, Task>?>(listAudioTasks.variant.size) { null }
         val order = randomUniqueListShuffle(0, list.size, list.size)
-        listImageTasks.variant.forEachIndexed { index, element ->
+        listAudioTasks.variant.forEachIndexed { index, element ->
             correctList.add(
-                AudioTask(
-                    id = Uuid.random().toString(), url = element.first
+                TextTaskModel(
+                    id = Uuid.random().toString(), isAnswer = true, text = element.first
                 ) to TextTaskModel(
                     id = Uuid.random().toString(), text = element.second
                 )
             )
-            list[index] = (AudioTask(
-                id = Uuid.random().toString(), url = element.first
+            list[index] = (TextTaskModel(
+                id = Uuid.random().toString(), text = element.first
+            ) to TextTaskModel(
+                id = Uuid.random().toString(),
+                isAnswer = true,
+                text = listAudioTasks.variant[order[index]].second
             ))
-            list[order[index]] = (TextTaskModel(
-                id = Uuid.random().toString(), text = element.second
-            ))
+
         }
         state.value = state.value.copy(list.map { it!! })
     }
 
     override fun onTaskClick(taskId: String) {
-        val element = state.value.elements.find { it.id == taskId }
+        val element = state.value.elements.find { it.first.id == taskId ||it.second.id == taskId  }
+        val currentElement = if(element?.first?.id!=taskId)element?.first else element.second
+
         if (!state.value.isChecked) {
             if (taskId == state.value.electedTask?.id) {
                 state.value = state.value.copy(electedTask = null)
-            } else if (element?.state != TaskState.Selected) {
-                element?.state = TaskState.Selected
+            } else if (currentElement?.state != TaskState.Selected) {
+                currentElement?.state = TaskState.Selected
                 if (state.value.electedTask == null)
-                    state.value = state.value.copy(electedTask = element)
+                    state.value = state.value.copy(electedTask = currentElement)
                 else
                     state.value =
                         state.value.copy(elements = state.value.elements.toMutableList().apply {
