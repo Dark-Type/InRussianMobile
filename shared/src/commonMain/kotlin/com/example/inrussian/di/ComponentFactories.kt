@@ -1,7 +1,6 @@
 package com.example.inrussian.di
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.example.inrussian.components.auth.base.BaseAuthComponent
 import com.example.inrussian.components.auth.base.BaseAuthOutput
 import com.example.inrussian.components.auth.login.LoginComponent
@@ -38,13 +37,8 @@ import com.example.inrussian.components.main.train.TasksComponent
 import com.example.inrussian.components.main.train.TasksOption
 import com.example.inrussian.components.main.train.TasksOutput
 import com.example.inrussian.components.main.train.TrainComponent
+import com.example.inrussian.components.main.train.TrainComponentImpl
 import com.example.inrussian.components.main.train.TrainOutput
-import com.example.inrussian.components.onboarding.language.LanguageComponent
-import com.example.inrussian.components.onboarding.language.LanguageOutput
-import com.example.inrussian.components.onboarding.root.OnboardingOutput
-import com.example.inrussian.components.onboarding.root.OnboardingRootComponent
-import com.example.inrussian.components.onboarding.personalData.PersonalDataComponent
-import com.example.inrussian.components.onboarding.personalData.PersonalDataOutput
 import com.example.inrussian.components.onboarding.citizenship.CitizenshipComponent
 import com.example.inrussian.components.onboarding.citizenship.CitizenshipOutput
 import com.example.inrussian.components.onboarding.confirmation.ConfirmationComponent
@@ -53,11 +47,12 @@ import com.example.inrussian.components.onboarding.education.EducationComponent
 import com.example.inrussian.components.onboarding.education.EducationOutput
 import com.example.inrussian.components.onboarding.interactiveOnboarding.InteractiveOnboardingComponent
 import com.example.inrussian.components.onboarding.interactiveOnboarding.InteractiveOnboardingOutput
-import com.example.inrussian.components.root.RootComponent
-import com.example.inrussian.stores.auth.login.LoginStore
-import com.example.inrussian.stores.auth.login.LoginStoreFactory
-import com.example.inrussian.stores.auth.recovery.RecoveryStore
-import com.example.inrussian.stores.auth.register.RegisterStore
+import com.example.inrussian.components.onboarding.language.LanguageComponent
+import com.example.inrussian.components.onboarding.language.LanguageOutput
+import com.example.inrussian.components.onboarding.personalData.PersonalDataComponent
+import com.example.inrussian.components.onboarding.personalData.PersonalDataOutput
+import com.example.inrussian.components.onboarding.root.OnboardingOutput
+import com.example.inrussian.components.onboarding.root.OnboardingRootComponent
 import org.koin.core.qualifier.named
 
 typealias AuthRootFactory = (ComponentContext, (AuthOutput) -> Unit) -> AuthRootComponent
@@ -78,8 +73,6 @@ typealias RegisterFactory = (ComponentContext, (RegisterOutput) -> Unit) -> Regi
 typealias SsoPopoverFactory = (ComponentContext, (SsoPopoverOutput) -> Unit) -> SsoPopoverComponent
 
 
-
-
 val QBaseAuthFactory = named("BaseAuthFactory")
 val QRegisterFactory = named("RegisterFactory")
 val QRegisterStoreFactory = named("RegisterStoreFactory")
@@ -89,7 +82,7 @@ val QEnterEmailFactory = named("EnterEmailFactory")
 val QEnterRecoveryCodeFactory = named("EnterRecoveryCodeFactory")
 val QUpdatePasswordFactory = named("UpdatePasswordFactory")
 val QLoginStoreFactory = named("LoginStoreFactory")
-val QRecoveryStoreFactory =named("RecoveryStoreFactory")
+val QRecoveryStoreFactory = named("RecoveryStoreFactory")
 
 typealias LanguageFactory = (ComponentContext, (LanguageOutput) -> Unit) -> LanguageComponent
 
@@ -135,11 +128,33 @@ typealias SectionDetailComponentFactory =
         ) -> SectionDetailComponent
 
 val QSectionDetailComponentFactory = named("SectionDetailComponentFactory")
+
+typealias TrainComponentFactory =
+            (
+            componentContext: ComponentContext,
+            sectionId: String,
+            onOutput: (SectionDetailOutput) -> Unit
+        ) -> TrainComponent
+
+val QTrainComponentFactory = named("TrainComponentFactory")
+
+typealias TrainStoreFactory =
+            (
+            componentContext: ComponentContext,
+            sectionId: String,
+            onOutput: (SectionDetailOutput) -> Unit
+        ) -> TrainComponentImpl
+
+val QTrainStoreFactory = named("TrainStoreFactory")
+
 typealias TasksComponentFactory =
-            (componentContext: ComponentContext,
-             sectionId: String,
-             option: TasksOption,
-             onOutput: (TasksOutput) -> Unit) -> TasksComponent
+            (
+            componentContext: ComponentContext,
+            sectionId: String,
+            option: TasksOption,
+            onOutput: (TasksOutput) -> Unit
+        ) -> TasksComponent
+
 val QTasksComponentFactory = named("TasksComponentFactory")
 val QHomeFactory = named("HomeFactory")
 val QTrainFactory = named("TrainFactory")

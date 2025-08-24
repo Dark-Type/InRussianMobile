@@ -3,12 +3,12 @@ package com.example.inrussian.di
 import com.arkivanov.decompose.ComponentContext
 import com.example.inrussian.components.auth.base.DefaultBaseAuthComponent
 import com.example.inrussian.components.auth.login.DefaultLoginComponent
-import com.example.inrussian.components.auth.ssoPopover.DefaultSsoPopoverComponent
-import com.example.inrussian.components.auth.register.DefaultRegisterComponent
 import com.example.inrussian.components.auth.passwordRecovery.enterEmail.DefaultEnterEmailComponent
 import com.example.inrussian.components.auth.passwordRecovery.enterRecoveryCode.DefaultEnterRecoveryCodeComponent
 import com.example.inrussian.components.auth.passwordRecovery.updatePassword.DefaultUpdatePasswordComponent
+import com.example.inrussian.components.auth.register.DefaultRegisterComponent
 import com.example.inrussian.components.auth.root.DefaultAuthRootComponent
+import com.example.inrussian.components.auth.ssoPopover.DefaultSsoPopoverComponent
 import com.example.inrussian.components.main.home.DefaultCourseDetailsComponent
 import com.example.inrussian.components.main.home.DefaultHomeComponent
 import com.example.inrussian.components.main.home.HomeOutput
@@ -20,6 +20,7 @@ import com.example.inrussian.components.main.root.DefaultMainRootComponent
 import com.example.inrussian.components.main.train.DefaultSectionDetailComponent
 import com.example.inrussian.components.main.train.DefaultTasksComponent
 import com.example.inrussian.components.main.train.DefaultTrainComponent
+import com.example.inrussian.components.main.train.TrainComponentImpl
 import com.example.inrussian.components.onboarding.citizenship.DefaultCitizenshipComponent
 import com.example.inrussian.components.onboarding.confirmation.DefaultConfirmationComponent
 import com.example.inrussian.components.onboarding.education.DefaultEducationComponent
@@ -217,6 +218,16 @@ val navigationModule = module {
                 sectionId = sectionId,
                 onOutput = onOutput,
                 tasksFactory = get(QTasksComponentFactory)
+            )
+        }
+    }
+
+    factory<TrainComponentFactory>(QTrainComponentFactory) {
+        { componentContext, sectionId, onOutput ->
+            TrainComponentImpl(
+                componentContext = componentContext,
+                storeModule =
+
             )
         }
     }

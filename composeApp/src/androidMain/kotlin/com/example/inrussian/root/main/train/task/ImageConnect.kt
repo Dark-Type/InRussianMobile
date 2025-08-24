@@ -8,11 +8,13 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.unit.dp
-import com.example.inrussian.models.models.task.Task
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import com.example.inrussian.components.main.train.tasks.ImageConnectTaskComponent
 import com.example.inrussian.models.models.TaskState
 import com.example.inrussian.models.models.task.TextTaskModel
 import com.example.inrussian.ui.theme.Green
@@ -23,37 +25,10 @@ import com.example.inrussian.ui.theme.TabSide
 
 
 @Composable
-fun TextConnect(
-    elements: List<Task> = listOf<Task>(
-        TextTaskModel(
-            "",
-            "какой даун это придумал",
-            state = TaskState.Selected
-        ),
-        TextTaskModel(
-            "",
-            "какой даун это придумал",
-            state = TaskState.Correct
-        ),
-        TextTaskModel(
-            "",
-            "какой даун это придумал",
-            state = TaskState.Correct
-        ),
-        TextTaskModel(
-            "",
-            "какой даун это придумал"
-        ),
-        TextTaskModel(
-            "",
-            "какой даун это придумал"
-        ),
-        TextTaskModel(
-            "",
-            "какой даун это придумал"
-        ),
-    )
+fun ImageConnectTask(
+    imageComponent: ImageConnectTaskComponent
 ) {
+    val state by imageComponent.state.subscribeAsState()
     Box(Modifier.fillMaxSize())
     LazyVerticalStaggeredGrid(
         StaggeredGridCells.Fixed(2),
@@ -61,7 +36,7 @@ fun TextConnect(
         verticalItemSpacing = 12.dp,
         horizontalArrangement = Arrangement.spacedBy(90.dp)
     ) {
-        itemsIndexed(elements) { index, element ->
+        itemsIndexed(state.elements) { index, element ->
             val workElement = (element as TextTaskModel)
             val color = when (workElement.state) {
                 TaskState.Correct -> Green
@@ -71,11 +46,18 @@ fun TextConnect(
             }
 
             if (index % 2 == 0)
-                PuzzleLayoutIn(TabSide.RIGHT, background = color, onClick = {}) {
+                PuzzleLayoutIn(
+                    TabSide.RIGHT,
+                    background = color,
+                    onClick = { imageComponent.onTaskClick(element.id) }
+                ) {
                     Text(workElement.text)
                 }
             else
-                PuzzleLayoutOut(onClick = {}, color = color) {
+                PuzzleLayoutOut(
+                    onClick = { imageComponent.onTaskClick(element.id) },
+                    color = color
+                ) {
                     Text(workElement.text)
                 }
         }

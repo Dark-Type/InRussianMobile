@@ -60,10 +60,9 @@ import com.example.inrussian.components.main.train.TaskContentItem
 import com.example.inrussian.components.main.train.TaskType
 import com.example.inrussian.components.main.train.TasksComponent
 import com.example.inrussian.components.main.train.TasksState
-import com.example.inrussian.models.models.AudioTask
-import com.example.inrussian.models.models.Task
+import com.example.inrussian.models.models.task.AudioTask
+import com.example.inrussian.models.models.task.Task
 import com.example.inrussian.models.models.TaskState
-import com.example.inrussian.models.models.TextTaskModel
 import com.example.inrussian.ui.theme.Black
 import com.example.inrussian.ui.theme.DarkGrey
 import com.example.inrussian.ui.theme.Green

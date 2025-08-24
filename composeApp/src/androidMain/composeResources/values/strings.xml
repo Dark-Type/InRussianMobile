@@ -97,4 +97,6 @@
     <string name="mastered">Освоено</string>
     <string name="on_mastered">На освоении</string>
     <string name="not_passed">Не пройдено</string>
+
+    <string name="empty_task">Больше задач нет</string>
 </resources>

@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.inrussian.models.models.Gap
 import com.example.inrussian.models.models.Sentence
-import com.example.inrussian.models.models.TextInsertTask
+import com.example.inrussian.models.models.task.TextInsertTask
 
 @Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xFFEAEAEA)
 @Composable
