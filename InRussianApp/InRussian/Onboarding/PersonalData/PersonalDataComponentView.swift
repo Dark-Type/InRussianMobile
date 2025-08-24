@@ -10,14 +10,7 @@ import SwiftUI
 struct PersonalDataComponentView: View {
     let component: PersonalDataComponent
 
-    @State private var name: String
-    @State private var surname: String
-    @State private var patronymic: String
-    @State private var gender: String
-    @State private var birthDate: Date?
-    @State private var phoneNumber: String
-    @State private var email: String
-
+    @ObservedObject private var observedState: ObservableValue<PersonalDataComponentState>
     @State private var showGenderPicker = false
     @State private var showDatePicker = false
 
@@ -25,58 +18,23 @@ struct PersonalDataComponentView: View {
 
     init(component: PersonalDataComponent) {
         self.component = component
-        _name = State(initialValue: component.state.value.name)
-        _surname = State(initialValue: component.state.value.surname)
-        _patronymic = State(initialValue: component.state.value.patronymic)
-        _gender = State(initialValue: component.state.value.gender)
-        _phoneNumber = State(initialValue: component.state.value.phoneNumber)
-        _email = State(initialValue: component.state.value.email)
-        if let isoDate = ISO8601DateFormatter().date(from: component.state.value.birthDate) {
-            _birthDate = State(initialValue: isoDate)
-        } else {
-            _birthDate = State(initialValue: nil)
-        }
+        self.observedState = ObservableValue(component.state)
     }
 
-    private var isFormFilled: Bool {
-        !name.isEmpty &&
-            !surname.isEmpty &&
-            !patronymic.isEmpty &&
-            !gender.isEmpty &&
-            birthDate != nil &&
-            !phoneNumber.isEmpty &&
-            !email.isEmpty
-    }
-
-    private func formattedBirthDate() -> String {
-        guard let birthDate else { return "" }
+    private func formattedBirthDate(_ iso: String) -> String {
+        guard let date = ISO8601DateFormatter().date(from: iso) else { return "" }
         let df = DateFormatter()
         df.dateStyle = .medium
-        return df.string(from: birthDate)
-    }
-
-    private var genderLabel: Text {
-        if gender.isEmpty {
-            return Text("Пол").foregroundColor(.secondary) + Text("*").foregroundColor(.red)
-        } else {
-            return Text(gender).foregroundColor(.primary)
-        }
-    }
-
-    private var birthDateLabel: Text {
-        if birthDate == nil {
-            return Text("Дата рождения").foregroundColor(.secondary) + Text("*").foregroundColor(.red)
-        } else {
-            return Text(formattedBirthDate()).foregroundColor(.primary)
-        }
+        return df.string(from: date)
     }
 
     var body: some View {
+        let state = observedState.value
+
         ZStack {
             Color(.secondarySystemBackground).ignoresSafeArea()
 
             VStack(spacing: 24) {
-                
                 Image(systemName: "person.crop.circle")
                     .resizable()
                     .foregroundColor(AppColors.Palette.accent.color)
@@ -84,144 +42,39 @@ struct PersonalDataComponentView: View {
                     .padding(.top, 64)
                 Spacer()
 
-                Form {
-                    Section {
-                        CustomAsteriskTextField(placeholder: "Имя", text: $name)
-                            .autocapitalization(.words)
-                            .listRowBackground(AppColors.Palette.componentBackground.color)
-
-                        CustomAsteriskTextField(placeholder: "Фамилия", text: $surname)
-                            .autocapitalization(.words)
-                            .listRowBackground(AppColors.Palette.componentBackground.color)
-
-                        TextField("Отчество", text: $patronymic)
-                            .autocapitalization(.words)
-                            .listRowBackground(AppColors.Palette.componentBackground.color)
-
-                        Button(action: { withAnimation { showGenderPicker = true } }) {
-                            HStack {
-                                genderLabel
-                                Spacer()
-                                Image(systemName: "chevron.down")
-                                    .foregroundColor(gender.isEmpty ? Color(.systemBlue) : AppColors.Palette.inactive.color)
-                            }
-                        }
-                        .buttonStyle(.plain)
-                        .listRowBackground(AppColors.Palette.componentBackground.color)
-
-                        Button(action: { withAnimation { showDatePicker = true } }) {
-                            HStack {
-                                birthDateLabel
-                                Spacer()
-                                Image(systemName: "calendar")
-                                    .foregroundColor(birthDate == nil ? Color(.systemBlue) : AppColors.Palette.inactive.color)
-                            }
-                        }
-                        .buttonStyle(.plain)
-                        .listRowBackground(AppColors.Palette.componentBackground.color)
-
-                        CustomAsteriskTextField(placeholder: "Телефон", text: $phoneNumber, keyboardType: .phonePad)
-                            .listRowBackground(AppColors.Palette.componentBackground.color)
-
-                        CustomAsteriskTextField(placeholder: "Email", text: $email, keyboardType: .emailAddress)
-                            .listRowBackground(AppColors.Palette.componentBackground.color)
-                    }
-                }
-                .scrollContentBackground(.hidden)
-                .background(Color.clear)
-                .cornerRadius(0)
-                .padding(.horizontal, 0)
-                .padding(.bottom, 36)
-
+                PersonalDataFields(
+                    state: state,
+                    component: component,
+                    showGenderPicker: $showGenderPicker,
+                    showDatePicker: $showDatePicker,
+                    formattedBirthDate: formattedBirthDate(state.birthDate)
+                )
+                .background(AppColors.Palette.componentBackground.color)
+                .cornerRadius(12)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 8)
             }
+            .padding(.horizontal, 0)
+            .padding(.bottom, 36)
 
             if showGenderPicker {
-                Color.black.opacity(0.45)
-                    .ignoresSafeArea()
-                    .onTapGesture {
+                GenderPickerOverlay(
+                    genderOptions: genderOptions,
+                    selectedGender: state.gender,
+                    onSelect: { gender in
+                        component.changeGender(gender: gender)
                         withAnimation { showGenderPicker = false }
-                    }
-                    .zIndex(2)
-                VStack(spacing: 0) {
-                    Text("Выберите пол")
-                        .font(.headline)
-                        .padding(.top, 28)
-                        .padding(.bottom, 12)
-                    ForEach(genderOptions, id: \.self) { option in
-                        Button(action: {
-                            gender = option
-                            withAnimation { showGenderPicker = false }
-                        }) {
-                            HStack {
-                                Text(option)
-                                    .foregroundColor(.primary)
-                                    .font(.system(size: 20, weight: .medium))
-                                Spacer()
-                                if gender == option {
-                                    Image(systemName: "checkmark")
-                                        .foregroundColor(AppColors.Palette.accent.color)
-                                        .font(.system(size: 18, weight: .bold))
-                                }
-                            }
-                            .padding(.vertical, 18)
-                            .padding(.horizontal, 32)
-                        }
-                    }
-                }
-                .frame(maxWidth: .infinity, maxHeight: 300)
-                .background(
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(AppColors.Palette.componentBackground.color)
-                        .shadow(radius: 10)
+                    },
+                    onCancel: { withAnimation { showGenderPicker = false } }
                 )
-                .padding(.horizontal, 32)
-                .padding(.vertical, 100)
-                .transition(.scale)
-                .zIndex(3)
             }
 
             if showDatePicker {
-                Color.black.opacity(0.45)
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        withAnimation { showDatePicker = false }
-                    }
-                    .zIndex(2)
-                VStack(spacing: 0) {
-                    Text("Выберите дату рождения")
-                        .font(.headline)
-                        .padding(.top, 28)
-                        .padding(.bottom, 12)
-                    DatePicker(
-                        "",
-                        selection: Binding<Date>(
-                            get: { birthDate ?? Date(timeIntervalSince1970: 0) },
-                            set: { newDate in birthDate = newDate }
-                        ),
-                        displayedComponents: .date
-                    )
-                    .datePickerStyle(.wheel)
-                    .labelsHidden()
-                    .padding(.vertical, 0)
-                    .padding(.horizontal, 32)
-                    Spacer()
-                    Button("Готово") {
-                        withAnimation { showDatePicker = false }
-                    }
-                    .font(.system(size: 20, weight: .bold))
-                    .padding(.vertical, 10)
-                    .padding(.horizontal, 48)
-                }
-                .frame(maxWidth: .infinity, maxHeight: 340)
-                .background(
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(AppColors.Palette.componentBackground.color)
-                        .shadow(radius: 10)
+                DatePickerOverlay(
+                    birthDate: state.birthDate,
+                    onDateChange: { isoString in component.onDataChange(date: isoString) },
+                    onDone: { withAnimation { showDatePicker = false } }
                 )
-                .padding(.horizontal, 32)
-                .padding(.vertical, 120)
-                .transition(.scale)
-                .zIndex(3)
             }
         }
         .navigationTitle("Персональные данные")
@@ -249,11 +102,244 @@ struct PersonalDataComponentView: View {
                         Image(systemName: "chevron.right")
                             .font(.system(size: 17, weight: .semibold))
                     }
-                    .foregroundColor(isFormFilled ? AppColors.Palette.accent.color : AppColors.Palette.inactive.color)
+                    .foregroundColor(state.isEnableContinueButton ? AppColors.Palette.accent.color : AppColors.Palette.inactive.color)
                 }
-                .disabled(!isFormFilled)
+                .disabled(!state.isEnableContinueButton)
             }
         }
+    }
+}
+
+private struct PersonalDataFields: View {
+    let state: PersonalDataComponentState
+    let component: PersonalDataComponent
+    @Binding var showGenderPicker: Bool
+    @Binding var showDatePicker: Bool
+    let formattedBirthDate: String
+
+    var body: some View {
+        VStack(spacing: 10) {
+            CustomAsteriskTextField(
+                placeholder: "Фамилия",
+                text: Binding(
+                    get: { state.surname },
+                    set: { component.changeSurname(surname: $0) }
+                )
+            ).padding(.top, 10)
+            Divider().padding(.horizontal, 8)
+
+            CustomAsteriskTextField(
+                placeholder: "Имя",
+                text: Binding(
+                    get: { state.name },
+                    set: { component.changeName(name: $0) }
+                )
+            )
+            Divider().padding(.horizontal, 8)
+
+            CustomAsteriskTextField(
+                placeholder: "Отчество",
+                text: Binding(
+                    get: { state.patronymic },
+                    set: { component.changeThirdName(thirdName: $0) }
+                ),
+                showAsterisk: false
+            )
+            Divider().padding(.horizontal, 8)
+
+            GenderPickerButton(
+                gender: state.gender,
+                showGenderPicker: $showGenderPicker
+            )
+            Divider().padding(.horizontal, 8)
+
+            BirthDatePickerButton(
+                birthDate: state.birthDate,
+                formattedBirthDate: formattedBirthDate,
+                showDatePicker: $showDatePicker
+            )
+            Divider().padding(.horizontal, 8)
+
+            CustomAsteriskTextField(
+                placeholder: "Телефон",
+                text: Binding(
+                    get: { state.phoneNumber },
+                    set: { component.changePhone(phone: $0) }
+                ),
+                keyboardType: .phonePad
+            )
+            Divider().padding(.horizontal, 8)
+
+            CustomAsteriskTextField(
+                placeholder: "Email",
+                text: Binding(
+                    get: { state.email },
+                    set: { component.changeEmail(email: $0) }
+                ),
+                keyboardType: .emailAddress
+            ).padding(.bottom, 10)
+        }
+    }
+}
+
+private struct GenderPickerButton: View {
+    let gender: String
+    @Binding var showGenderPicker: Bool
+
+    var body: some View {
+        Button(action: { withAnimation { showGenderPicker = true } }) {
+            HStack {
+                if gender.isEmpty {
+                    HStack(spacing: 0) {
+                        Text("Пол").foregroundColor(.secondary)
+                        Text("*").foregroundColor(.red)
+                    }
+                } else {
+                    Text(gender).foregroundColor(.primary)
+                }
+                Spacer()
+                Image(systemName: "chevron.down")
+                    .foregroundColor(gender.isEmpty ? Color(.systemBlue) : AppColors.Palette.inactive.color)
+            }
+            .contentShape(Rectangle())
+            .padding(.vertical, 10)
+            .padding(.horizontal, 12)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct BirthDatePickerButton: View {
+    let birthDate: String
+    let formattedBirthDate: String
+    @Binding var showDatePicker: Bool
+
+    var body: some View {
+        Button(action: { withAnimation { showDatePicker = true } }) {
+            HStack {
+                if birthDate.isEmpty {
+                    HStack(spacing: 0) {
+                        Text("Дата рождения").foregroundColor(.secondary)
+                        Text("*").foregroundColor(.red)
+                    }
+                } else {
+                    Text(formattedBirthDate).foregroundColor(.primary)
+                }
+                Spacer()
+                Image(systemName: "calendar")
+                    .foregroundColor(birthDate.isEmpty ? Color(.systemBlue) : AppColors.Palette.inactive.color)
+            }
+            .contentShape(Rectangle())
+            .padding(.vertical, 10)
+            .padding(.horizontal, 12)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct GenderPickerOverlay: View {
+    let genderOptions: [String]
+    let selectedGender: String
+    let onSelect: (String) -> Void
+    let onCancel: () -> Void
+
+    var body: some View {
+        Color.black.opacity(0.45)
+            .ignoresSafeArea()
+            .onTapGesture { onCancel() }
+            .zIndex(2)
+        VStack(spacing: 0) {
+            Text("Выберите пол")
+                .font(.headline)
+                .padding(.top, 28)
+                .padding(.bottom, 12)
+            ForEach(genderOptions, id: \.self) { option in
+                Button(action: { onSelect(option) }) {
+                    HStack {
+                        Text(option)
+                            .foregroundColor(.primary)
+                            .font(.system(size: 20, weight: .medium))
+                        Spacer()
+                        if selectedGender == option {
+                            Image(systemName: "checkmark")
+                                .foregroundColor(AppColors.Palette.accent.color)
+                                .font(.system(size: 18, weight: .bold))
+                        }
+                    }
+                    .padding(.vertical, 18)
+                    .padding(.horizontal, 32)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: 300)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(AppColors.Palette.componentBackground.color)
+                .shadow(radius: 10)
+        )
+        .padding(.horizontal, 32)
+        .padding(.vertical, 100)
+        .transition(.scale)
+        .zIndex(3)
+    }
+}
+
+private struct DatePickerOverlay: View {
+    let birthDate: String
+    let onDateChange: (String) -> Void
+    let onDone: () -> Void
+
+    var body: some View {
+        let binding = Binding<Date>(
+            get: {
+                if let date = ISO8601DateFormatter().date(from: birthDate) {
+                    return date
+                } else {
+                    return Date(timeIntervalSince1970: 0)
+                }
+            },
+            set: { newDate in
+                let iso = ISO8601DateFormatter().string(from: newDate)
+                onDateChange(iso)
+            }
+        )
+
+        Color.black.opacity(0.45)
+            .ignoresSafeArea()
+            .onTapGesture { onDone() }
+            .zIndex(2)
+        VStack(spacing: 0) {
+            Text("Выберите дату рождения")
+                .font(.headline)
+                .padding(.top, 28)
+                .padding(.bottom, 12)
+            DatePicker(
+                "",
+                selection: binding,
+                displayedComponents: .date
+            )
+            .datePickerStyle(.wheel)
+            .labelsHidden()
+            .padding(.vertical, 0)
+            .padding(.horizontal, 32)
+            Spacer()
+            Button("Готово") {
+                onDone()
+            }
+            .font(.system(size: 20, weight: .bold))
+            .padding(.vertical, 10)
+            .padding(.horizontal, 48)
+        }
+        .frame(maxWidth: .infinity, maxHeight: 340)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(AppColors.Palette.componentBackground.color)
+                .shadow(radius: 10)
+        )
+        .padding(.horizontal, 32)
+        .padding(.vertical, 120)
+        .transition(.scale)
+        .zIndex(3)
     }
 }
 
@@ -261,21 +347,28 @@ struct CustomAsteriskTextField: View {
     let placeholder: String
     @Binding var text: String
     var keyboardType: UIKeyboardType = .default
+    var showAsterisk: Bool = true
 
     var body: some View {
         ZStack(alignment: .leading) {
             if text.isEmpty {
-                HStack(spacing: 0) {
-                    Text(placeholder)
+                HStack(spacing: 2) {
+                    Text("  " + placeholder)
                         .foregroundColor(.secondary)
-                    Text("*")
-                        .foregroundColor(.red)
+                    if showAsterisk {
+                        Text("*")
+                            .foregroundColor(.red)
+                    }
                 }
                 .padding(.leading, 4)
             }
+
             TextField("", text: $text)
                 .keyboardType(keyboardType)
                 .autocapitalization(.none)
+                .padding(.vertical, 10)
+                .padding(.horizontal, 12)
+                .background(Color.clear)
         }
     }
 }

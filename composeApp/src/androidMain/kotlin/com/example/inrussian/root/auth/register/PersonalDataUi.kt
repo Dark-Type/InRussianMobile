@@ -5,13 +5,13 @@ import android.widget.DatePicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -19,7 +19,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -46,7 +45,6 @@ import com.arkivanov.decompose.value.MutableValue
 import com.example.inrussian.components.onboarding.personalData.PersonalDataComponent
 import com.example.inrussian.ui.theme.BackButton
 import com.example.inrussian.ui.theme.ContinueButton
-import com.example.inrussian.ui.theme.DarkGrey
 import com.example.inrussian.ui.theme.Orange
 import com.example.inrussian.ui.theme.reallyLightGrey
 import inrussian.composeapp.generated.resources.Res
@@ -134,16 +132,50 @@ fun PersonaDataUi(component: PersonalDataComponent) {
                     stringResource(Res.string.third_name)
                 )
                 HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-                InputFormField(
-                    state.gender,
-                    {},
-                    stringResource(Res.string.gender),
-                    Modifier,
-                    vectorResource(Res.drawable.down_arrow),
-                    { component.changeGenderChoose(!state.isGenderOpen) },
-                    true,
-                    isRequired = true
-                )
+                var expanded by remember { mutableStateOf(state.isGenderOpen) }
+
+                Row(
+                    Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    InputFormField(
+                        state.gender,
+                        {},
+                        stringResource(Res.string.gender),
+                        Modifier.weight(1f),
+                        isRequired = true
+                    )
+
+                    Box {
+                        IconButton(onClick = { expanded = true }) {
+                            Icon(vectorResource(Res.drawable.down_arrow), "")
+                        }
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false },
+                            modifier = Modifier
+                                .shadow(6.dp, RoundedCornerShape(10.dp), clip = true)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(White)
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Мужской") },
+                                onClick = {
+                                    component.changeGender("Мужской")
+                                    expanded = false
+                                }
+                            )
+                            HorizontalDivider(modifier = Modifier.padding(horizontal = 5.dp))
+                            DropdownMenuItem(
+                                text = { Text("Женский") },
+                                onClick = {
+                                    component.changeGender("Женский")
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
                 HorizontalDivider(Modifier.padding(horizontal = 16.dp))
                 InputFormField(
                     state.birthDate,
@@ -168,27 +200,6 @@ fun PersonaDataUi(component: PersonalDataComponent) {
             }
         }
         DataPickerSimple(state.showDataPicker, component::onDataChange)
-        if (state.isGenderOpen)
-            Column(
-                Modifier
-                    .offset(120.dp, 220.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(White)
-                    .align(Alignment.Center)
-                    .shadow(1.dp, shape = RoundedCornerShape(10.dp))
-                    .width(IntrinsicSize.Min)
-            ) {
-                TextButton({
-                    component.changeGender("Мужской")
-                    component.changeGenderChoose(false)
-                }) { Text("Мужской", color = DarkGrey.copy(0.8f)) }
-                HorizontalDivider()
-                TextButton({
-                    component.changeGender("Женский")
-                    component.changeGenderChoose(false)
-                }
-                ) { Text("Женский", color = DarkGrey.copy(0.8f)) }
-            }
     }
 
 }
@@ -247,7 +258,7 @@ fun DataPickerSimple(showDataPicker: Boolean, onSelect: (String) -> Unit) {
     val datePicker = remember {
         DatePickerDialog(
             context,
-            DatePickerDialog.OnDateSetListener { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
+            { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
                 date = "$mDayOfMonth-${mMonth + 1}-$mYear"
             },
             year,

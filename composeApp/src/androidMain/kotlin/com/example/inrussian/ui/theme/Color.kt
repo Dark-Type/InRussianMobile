@@ -23,3 +23,6 @@ val lightGreen = Color(0xFF32D74B)
 val lightCircleGreen = Color(0xFF19D065)
 val Green = Color(0xFF28A745)
 val Yellow = Color(0xFFFFD60A)
+
+val TabUnselectedColor = Color(0xFF999999)
+val TabBackground = Color(0xF2F9F9F9)

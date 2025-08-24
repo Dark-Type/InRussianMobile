@@ -35,51 +35,47 @@ struct LoginView: View {
                 Spacer(minLength: 0)
 
                 VStack(spacing: 16) {
-                    HStack {
+                    VStack(alignment: .leading, spacing: 4) {
                         OutlinedTextfield(
                             text: Binding(
                                 get: { state.email },
                                 set: { component.onEmailChange(email: $0) }
                             ),
                             placeholder: "Электронная почта",
-                            isSecure: false
+                            isSecure: false,
+                            onToggleSecure: nil,
+                            submitLabel: .next,
+                            onSubmit: nil,
+                            textContentType: .emailAddress,
+                            keyboardType: .emailAddress
                         )
+                        .disabled(state.loading)
 
-                        if !state.email.isEmpty {
-                            Button(action: {
-                                component.onDeleteEmailClick()
-                            }) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .foregroundColor(AppColors.Palette.footnote.color)
-                            }
-                            .buttonStyle(.plain)
+                        if let emailError = state.emailError {
+                            Text(emailError)
+                                .font(.caption)
+                                .foregroundColor(.red)
+                                .padding(.leading, 16)
                         }
                     }
-
-                    if let emailError = state.emailError {
-                        Text(emailError)
-                            .font(.caption)
-                            .foregroundColor(.red)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-
                     HStack {
                         OutlinedTextfield(
                             text: Binding(
                                 get: { state.password },
                                 set: { component.onPasswordChange(password: $0) }
                             ),
-                            placeholder: "Пароль",
-                            isSecure: !state.showPassword
+                            placeholder: "Подтвердите пароль",
+                            isSecure: !state.showPassword,
+                            onToggleSecure: { component.onShowPasswordClick() },
+                            submitLabel: .done,
+                            onSubmit: {
+                                if state.isButtonActive, !state.loading {
+                                    component.onLogin(email: state.email, password: state.password)
+                                }
+                            },
+                            textContentType: .password,
+                            keyboardType: .default
                         )
-
-//                        Button(action: {
-//                            component.onShowPasswordClick()
-//                        }) {
-//                            Image(systemName: state.showPassword ? "eye.slash" : "eye")
-//                                .foregroundColor(AppColors.Palette.footnote.color)
-//                        }
-//                        .buttonStyle(.plain)
                     }
 
                     if let passwordError = state.passwordError {

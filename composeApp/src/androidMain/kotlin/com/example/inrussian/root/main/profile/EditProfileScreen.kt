@@ -13,13 +13,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -52,11 +50,11 @@ import com.example.inrussian.ui.theme.Orange
 import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.activity_type
 import inrussian.composeapp.generated.resources.app_language
+import inrussian.composeapp.generated.resources.back_arrow
 import inrussian.composeapp.generated.resources.calendar
 import inrussian.composeapp.generated.resources.can_write_rus_speech
 import inrussian.composeapp.generated.resources.citizenship
 import inrussian.composeapp.generated.resources.citizenship_data
-import inrussian.composeapp.generated.resources.`continue`
 import inrussian.composeapp.generated.resources.dob
 import inrussian.composeapp.generated.resources.down_arrow
 import inrussian.composeapp.generated.resources.edit_profile
@@ -73,6 +71,7 @@ import inrussian.composeapp.generated.resources.profile
 import inrussian.composeapp.generated.resources.purpose
 import inrussian.composeapp.generated.resources.residence_city
 import inrussian.composeapp.generated.resources.residence_country
+import inrussian.composeapp.generated.resources.save
 import inrussian.composeapp.generated.resources.second_name
 import inrussian.composeapp.generated.resources.study_country
 import inrussian.composeapp.generated.resources.third_name
@@ -110,6 +109,19 @@ fun EditProfileScreen(component: EditProfileComponent) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Spacer(Modifier.height(38.dp))
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(onClick = component::onBack) {
+                            Icon(
+                                vectorResource(Res.drawable.back_arrow),
+                                contentDescription = null,
+                                tint = Orange
+                            )
+                        }
+                        Spacer(Modifier.weight(1f))
+                    }
                     Icon(
                         vectorResource(Res.drawable.profile),
                         "",
@@ -120,14 +132,14 @@ fun EditProfileScreen(component: EditProfileComponent) {
                     Text(
                         stringResource(Res.string.edit_profile),
                         Modifier.padding(horizontal = 30.dp),
-                        style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.titleLarge,
+                        textAlign = TextAlign.Center,
                         fontWeight = FontWeight.W600
                     )
-
                 }
             }
             item {
-                Spacer(Modifier.height(140.dp))
+                Spacer(Modifier.height(60.dp))
             }
 
             item {
@@ -375,10 +387,10 @@ fun EditProfileScreen(component: EditProfileComponent) {
                 }
             }
             item {
-                CommonButton(stringResource(Res.string.`continue`), true, component::save)
+                CommonButton(stringResource(Res.string.save), true, component::save)
 
             }
-            item { Spacer(Modifier.height(70.dp)) }
+            item { Spacer(Modifier.height(86.dp)) }
         }
 
             DataPickerSimple(state.isDateOpen,component::updateDob)

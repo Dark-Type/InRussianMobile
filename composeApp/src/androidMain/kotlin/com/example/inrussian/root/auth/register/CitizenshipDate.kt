@@ -19,9 +19,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,6 +40,7 @@ import com.example.inrussian.ui.theme.DarkGrey
 import com.example.inrussian.ui.theme.Orange
 import com.example.inrussian.ui.theme.reallyLightGrey
 import inrussian.composeapp.generated.resources.Res
+import inrussian.composeapp.generated.resources.checkmark_circle
 import inrussian.composeapp.generated.resources.citizenship
 import inrussian.composeapp.generated.resources.citizenship_data
 import inrussian.composeapp.generated.resources.delete
@@ -49,11 +53,85 @@ import inrussian.composeapp.generated.resources.study_country
 import inrussian.composeapp.generated.resources.time_of_stay
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
+private val countryOptionsRu = listOf(
+    "Австралия", "Австрия", "Азербайджан", "Албания", "Алжир", "Ангола", "Андорра", "Антигуа и Барбуда", "Аргентина", "Армения",
+    "Афганистан", "Багамские Острова", "Бангладеш", "Барбадос", "Бахрейн", "Беларусь", "Белиз", "Бельгия", "Бенин", "Болгария",
+    "Боливия", "Босния и Герцеговина", "Ботсвана", "Бразилия", "Бруней", "Буркина-Фасо", "Бурунди", "Бутан", "Вануату", "Ватикан",
+    "Великобритания", "Венгрия", "Венесуэла", "Восточный Тимор", "Вьетнам", "Габон", "Гаити", "Гайана", "Гамбия", "Гана",
+    "Гватемала", "Гвинея", "Гвинея-Бисау", "Германия", "Гондурас", "Гренада", "Греция", "Грузия", "Дания", "Джибути", "Доминика",
+    "Доминиканская Республика", "Египет", "Замбия", "Зимбабве", "Израиль", "Индия", "Индонезия", "Иордания", "Ирак", "Иран",
+    "Ирландия", "Исландия", "Испания", "Италия", "Йемен", "Кабо-Верде", "Казахстан", "Камбоджа", "Камерун", "Канада", "Катар",
+    "Кения", "Кипр", "Киргизия", "Кирибати", "Китай", "Колумбия", "Коморы", "Конго", "Коста-Рика", "Кот-д’Ивуар", "Куба",
+    "Кувейт", "Лаос", "Латвия", "Лесото", "Либерия", "Ливан", "Ливия", "Литва", "Лихтенштейн", "Люксембург", "Маврикий", "Мавритания",
+    "Мадагаскар", "Макао", "Македония", "Малави", "Малайзия", "Мали", "Мальдивы", "Мальта", "Марокко", "Маршалловы Острова",
+    "Мексика", "Мозамбик", "Молдова", "Монако", "Монголия", "Мьянма", "Намибия", "Науру", "Непал", "Нигер", "Нигерия", "Нидерланды",
+    "Никарагуа", "Новая Зеландия", "Норвегия", "ОАЭ", "Оман", "Пакистан", "Палау", "Палестина", "Панама", "Папуа — Новая Гвинея",
+    "Парагвай", "Перу", "Польша", "Португалия", "Россия", "Руанда", "Румыния", "Сальвадор", "Самоа", "Сан-Марино", "Сан-Томе и Принсипи",
+    "Саудовская Аравия", "Свазиленд", "Северная Корея", "Северная Македония", "Сейшельские Острова", "Сенегал", "Сент-Винсент и Гренадины",
+    "Сент-Китс и Невис", "Сент-Люсия", "Сербия", "Сингапур", "Сирия", "Словакия", "Словения", "Соломоновы Острова", "Сомали",
+    "Судан", "Суринам", "США", "Сьерра-Леоне", "Таджикистан", "Таиланд", "Танзания", "Того", "Тонга", "Тринидад и Тобаго", "Тувалу",
+    "Тунис", "Туркмения", "Турция", "Уганда", "Узбекистан", "Украина", "Уругвай", "Фиджи", "Филиппины", "Финляндия", "Франция",
+    "Хорватия", "ЦАР", "Чад", "Черногория", "Чехия", "Чили", "Швейцария", "Швеция", "Шри-Ланка", "Эквадор", "Экваториальная Гвинея",
+    "Эритрея", "Эстония", "Эфиопия", "ЮАР", "Южная Корея", "Южный Судан", "Ямайка", "Япония"
+).sorted()
 
-@OptIn(ExperimentalMaterial3Api::class)
+private val nationalityOptionsRu = listOf(
+    "Абазин", "Абхаз", "Аварец", "Австралиец", "Азербайджанец", "Айны", "Айну", "Акан", "Албанец", "Алжирец",
+    "Американец", "Англичанин", "Антигуанец", "Араб", "Аргентинец", "Армянин", "Ассириец", "Афганец",
+    "Багулалец", "Балкарец", "Башкир", "Башкирин", "Беларус", "Белизец", "Белудж", "Бельгиец", "Бенинец",
+    "Бирманец", "Болгарин", "Боливиец", "Босниец", "Ботлихец", "Ботсванец", "Бразилец", "Британец", "Брунейц",
+    "Будуг", "Бурят", "Бутанец",
+    "Венгр", "Венесуэлец", "Вепс", "Вьетнамец",
+    "Гаитянин", "Гамбиец", "Ганец", "Гвинеец", "Гвинеец-Бисау", "Германец", "Гинухец", "Годоберинец", "Гондурасец", "Грек",
+    "Гренландец", "Грузин", "Гуарани",
+    "Дагестанец", "Даргинец", "Датчанин", "Дидой", "Долган", "Доминиканец", "Джухур",
+    "Еврей", "Египтянин", "Эвен", "Эвенк", "Эквадорец", "Эрзя", "Эскимос", "Эстонец", "Эфиоп",
+    "Жапонец",
+    "Замбиец", "Зимбабвиец",
+    "Ивановец", "Индиец", "Индонезиец", "Ингуш", "Иорданец", "Иранец", "Ирландец", "Исландиец", "Испанец", "Итальянец", "Ительмен",
+    "Йеменец",
+    "Кабардинец", "Казах", "Калмык", "Камерунец", "Канадец", "Караим", "Карачаевец", "Карел", "Катарец", "Кениец", "Кет",
+    "Китайц", "Киргиз", "Кирибати", "Киприот", "Колумбиец", "Коми", "Конголезец", "Кореец", "Коряк", "Костариканец",
+    "Кот-д’ивуарец", "Крымчак", "Кувейтец", "Кумык", "Кумыкец", "Кхмер", "Кыргызы",
+    "Лакец", "Лаосец", "Латыш", "Лезгин", "Либанец", "Литовец", "Лихтенштейнец", "Люксембуржец",
+    "Маврикиец", "Мавританец", "Мадагаскарец", "Малайзиец", "Малиец", "Мальдивец", "Мальтиец", "Манси", "Мариец", "Марокканец",
+    "Маршалловец", "Мексиканец", "Молдаванин", "Монгол", "Мордва", "Мордвин", "Мозамбикец", "Мьянманец",
+    "Нагаец", "Намибиец", "Нганасан", "Немец", "Нидерландец", "Нигериец", "Никарагуанец", "Нивх", "Новозеландец", "Ногай", "Норвежец",
+    "Орок", "Осетин",
+    "Палауец", "Панамец", "Папуас", "Пакистанец", "Парагваец", "Перуанец", "Поляк", "Португалец", "Пуэрториканец",
+    "Румын", "Русский", "Рутулец",
+    "Саам", "Саха", "Сальвадорец", "Самоанец", "Сенегалец", "Серб", "Сингапурец", "Сириец", "Словац", "Словенец", "Сойот", "Сомалиец",
+    "Суданец", "Суринамец", "Сьерра-леонец",
+    "Табарит", "Таджик", "Таец", "Танзаниец", "Татарин", "Татарин-крымский", "Тат", "Тиндинец", "Тофалар", "Тувинец", "Тунисец",
+    "Туркмен", "Турок",
+    "Удмурт", "Уильта", "Узбекистанец", "Узбек", "Украинец", "Уругваец",
+    "Фиджиец", "Филиппинец", "Финн", "Француз",
+    "Хакас", "Хант", "Хваршине", "Хиналуг", "Хорват",
+    "Цез", "Цыган",
+    "Чамалинец", "Черкес", "Чех", "Чеченец", "Чилиец", "Чуваш", "Чукча",
+    "Швед", "Шотландец", "Шри-ланкиец",
+    "Юкагир", "Южноафриканец",
+    "Яванец", "Ямайец", "Якут", "Японец"
+).sorted()
+
+// Варианты времени пребывания (как в SwiftUI)
+private val timeOptionsRu = listOf(
+    "менее месяца",
+    "менее полугода",
+    "менее года",
+    "более года",
+    "более пяти лет",
+    "никогда не был"
+)
+
 @Composable
 fun CitizenshipDate(component: CitizenshipComponent) {
     val state by component.state.subscribeAsState()
+
+    // Локальные состояния для дропдаунов (аналог модалок в SwiftUI)
+    val isResidenceOpen = remember { mutableStateOf(false) }
+    val isStudyCountryOpen = remember { mutableStateOf(false) }
+
     Column(
         Modifier
             .background(reallyLightGrey)
@@ -68,27 +146,29 @@ fun CitizenshipDate(component: CitizenshipComponent) {
             BackButton(true, component::onBack)
             ContinueButton(state.continueEnable, component::onNext)
         }
+
         Text(
             stringResource(Res.string.citizenship_data),
             fontSize = 40.sp,
             fontWeight = FontWeight.W600
         )
+
         Box(
             Modifier
                 .weight(0.8f)
                 .fillMaxWidth(),
-
-            ) {
+        ) {
             Icon(
                 vectorResource(Res.drawable.eath),
-                "",
-                Modifier
+                contentDescription = "",
+                modifier = Modifier
                     .fillMaxWidth(0.5f)
                     .padding(bottom = 22.dp)
                     .align(Alignment.Center),
                 tint = Orange
             )
         }
+
         Column(
             Modifier
                 .fillMaxWidth()
@@ -96,9 +176,10 @@ fun CitizenshipDate(component: CitizenshipComponent) {
                 .clip(RoundedCornerShape(12.dp))
                 .background(White)
         ) {
+            // Гражданства — мультиселект (список стран)
             ClipsContainer(
                 isOpen = state.isCitizenshipOpen,
-                variants = listOf("Indonezia", "amsterdam", "Filipin", "Russia", "Kyrgiztan"),
+                variants = countryOptionsRu,
                 active = state.citizenship,
                 onClick = component::deleteCountry,
                 onChangeExpanded = component::openCitizenship,
@@ -106,41 +187,59 @@ fun CitizenshipDate(component: CitizenshipComponent) {
                 placeholder = stringResource(Res.string.citizenship)
             )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-            ClipsContainer(
+
+            // Национальность — сингл-селект (список национальностей)
+            SingleSelectRow(
                 isOpen = state.isNationalityOpen,
-                variants = listOf("Evrye", "Russian", "Kazah"),
-                active = if (state.nationality == "") listOf() else listOf(state.nationality),
-                onClick = component::deleteNationality,
+                value = state.nationality,
+                options = nationalityOptionsRu,
+                placeholder = stringResource(Res.string.nationality),
                 onChangeExpanded = component::openNationality,
-                onAddClick = component::selectNationality,
-                placeholder = stringResource(Res.string.nationality)
+                onSelect = component::selectNationality,
+                onClear = { component.selectNationality("") }
             )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-            InputFormField(
-                state.countryOfResidence,
-                component::countryLiveChange,
-                stringResource(Res.string.residence_country)
+
+            // Страна проживания — сингл-селект (список стран)
+            SingleSelectRow(
+                isOpen = isResidenceOpen.value,
+                value = state.countryOfResidence,
+                options = countryOptionsRu,
+                placeholder = stringResource(Res.string.residence_country),
+                onChangeExpanded = { isResidenceOpen.value = it },
+                onSelect = { choice -> component.countryLiveChange(choice) },
+                onClear = { component.countryLiveChange("") }
             )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+
+            // Город проживания — текстовое поле
             InputFormField(
                 state.cityOfResidence,
-                component::cityLiveChange, stringResource(Res.string.residence_city)
+                component::cityLiveChange,
+                stringResource(Res.string.residence_city)
             )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-            InputFormField(
-                state.countryDuringEducation,
-                component::studyCountyChange,
-                stringResource(Res.string.study_country)
+
+            // Страна во время обучения — сингл-селект (список стран)
+            SingleSelectRow(
+                isOpen = isStudyCountryOpen.value,
+                value = state.countryDuringEducation,
+                options = countryOptionsRu,
+                placeholder = stringResource(Res.string.study_country),
+                onChangeExpanded = { isStudyCountryOpen.value = it },
+                onSelect = { choice -> component.studyCountyChange(choice) },
+                onClear = { component.studyCountyChange("") }
             )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-            ClipsContainer(
+
+            SingleSelectRow(
                 isOpen = state.isTimeOpen,
-                variants = listOf("До 5 лет", "Меньше года", "Больше года", "Около трех лет"),
-                active = if (state.selectedTime == "") listOf() else listOf(state.timeSpentInRussia),
-                onClick = component::deleteTime,
+                value = state.timeSpentInRussia,
+                options = timeOptionsRu,
+                placeholder = stringResource(Res.string.time_of_stay),
                 onChangeExpanded = component::openTime,
-                onAddClick = component::selectTime,
-                placeholder = stringResource(Res.string.time_of_stay)
+                onSelect = component::selectTime,
+                onClear = { component.selectTime("") }
             )
         }
     }
@@ -157,13 +256,13 @@ fun CommonClips(onClick: (String) -> Unit, text: String) {
                 .align(Alignment.Center)
         )
         IconButton(
-            { onClick(text) },
-            Modifier
+            onClick = { onClick(text) },
+            modifier = Modifier
                 .align(Alignment.TopEnd)
                 .size(14.dp)
                 .offset(7.dp, (-7).dp)
         ) {
-            Icon(vectorResource(Res.drawable.delete), "")
+            Icon(vectorResource(Res.drawable.delete), contentDescription = "")
         }
     }
 }
@@ -184,27 +283,90 @@ fun ClipsContainer(
             active.forEach { text ->
                 CommonClips(onClick, text)
             }
-            if (active.isEmpty())
-                Text(placeholder)
+            if (active.isEmpty()) Text(placeholder)
         }
 
         IconButton(
             onClick = { onChangeExpanded(!isOpen) },
             modifier = Modifier.align(Alignment.TopEnd)
-        ) { Icon(vectorResource(Res.drawable.down_arrow), contentDescription = null) }
+        ) {
+            Icon(vectorResource(Res.drawable.down_arrow), contentDescription = null)
+        }
+
         DropdownMenu(
             expanded = isOpen,
             onDismissRequest = { onChangeExpanded(false) },
             offset = DpOffset(x = 220.dp, y = 0.dp),
             containerColor = White
         ) {
-            variants.forEach { country ->
+            variants.forEach { option ->
                 DropdownMenuItem(
-                    text = { Text(country) },
+                    text = { Text(option) },
                     onClick = {
-                        if (!active.contains(country)) {
-                            onAddClick(country)
+                        if (!active.contains(option)) onAddClick(option)
+                        onChangeExpanded(false)
+                    }
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SingleSelectRow(
+    isOpen: Boolean,
+    value: String,
+    options: List<String>,
+    placeholder: String,
+    onChangeExpanded: (Boolean) -> Unit,
+    onSelect: (String) -> Unit,
+    onClear: () -> Unit
+) {
+    Box(Modifier
+        .fillMaxWidth()
+        .padding(start = 16.dp, end = 8.dp, top = 12.dp, bottom = 8.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.CenterStart),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val isEmpty = value.isEmpty()
+            Text(
+                if (isEmpty) placeholder else value,
+                color = if (isEmpty) DarkGrey.copy(alpha = 0.6f) else Color.Black,
+                modifier = Modifier.weight(1f)
+            )
+
+            if (!isEmpty) {
+                IconButton(onClick = onClear) {
+                    Icon(vectorResource(Res.drawable.delete), contentDescription = "")
+                }
+            }
+
+            IconButton(onClick = { onChangeExpanded(!isOpen) }) {
+                Icon(vectorResource(Res.drawable.down_arrow), contentDescription = null)
+            }
+        }
+
+        DropdownMenu(
+            expanded = isOpen,
+            onDismissRequest = { onChangeExpanded(false) },
+            offset = DpOffset(x = 220.dp, y = 0.dp),
+            containerColor = White
+        ) {
+            options.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(option) },
+                    trailingIcon = {
+                        if (option == value) {
+                            Icon(vectorResource(Res.drawable.checkmark_circle), contentDescription = null, tint = Orange)
                         }
+                    },
+                    onClick = {
+                        onSelect(option)
                         onChangeExpanded(false)
                     }
                 )

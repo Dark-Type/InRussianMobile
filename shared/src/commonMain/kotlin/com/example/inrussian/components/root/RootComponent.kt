@@ -106,8 +106,11 @@ class DefaultRootComponent(
 
     private fun onMainOutput(output: MainOutput) {
         when (output) {
-            is MainOutput.NavigateBack -> {
+            is MainOutput.NavigateToAuth -> {
                 navigateTo(Configuration.Auth, RootIntent.ShowAuth)
+            }
+            is MainOutput.NavigateToOnboarding -> {
+                navigateTo(Configuration.Onboarding, RootIntent.ShowOnboarding)
             }
         }
     }

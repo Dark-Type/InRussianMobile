@@ -33,6 +33,10 @@ interface EducationComponent {
     fun changeActivity(activity: String)
     fun changeEducation(education: String)
     fun changePurpose(purpose: String)
+    fun changeSpeaksRussian(value: Boolean)
+    fun changeUnderstandsRussian(value: Boolean)
+    fun changeReadsRussian(value: Boolean)
+    fun changeWritesRussian(value: Boolean)
 }
 
 sealed class EducationOutput {
@@ -91,5 +95,20 @@ class DefaultEducationComponent(
 
     override fun changePurpose(purpose: String) {
         _state.value = _state.value.copy(purposeOfRegistration = purpose)
+    }
+    override fun changeSpeaksRussian(value: Boolean) {
+        _state.value = _state.value.copy(speaksRussian = value)
+    }
+
+    override fun changeUnderstandsRussian(value: Boolean) {
+        _state.value = _state.value.copy(understandsRussian = value)
+    }
+
+    override fun changeReadsRussian(value: Boolean) {
+        _state.value = _state.value.copy(readsRussian = value)
+    }
+
+    override fun changeWritesRussian(value: Boolean) {
+        _state.value = _state.value.copy(writesRussian = value)
     }
 }

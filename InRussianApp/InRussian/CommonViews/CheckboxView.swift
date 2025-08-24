@@ -33,3 +33,4 @@ struct CheckboxView: View {
 #Preview {
     CheckboxView(isChecked: Binding.constant(true), label: "String")
 }
+

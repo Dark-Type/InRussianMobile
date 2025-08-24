@@ -3,6 +3,7 @@ package com.example.inrussian.root.auth.register
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +16,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.inrussian.components.auth.register.RegisterComponent
+import com.example.inrussian.ui.theme.BackButton
 import com.example.inrussian.ui.theme.CommonButton
 import com.example.inrussian.ui.theme.CommonTextField
 import inrussian.composeapp.generated.resources.Res
@@ -35,6 +37,9 @@ fun RegisterUi(component: RegisterComponent) {
     val state by component.state.subscribeAsState()
 
     Column(modifier = Modifier.padding(16.dp)) {
+        Row {
+            BackButton(enable = false, onClick = component::onBackClicked)
+        }
         Box(
             modifier = Modifier
                 .weight(1f)
@@ -57,7 +62,7 @@ fun RegisterUi(component: RegisterComponent) {
             onIconClick = component::onEmailDeleteClick,
             error = state.emailError
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
         CommonTextField(
             value = state.password,
             onValueChange = component::changePassword,
@@ -70,7 +75,7 @@ fun RegisterUi(component: RegisterComponent) {
 
             error = state.passwordError
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
         CommonTextField(
             value = state.confirmPassword,
             onValueChange = component::changeConfirmPassword,

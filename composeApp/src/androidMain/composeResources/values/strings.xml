@@ -26,7 +26,7 @@
     <string name="app_n_language">Язык\nприложения</string>
     <string name="app_language">Язык приложения:</string>
     <string name="tell_about_u">Для продолжения расскажите немного о себе</string>
-    <string name="continue">Далее</string>
+    <string name="`continue`">Далее</string>
     <string name="back">Назад</string>
     <string name="give_permission">Я даю согласие</string>
     <string name="to_update_data">на обработку персональных данных</string>
@@ -63,7 +63,7 @@
 
 
     <string name="profile">Профиль</string>
-    <string name="register_date">Дата регистрации:</string>
+    <string name="register_date">Дата регистрации</string>
     <string name="your_achievements">Ваши достижения</string>
     <string name="strike">серия</string>
     <string name="send_notification">Разрешить отправку уведомлений</string>
@@ -71,6 +71,8 @@
     <string name="edit_profile">Редактировать личные данные</string>
     <string name="privacy_police">Политика конфиденциальности</string>
     <string name="about_app">О приложении</string>
+    <string name="show_onboarding">Просмотреть онбординг еще раз</string>
+    <string name="save">Сохранить</string>
 
     <string name="training">Тренажер</string>
     <string name="main">Главная</string>
@@ -97,4 +99,10 @@
     <string name="mastered">Освоено</string>
     <string name="on_mastered">На освоении</string>
     <string name="not_passed">Не пройдено</string>
+
+    <string name="theme_system">Системная</string>
+    <string name="theme_light">Светлая</string>
+    <string name="theme_dark">Темная</string>
+    <string name="logout">Выйти</string>
+
 </resources>

@@ -3,9 +3,13 @@ package com.example.inrussian.root.main.profile
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,16 +40,25 @@ fun ProfileMainScreen(component: ProfileMainComponent) {
         return
     }
 
-    LazyColumn(
+    Column(
         modifier = Modifier
             .background(reallyLightGrey)
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        item { HeaderSection(state = state, component = component) }
-        item { BadgesSection(badges = state.badges) }
-        item { ActionButtons(component = component) }
+        HeaderSection(
+            state = state,
+            component = component,
+        )
+        BadgesSection(
+            badges = state.badges,
+        )
+        ActionButtons(
+            component = component,
+        )
+        Spacer(modifier = Modifier.height(82.dp))
     }
 }
 
@@ -98,6 +111,14 @@ class ProfileMainScreen : ProfileMainComponent {
     }
 
     override fun onNotificationSwitchClick(enable: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onShowOnboarding() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onShowAuth() {
         TODO("Not yet implemented")
     }
 

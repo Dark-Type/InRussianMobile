@@ -29,7 +29,8 @@ interface RegisterStore : Store<RegisterStore.Intent, RegisterStore.State, Regis
         val isButtonActive: Boolean
             get() = email.isNotBlank() && emailError == null &&
                     password.isNotBlank() && passwordError == null &&
-                    confirmPassword.isNotBlank() && confirmPasswordError == null
+                    confirmPassword.isNotBlank() && confirmPasswordError == null &&
+                    password == confirmPassword
     }
 
     sealed interface Action {}

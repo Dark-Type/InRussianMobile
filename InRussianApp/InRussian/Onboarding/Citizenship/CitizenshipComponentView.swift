@@ -5,8 +5,8 @@
 //  Created by dark type on 16.08.2025.
 //
 
-import SwiftUI
 import Shared
+import SwiftUI
 
 enum TimeSpentInRussia: String, CaseIterable, Identifiable {
     case lessThanMonth = "менее месяца"
@@ -22,11 +22,49 @@ enum TimeSpentInRussia: String, CaseIterable, Identifiable {
 struct CitizenshipComponentView: View {
     let component: CitizenshipComponent
 
-    // Options
     private let countryOptions = [
-        "Россия", "Казахстан", "Узбекистан", "Таджикистан", "Киргизия",
-        "Беларусь", "Армения", "Грузия", "Китай", "Индия", "Турция", "Германия"
-    ]
+        "Австралия", "Австрия", "Азербайджан", "Албания", "Алжир", "Ангола", "Андорра", "Антигуа и Барбуда", "Аргентина", "Армения",
+        "Афганистан", "Багамские Острова", "Бангладеш", "Барбадос", "Бахрейн", "Беларусь", "Белиз", "Бельгия", "Бенин", "Болгария",
+        "Боливия", "Босния и Герцеговина", "Ботсвана", "Бразилия", "Бруней", "Буркина-Фасо", "Бурунди", "Бутан", "Вануату", "Ватикан",
+        "Великобритания", "Венгрия", "Венесуэла", "Восточный Тимор", "Вьетнам", "Габон", "Гаити", "Гайана", "Гамбия", "Гана",
+        "Гватемала", "Гвинея", "Гвинея-Бисау", "Германия", "Гондурас", "Гренада", "Греция", "Грузия", "Дания", "Джибути", "Доминика",
+        "Доминиканская Республика", "Египет", "Замбия", "Зимбабве", "Израиль", "Индия", "Индонезия", "Иордания", "Ирак", "Иран",
+        "Ирландия", "Исландия", "Испания", "Италия", "Йемен", "Кабо-Верде", "Казахстан", "Камбоджа", "Камерун", "Канада", "Катар",
+        "Кения", "Кипр", "Киргизия", "Кирибати", "Китай", "Колумбия", "Коморы", "Конго", "Коста-Рика", "Кот-д’Ивуар", "Куба",
+        "Кувейт", "Лаос", "Латвия", "Лесото", "Либерия", "Ливан", "Ливия", "Литва", "Лихтенштейн", "Люксембург", "Маврикий", "Мавритания",
+        "Мадагаскар", "Макао", "Македония", "Малави", "Малайзия", "Мали", "Мальдивы", "Мальта", "Марокко", "Маршалловы Острова",
+        "Мексика", "Мозамбик", "Молдова", "Монако", "Монголия", "Мьянма", "Намибия", "Науру", "Непал", "Нигер", "Нигерия", "Нидерланды",
+        "Никарагуа", "Новая Зеландия", "Норвегия", "ОАЭ", "Оман", "Пакистан", "Палау", "Палестина", "Панама", "Папуа — Новая Гвинея",
+        "Парагвай", "Перу", "Польша", "Португалия", "Россия", "Руанда", "Румыния", "Сальвадор", "Самоа", "Сан-Марино", "Сан-Томе и Принсипи",
+        "Саудовская Аравия", "Свазиленд", "Северная Корея", "Северная Македония", "Сейшельские Острова", "Сенегал", "Сент-Винсент и Гренадины",
+        "Сент-Китс и Невис", "Сент-Люсия", "Сербия", "Сингапур", "Сирия", "Словакия", "Словения", "Соломоновы Острова", "Сомали",
+        "Судан", "Суринам", "США", "Сьерра-Леоне", "Таджикистан", "Таиланд", "Танзания", "Того", "Тонга", "Тринидад и Тобаго", "Тувалу",
+        "Тунис", "Туркмения", "Турция", "Уганда", "Узбекистан", "Украина", "Уругвай", "Фиджи", "Филиппины", "Финляндия", "Франция",
+        "Хорватия", "ЦАР", "Чад", "Черногория", "Чехия", "Чили", "Швейцария", "Швеция", "Шри-Ланка", "Эквадор", "Экваториальная Гвинея",
+        "Эритрея", "Эстония", "Эфиопия", "ЮАР", "Южная Корея", "Южный Судан", "Ямайка", "Япония"
+    ].sorted()
+    let nationalityOptions = [
+        "Русский", "Татарин", "Башкир", "Чеченец", "Удмурт", "Мордва", "Мариец", "Чуваш", "Бурят", "Якут", "Осетин", "Калмык",
+        "Кабардинец", "Аварец", "Даргинец", "Кумык", "Лезгин", "Ингуш", "Карачаевец", "Балкарец", "Армянин", "Азербайджанец",
+        "Грузин", "Еврей", "Белорус", "Украинец", "Молдаванин", "Казах", "Узбек", "Киргиз", "Туркмен", "Таджик", "Латыш",
+        "Литовец", "Эстонец", "Поляк", "Немец", "Грек", "Болгарин", "Румын", "Чех", "Словац", "Венгр", "Финн", "Швед", "Норвежец",
+        "Датчанин", "Англичанин", "Шотландец", "Ирландец", "Француз", "Итальянец", "Испанец", "Португалец", "Серб", "Хорват",
+        "Словенец", "Македонец", "Черногорец", "Босниец", "Албанец", "Турок", "Араб", "Иранец", "Афганец", "Пакистанец", "Индус",
+        "Китайц", "Кореец", "Японец", "Монгол", "Вьетнамец", "Лаосец", "Кхмер", "Таец", "Бирманец", "Малайзиец", "Индонезиец",
+        "Филиппинец", "Сингапурец", "Канадец", "Американец", "Мексиканец", "Кубинец", "Бразилец", "Аргентинец", "Чилиец",
+        "Перуанец", "Колумбиец", "Венесуэлец", "Эквадорец", "Боливиец", "Парагваец", "Уругваец", "Гватемалец", "Коста-риканец",
+        "Гондурасец", "Сальвадорец", "Панамец", "Ямайец", "Гаитянин", "Доминиканец", "Камерунец", "Ганец", "Нигериец",
+        "Суданец", "Эфиоп", "Сомалиец", "Кениец", "Танзаниец", "Угандиец", "Замбиец", "Зимбабвиец", "Мозамбикец", "Малагасиец",
+        "Мадагаскарец", "Сенегалец", "Марокканец", "Алжирец", "Тунисец", "Ливиец", "Египтянин", "Южноафриканец", "Австралиец",
+        "Новозеландец", "Папуас", "Фиджиец", "Тонганец", "Самоанец", "Маори", "Гренландец", "Исландиец", "Еврей", "Цыган",
+        "Ассириец", "Осетин", "Караим", "Татарин-крымский", "Ахалтекинец", "Абхаз", "Адыгеец", "Абазин", "Шорец", "Тувинец",
+        "Хакас", "Саха", "Эвенк", "Ненец", "Чукча", "Коряк", "Ительмен", "Коми", "Карел", "Вепс", "Саам", "Удмурт", "Мари",
+        "Мордва", "Эрзя", "Мокша", "Чуваш", "Башкир", "Калмык", "Бурят", "Тувинец", "Якут", "Хант", "Манси", "Селькуп", "Нганасан",
+        "Эскимос", "Алеут", "Кет", "Юкагир", "Эвен", "Долган", "Нивх", "Уильта", "Ороч", "Удэгеец", "Тазы", "Орок", "Чулымец",
+        "Селькуп", "Сойот", "Тофалар", "Айну", "Нагаец", "Башкирин", "Кумыкец", "Лезгин", "Табасаранец", "Рутулец", "Цахурец",
+        "Агулец", "Тат", "Джухур", "Лакец", "Дидой", "Тиндиец", "Чамалинец", "Ботлихец", "Гинухец", "Годоберинец", "Хваршине",
+        "Багулалец", "Цез", "Гунзибец", "Хиналуг", "Будуг", "Крымчак", "Карачаевец", "Балкарец", "Абазин", "Черкес", "Ногай", "Кумыкец"
+    ].sorted()
 
     @State private var citizenships: [String]
     @State private var nationality: String
@@ -35,10 +73,11 @@ struct CitizenshipComponentView: View {
     @State private var countryDuringEducation: String
     @State private var timeSpentInRussia: TimeSpentInRussia?
 
-    
     @State private var showCitizenshipPicker = false
     @State private var showNationalityPicker = false
     @State private var showTimeSpentPicker = false
+    @State private var showCountryOfResidencePicker = false
+    @State private var showCountryDuringEducationPicker = false
 
     init(component: CitizenshipComponent) {
         self.component = component
@@ -48,14 +87,16 @@ struct CitizenshipComponentView: View {
         _cityOfResidence = State(initialValue: component.state.value.cityOfResidence)
         _countryDuringEducation = State(initialValue: component.state.value.countryDuringEducation)
         _timeSpentInRussia = State(initialValue:
-                                    TimeSpentInRussia.allCases.first(where: { $0.rawValue == component.state.value.timeSpentInRussia })
+            TimeSpentInRussia.allCases.first(where: { $0.rawValue == component.state.value.timeSpentInRussia })
         )
     }
 
     // MARK: - Labels
+
     private var citizenshipPlaceholder: Text {
         Text("Гражданство").foregroundColor(.secondary) + Text("*").foregroundColor(.red)
     }
+
     private var nationalityLabel: Text {
         if nationality.isEmpty {
             return Text("Национальность").foregroundColor(.secondary) + Text("*").foregroundColor(.red)
@@ -63,6 +104,7 @@ struct CitizenshipComponentView: View {
             return Text(nationality).foregroundColor(.primary)
         }
     }
+
     private var timeSpentLabel: Text {
         if timeSpentInRussia == nil {
             return Text("Время в России").foregroundColor(.secondary) + Text("*").foregroundColor(.red)
@@ -71,14 +113,31 @@ struct CitizenshipComponentView: View {
         }
     }
 
+    private var countryOfResidenceLabel: Text {
+        if countryOfResidence.isEmpty {
+            return Text("Страна проживания").foregroundColor(.secondary) + Text("*").foregroundColor(.red)
+        } else {
+            return Text(countryOfResidence).foregroundColor(.primary)
+        }
+    }
+
+    private var countryDuringEducationLabel: Text {
+        if countryDuringEducation.isEmpty {
+            return Text("Страна во время обучения").foregroundColor(.secondary) + Text("*").foregroundColor(.red)
+        } else {
+            return Text(countryDuringEducation).foregroundColor(.primary)
+        }
+    }
+
     // MARK: - Validation
+
     private var isFormFilled: Bool {
         !citizenships.isEmpty &&
-        !nationality.isEmpty &&
-        !countryOfResidence.isEmpty &&
-        !cityOfResidence.isEmpty &&
-        !countryDuringEducation.isEmpty &&
-        timeSpentInRussia != nil
+            !nationality.isEmpty &&
+            !countryOfResidence.isEmpty &&
+            !cityOfResidence.isEmpty &&
+            !countryDuringEducation.isEmpty &&
+            timeSpentInRussia != nil
     }
 
     var body: some View {
@@ -86,7 +145,6 @@ struct CitizenshipComponentView: View {
             Color(.secondarySystemBackground).ignoresSafeArea()
 
             VStack(spacing: 24) {
-
                 Image(systemName: "globe.europe.africa.fill")
                     .resizable()
                     .scaledToFit()
@@ -97,7 +155,6 @@ struct CitizenshipComponentView: View {
 
                 Form {
                     Section {
-                        // Citizenship multi-select chips
                         CitizenshipChipField(
                             placeholder: citizenshipPlaceholder,
                             selections: $citizenships,
@@ -107,7 +164,6 @@ struct CitizenshipComponentView: View {
                         )
                         .listRowBackground(AppColors.Palette.componentBackground.color)
 
-                        // Nationality single-select
                         PickerLikeRow(
                             label: nationalityLabel,
                             icon: "chevron.down",
@@ -118,7 +174,6 @@ struct CitizenshipComponentView: View {
                         }
                         .listRowBackground(AppColors.Palette.componentBackground.color)
 
-                        // Time spent single-select (enum)
                         PickerLikeRow(
                             label: timeSpentLabel,
                             icon: "chevron.down",
@@ -129,13 +184,26 @@ struct CitizenshipComponentView: View {
                         }
                         .listRowBackground(AppColors.Palette.componentBackground.color)
 
-                        // Text fields
-                        CustomAsteriskTextField(placeholder: "Страна проживания", text: $countryOfResidence)
-                            .listRowBackground(AppColors.Palette.componentBackground.color)
+                        PickerLikeRow(
+                            label: countryOfResidenceLabel,
+                            icon: "chevron.down",
+                            isEmpty: countryOfResidence.isEmpty,
+                            inactiveColor: AppColors.Palette.inactive.color
+                        ) {
+                            withAnimation { showCountryOfResidencePicker = true }
+                        }
+                        .listRowBackground(AppColors.Palette.componentBackground.color)
+
                         CustomAsteriskTextField(placeholder: "Город проживания", text: $cityOfResidence)
                             .listRowBackground(AppColors.Palette.componentBackground.color)
-                        CustomAsteriskTextField(placeholder: "Страна во время обучения", text: $countryDuringEducation)
-                            .listRowBackground(AppColors.Palette.componentBackground.color)
+                        PickerLikeRow(
+                            label: countryDuringEducationLabel,
+                            icon: "chevron.down",
+                            isEmpty: countryDuringEducation.isEmpty,
+                            inactiveColor: AppColors.Palette.inactive.color
+                        ) {
+                            withAnimation { showCountryDuringEducationPicker = true }
+                        }
                     }
                 }
                 .scrollContentBackground(.hidden)
@@ -143,7 +211,6 @@ struct CitizenshipComponentView: View {
                 .padding(.bottom, 36)
             }
 
-            // Modals
             if showCitizenshipPicker {
                 DimmedModalBackground { withAnimation { showCitizenshipPicker = false } }
                 OptionListModal(
@@ -170,7 +237,7 @@ struct CitizenshipComponentView: View {
                 DimmedModalBackground { withAnimation { showNationalityPicker = false } }
                 OptionListModal(
                     title: "Выберите национальность",
-                    options: countryOptions,
+                    options: nationalityOptions,
                     selected: nationality.isEmpty ? [] : [nationality],
                     allowsMultiple: false,
                     accent: AppColors.Palette.accent.color,
@@ -199,6 +266,38 @@ struct CitizenshipComponentView: View {
                     onDone: { withAnimation { showTimeSpentPicker = false } }
                 )
             }
+            if showCountryOfResidencePicker {
+                DimmedModalBackground { withAnimation { showCountryOfResidencePicker = false } }
+                OptionListModal(
+                    title: "Страна проживания",
+                    options: countryOptions,
+                    selected: countryOfResidence.isEmpty ? [] : [countryOfResidence],
+                    allowsMultiple: false,
+                    accent: AppColors.Palette.accent.color,
+                    onSelect: { choice in
+                        countryOfResidence = choice
+                        withAnimation { showCountryOfResidencePicker = false }
+                    },
+                    onRemove: { _ in },
+                    onDone: { withAnimation { showCountryOfResidencePicker = false } }
+                )
+            }
+            if showCountryDuringEducationPicker {
+                DimmedModalBackground { withAnimation { showCountryDuringEducationPicker = false } }
+                OptionListModal(
+                    title: "Страна во время обучения",
+                    options: countryOptions,
+                    selected: countryDuringEducation.isEmpty ? [] : [countryDuringEducation],
+                    allowsMultiple: false,
+                    accent: AppColors.Palette.accent.color,
+                    onSelect: { choice in
+                        countryDuringEducation = choice
+                        withAnimation { showCountryDuringEducationPicker = false }
+                    },
+                    onRemove: { _ in },
+                    onDone: { withAnimation { showCountryDuringEducationPicker = false } }
+                )
+            }
         }
         .navigationTitle("Гражданство и проживание")
         .navigationBarTitleDisplayMode(.large)
@@ -219,11 +318,9 @@ struct CitizenshipComponentView: View {
                 Button {
                     component.onNext()
                 } label: {
-                    HStack(spacing: 0) {
+                    HStack {
                         Text("Далее")
-                            .font(.system(size: 17, weight: .semibold))
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 17, weight: .semibold))
                     }
                     .foregroundColor(isFormFilled ? AppColors.Palette.accent.color : AppColors.Palette.inactive.color)
                 }
@@ -231,10 +328,10 @@ struct CitizenshipComponentView: View {
             }
         }
     }
-
 }
 
 // MARK: - Picker-Like Row
+
 struct PickerLikeRow: View {
     let label: Text
     let icon: String
@@ -258,6 +355,7 @@ struct PickerLikeRow: View {
 }
 
 // MARK: - Citizenship Chips Field
+
 struct CitizenshipChipField: View {
     let placeholder: Text
     @Binding var selections: [String]
@@ -319,6 +417,7 @@ struct CitizenshipChipField: View {
 }
 
 // MARK: - Chip View
+
 struct ChipView: View {
     let text: String
     let accent: Color
@@ -352,8 +451,6 @@ struct ChipView: View {
         .fixedSize()
     }
 }
-
-
 
 struct OptionListModal: View {
     let title: String
@@ -448,6 +545,7 @@ struct OptionListModal: View {
 }
 
 // MARK: - Dimmed Background
+
 struct DimmedModalBackground: View {
     let dismiss: () -> Void
     var body: some View {

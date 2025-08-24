@@ -9,15 +9,24 @@
 import SwiftUI
 import Shared
 
-public class ObservableValue<T : AnyObject> : ObservableObject {
+public class ObservableValue<T: AnyObject>: ObservableObject {
     @Published
     var value: T
 
     private var cancellation: Cancellation?
-    
-    init(_ value: Value<T>) {
+
+    public init(_ value: Value<T>) {
         self.value = value.value
-        self.cancellation = value.subscribe { [weak self] value in self?.value = value }
+        self.cancellation = value.subscribe { [weak self] v in
+            guard let self = self else { return }
+            if Thread.isMainThread {
+                self.value = v
+            } else {
+                DispatchQueue.main.async {
+                    self.value = v
+                }
+            }
+        }
     }
 
     deinit {

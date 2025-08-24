@@ -61,5 +61,4 @@ class DefaultLanguageComponent(
     override fun clickOnToggleButton(isSelected: Boolean) {
         _state.value = _state.value.copy(hasGivenPermission = isSelected)
     }
-
 }

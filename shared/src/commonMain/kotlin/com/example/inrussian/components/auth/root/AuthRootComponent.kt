@@ -174,7 +174,7 @@ class DefaultAuthRootComponent(
 
     private fun onUpdatePasswordOutput(output: UpdatePasswordOutput): Unit =
         when (output) {
-            is UpdatePasswordOutput.PasswordUpdated -> navigation.pushNew(AuthConfiguration.LanguageEmpty)
+            is UpdatePasswordOutput.PasswordUpdated -> onOutput(AuthOutput.NavigateToOnboarding)
             is UpdatePasswordOutput.NavigateBack -> navigation.pop()
         }
 

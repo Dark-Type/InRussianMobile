@@ -27,6 +27,9 @@ class DefaultUpdatePasswordComponent(
     private val authRepository: AuthRepository
 ) : UpdatePasswordComponent, ComponentContext by componentContext {
 
+    private val _state = MutableValue(UpdatePasswordState())
+    override val state: Value<UpdatePasswordState> get() = _state
+
     override fun onPasswordUpdated() {
         onOutput(UpdatePasswordOutput.PasswordUpdated)
     }
@@ -36,21 +39,29 @@ class DefaultUpdatePasswordComponent(
     }
 
     override fun onPasswordChange(password: String) {
-        TODO("Not yet implemented")
+        val confirmPassword = _state.value.confirmPassword
+        val enable = password.length >= 6 && password == confirmPassword && confirmPassword.isNotEmpty()
+        _state.value = _state.value.copy(
+            password = password,
+            updateButtonEnable = enable
+        )
     }
 
     override fun onConfirmPasswordChange(confirmPassword: String) {
-        TODO("Not yet implemented")
+        val password = _state.value.password
+        val error = if (password.length < 6) "Пароль должен быть не менее 6 символов" else null
+        val enable = password.length >= 6 && password == confirmPassword && confirmPassword.isNotEmpty()
+        _state.value = _state.value.copy(
+            confirmPassword = confirmPassword,
+            confirmPasswordError = error,
+            updateButtonEnable = enable
+        )
     }
-
     override fun onShowPasswordClick() {
-        TODO("Not yet implemented")
+        _state.value = _state.value.copy(showPassword = !_state.value.showPassword)
     }
 
     override fun onShowConfirmPasswordClick() {
-        TODO("Not yet implemented")
+        _state.value = _state.value.copy(showConfirmPassword = !_state.value.showConfirmPassword)
     }
-
-    private val _state = MutableValue(UpdatePasswordState())
-    override val state: Value<UpdatePasswordState> get() = _state
 }

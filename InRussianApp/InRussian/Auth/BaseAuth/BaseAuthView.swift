@@ -80,7 +80,8 @@ private struct SocialDivider: View {
                 .font(.footnote)
                 .foregroundColor(AppColors.Palette.footnote.color)
                 .multilineTextAlignment(.center)
-                .frame(width: UIScreen.main.bounds.width * 0.25)
+                .lineLimit(2, reservesSpace: true)
+                .frame(width: UIScreen.main.bounds.width * 0.3)
 
             Rectangle()
                 .fill(AppColors.Palette.stroke.color)

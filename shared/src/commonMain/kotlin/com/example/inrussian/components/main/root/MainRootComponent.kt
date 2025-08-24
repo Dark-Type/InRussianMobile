@@ -90,19 +90,20 @@ class DefaultMainRootComponent(
 
     private fun onHomeOutput(output: HomeOutput) {
         when (output) {
-            is HomeOutput.NavigateBack -> onOutput(MainOutput.NavigateBack)
+            is HomeOutput.NavigateBack -> onOutput(MainOutput.NavigateToAuth)
         }
     }
 
     private fun onTrainOutput(output: TrainOutput) {
         when (output) {
-            is TrainOutput.NavigateBack -> onOutput(MainOutput.NavigateBack)
+            is TrainOutput.NavigateBack -> onOutput(MainOutput.NavigateToAuth)
         }
     }
 
     private fun onProfileOutput(output: ProfileOutput) {
         when (output) {
-            is ProfileOutput.NavigateBack -> onOutput(MainOutput.NavigateBack)
+            is ProfileOutput.NavigateToAuth -> onOutput(MainOutput.NavigateToAuth)
+            is ProfileOutput.NavigateToOnboarding -> onOutput(MainOutput.NavigateToOnboarding)
         }
     }
 }

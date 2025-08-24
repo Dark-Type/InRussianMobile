@@ -24,11 +24,9 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.arkivanov.decompose.value.MutableValue
 import com.example.inrussian.components.onboarding.education.EducationComponent
 import com.example.inrussian.ui.theme.BackButton
 import com.example.inrussian.ui.theme.ContinueButton
@@ -92,7 +90,182 @@ fun EducationUi(component: EducationComponent) {
         ) {
             ClipsContainer(
                 isOpen = state.isOpenLanguages,
-                variants = listOf("Russ", "NeRuss", "Japan"),
+                variants = listOf(
+                    "Русский",
+                    "Английский",
+                    "Китайский",
+                    "Узбекский",
+                    "Таджикский",
+                    "Хинди",
+                    "Казахский",
+                    "Французский",
+                    "Немецкий",
+                    "Испанский",
+                    "Португальский",
+                    "Итальянский",
+                    "Японский",
+                    "Корейский",
+                    "Турецкий",
+                    "Польский",
+                    "Украинский",
+                    "Белорусский",
+                    "Литовский",
+                    "Латышский",
+                    "Эстонский",
+                    "Грузинский",
+                    "Армянский",
+                    "Азербайджанский",
+                    "Монгольский",
+                    "Вьетнамский",
+                    "Тайский",
+                    "Бирманский",
+                    "Лаосский",
+                    "Кхмерский",
+                    "Индонезийский",
+                    "Малайский",
+                    "Филиппинский (Тагальский)",
+                    "Суахили",
+                    "Арабский",
+                    "Персидский",
+                    "Пушту",
+                    "Курдский",
+                    "Туркменский",
+                    "Киргизский",
+                    "Башкирский",
+                    "Татарский",
+                    "Чувашский",
+                    "Марийский",
+                    "Мордовский",
+                    "Удмуртский",
+                    "Коми",
+                    "Карельский",
+                    "Финский",
+                    "Шведский",
+                    "Норвежский",
+                    "Датский",
+                    "Исландский",
+                    "Венгерский",
+                    "Чешский",
+                    "Словацкий",
+                    "Словенский",
+                    "Хорватский",
+                    "Сербский",
+                    "Болгарский",
+                    "Македонский",
+                    "Румынский",
+                    "Албанский",
+                    "Греческий",
+                    "Еврейский (Иврит)",
+                    "Йидиш",
+                    "Бенгальский",
+                    "Панджаби",
+                    "Гуджарати",
+                    "Тамильский",
+                    "Телугу",
+                    "Каннада",
+                    "Малаялам",
+                    "Маратхи",
+                    "Сингальский",
+                    "Непальский",
+                    "Синдхи",
+                    "Урду",
+                    "Пушту",
+                    "Сингальский",
+                    "Тайский",
+                    "Лаосский",
+                    "Бирманский",
+                    "Кхмерский",
+                    "Болгарский",
+                    "Македонский",
+                    "Венгерский",
+                    "Чешский",
+                    "Словацкий",
+                    "Польский",
+                    "Нидерландский",
+                    "Фламандский",
+                    "Африкаанс",
+                    "Каталанский",
+                    "Галисийский",
+                    "Баскский",
+                    "Фризский",
+                    "Ирландский",
+                    "Шотландский (Гэльский)",
+                    "Уэльский",
+                    "Корнский",
+                    "Бретонский",
+                    "Люксембургский",
+                    "Албанский",
+                    "Ретороманский",
+                    "Сардский",
+                    "Сицилийский",
+                    "Неаполитанский",
+                    "Пьемонтский",
+                    "Лигурийский",
+                    "Ломбардский",
+                    "Венетский",
+                    "Фриульский",
+                    "Сардский",
+                    "Мальтийский",
+                    "Креольский (Гаитянский)",
+                    "Сомалийский",
+                    "Амхарский",
+                    "Тигринья",
+                    "Оромо",
+                    "Суахили",
+                    "Лингала",
+                    "Кикуйю",
+                    "Шона",
+                    "Зулу",
+                    "Коса",
+                    "Сото",
+                    "Тсвана",
+                    "Тсонга",
+                    "Венда",
+                    "Чичева",
+                    "Ломве",
+                    "Яо",
+                    "Ганда",
+                    "Луганда",
+                    "Руанда",
+                    "Кирунди",
+                    "Масаи",
+                    "Сукума",
+                    "Ньянджа",
+                    "Мандинка",
+                    "Волоф",
+                    "Фула",
+                    "Хауса",
+                    "Йоруба",
+                    "Игбо",
+                    "Эве",
+                    "Га",
+                    "Акан",
+                    "Тви",
+                    "Бамбара",
+                    "Сонгаи",
+                    "Туарегский",
+                    "Берберский",
+                    "Маори",
+                    "Тонганский",
+                    "Самоанский",
+                    "Гавайский",
+                    "Фиджийский",
+                    "Тахитянский",
+                    "Микронезийский",
+                    "Маршалльский",
+                    "Палауанский",
+                    "Тувалуанский",
+                    "Науруанский",
+                    "Бислама",
+                    "Пиджин-Инглиш",
+                    "Креольский (Сейшельский)",
+                    "Креольский (Реюньонский)",
+                    "Креольский (Маврикийский)",
+                    "Эсперанто",
+                    "Интерлингва",
+                    "Идо",
+                    "Волапюк"
+                ),
                 active = state.languages,
                 onClick = component::deleteLanguage,
                 onChangeExpanded = component::onChangeExpanded,
@@ -101,13 +274,29 @@ fun EducationUi(component: EducationComponent) {
             )
 
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-            TextWithToggle(stringResource(Res.string.understand_rus_speech), true, {})
+            TextWithToggle(
+                stringResource(Res.string.understand_rus_speech),
+                state.speaksRussian,
+                { component.changeSpeaksRussian(it) }
+            )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-            TextWithToggle(stringResource(Res.string.understand_rus_language), true, {})
+            TextWithToggle(
+                stringResource(Res.string.understand_rus_language),
+                state.understandsRussian,
+                { component.changeUnderstandsRussian(it) }
+            )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-            TextWithToggle(stringResource(Res.string.understand_rus_text), true, {})
+            TextWithToggle(
+                stringResource(Res.string.understand_rus_text),
+                state.readsRussian,
+                { component.changeReadsRussian(it) }
+            )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-            TextWithToggle(stringResource(Res.string.can_write_rus_speech), true, {})
+            TextWithToggle(
+                stringResource(Res.string.can_write_rus_speech),
+                state.writesRussian,
+                { component.changeWritesRussian(it) }
+            )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
             InputFormField(
                 state.kindOfActivity,
@@ -159,47 +348,48 @@ fun TextWithToggle(
     }
 }
 
-class EducationUi : EducationComponent {
-    override val state = MutableValue(
-        EducationComponent.State(languages = mutableListOf("Ural", "Oleg"), isOpenLanguages = true)
-    )
-
-    override fun onNext() {
-        TODO("Not yet implemented")
-    }
-
-    override fun onBack() {
-        TODO("Not yet implemented")
-    }
-
-    override fun deleteLanguage(string: String) {
-        TODO("Not yet implemented")
-    }
-
-
-    override fun onChangeExpanded(boolean: Boolean) {
-        TODO("Not yet implemented")
-    }
-
-    override fun selectLanguage(language: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeActivity(activity: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeEducation(education: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun changePurpose(purpose: String) {
-        TODO("Not yet implemented")
-    }
-
-    @Preview(showBackground = true, showSystemUi = true)
-    @Composable
-    fun Preview() {
-        EducationUi(this)
-    }
-}
+//class EducationUi : EducationComponent {
+//    override val state = MutableValue(
+//        EducationComponent.State(languages = mutableListOf("Ural", "Oleg"), isOpenLanguages = true)
+//    )
+//
+//
+//    override fun onNext() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun onBack() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun deleteLanguage(string: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//
+//    override fun onChangeExpanded(boolean: Boolean) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun selectLanguage(language: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun changeActivity(activity: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun changeEducation(education: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun changePurpose(purpose: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    @Preview(showBackground = true, showSystemUi = true)
+//    @Composable
+//    fun Preview() {
+//        EducationUi(this)
+//    }
+//}

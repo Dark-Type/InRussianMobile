@@ -41,7 +41,7 @@ struct ConfirmationComponentView: View {
             Spacer()
 
             CustomButton(
-                text: "Все сохранено",
+                text: "Сохранить все",
                 color: AppColors.Palette.accent.color,
                 isActive: true,
                 trailingLogo: nil,

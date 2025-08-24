@@ -7,4 +7,5 @@ data class UpdatePasswordState(
     val isLoading: Boolean = false,
     val showPassword: Boolean = false,
     val showConfirmPassword: Boolean = false,
+    val confirmPasswordError: String? = null
 )

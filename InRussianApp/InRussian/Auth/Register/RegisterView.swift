@@ -11,16 +11,14 @@ import SwiftUI
 struct RegisterView: View {
     let component: RegisterComponent
 
-    @State private var email: String = ""
-    @State private var password: String = ""
-    @State private var confirmPassword: String = ""
+    @ObservedObject private var observedState: ObservableValue<RegisterStoreState>
 
     init(component: RegisterComponent) {
         self.component = component
-        _email = State(initialValue: component.state.value.email)
-        _password = State(initialValue: component.state.value.password)
-        _confirmPassword = State(initialValue: component.state.value.confirmPassword)
+        self.observedState = ObservableValue(component.state)
     }
+
+    private var state: RegisterStoreState { observedState.value }
 
     var body: some View {
         ZStack {
@@ -40,17 +38,22 @@ struct RegisterView: View {
 
                 VStack(spacing: 16) {
                     VStack(alignment: .leading, spacing: 4) {
-                       
-                            OutlinedTextfield(
-                                text: $email,
-                                placeholder: "Электронная почта",
-                                isSecure: false
-                            )
-                            .disabled(component.state.value.loading)
-                            
-                        
-                        
-                        if let emailError = component.state.value.emailError {
+                        OutlinedTextfield(
+                            text: Binding(
+                                get: { state.email },
+                                set: { component.changeEmail(email: $0) }
+                            ),
+                            placeholder: "Электронная почта",
+                            isSecure: false,
+                            onToggleSecure: nil,
+                            submitLabel: .next,
+                            onSubmit: nil,
+                            textContentType: .emailAddress,
+                            keyboardType: .emailAddress
+                        )
+                        .disabled(state.loading)
+
+                        if let emailError = state.emailError {
                             Text(emailError)
                                 .font(.caption)
                                 .foregroundColor(.red)
@@ -59,18 +62,22 @@ struct RegisterView: View {
                     }
 
                     VStack(alignment: .leading, spacing: 4) {
-                       
-                            OutlinedTextfield(
-                                text: $password,
-                                placeholder: "Пароль",
-                                isSecure: !component.state.value.showPassword
-                            )
-                            .disabled(component.state.value.loading)
-                            
-                            
-                        
-                        
-                        if let passwordError = component.state.value.passwordError {
+                        OutlinedTextfield(
+                            text: Binding(
+                                get: { state.password },
+                                set: { component.changePassword(password: $0) }
+                            ),
+                            placeholder: "Пароль",
+                            isSecure: !state.showPassword,
+                            onToggleSecure: { component.onShowPasswordClick() },
+                            submitLabel: .next,
+                            onSubmit: nil,
+                            textContentType: .password,
+                            keyboardType: .default
+                        )
+                        .disabled(state.loading)
+
+                        if let passwordError = state.passwordError {
                             Text(passwordError)
                                 .font(.caption)
                                 .foregroundColor(.red)
@@ -79,17 +86,26 @@ struct RegisterView: View {
                     }
 
                     VStack(alignment: .leading, spacing: 4) {
-                     
-                            OutlinedTextfield(
-                                text: $confirmPassword,
-                                placeholder: "Подтвердите пароль",
-                                isSecure: !component.state.value.showConfirmPassword
-                            )
-                            .disabled(component.state.value.loading)
-                            
-                        
-                        
-                        if let confirmPasswordError = component.state.value.confirmPasswordError {
+                        OutlinedTextfield(
+                            text: Binding(
+                                get: { state.confirmPassword },
+                                set: { component.changeConfirmPassword(confirmPassword: $0) }
+                            ),
+                            placeholder: "Подтвердите пароль",
+                            isSecure: !state.showConfirmPassword,
+                            onToggleSecure: { component.onShowConfirmPasswordClick() },
+                            submitLabel: .done,
+                            onSubmit: {
+                                if state.isButtonActive && !state.loading {
+                                    component.onRegister(email: state.email, password: state.password)
+                                }
+                            },
+                            textContentType: .password,
+                            keyboardType: .default
+                        )
+                        .disabled(state.loading)
+
+                        if let confirmPasswordError = state.confirmPasswordError {
                             Text(confirmPasswordError)
                                 .font(.caption)
                                 .foregroundColor(.red)
@@ -100,14 +116,17 @@ struct RegisterView: View {
                     CustomButton(
                         text: "Зарегистрироваться",
                         color: AppColors.Palette.accent.color,
-                        isActive: component.state.value.isButtonActive && !component.state.value.loading
+                        isActive: state.isButtonActive && !state.loading
                     ) {
-                        component.onRegister(email: email, password: password)
+                        component.onRegister(
+                            email: state.email,
+                            password: state.password
+                        )
                     }
+                    .disabled(!state.isButtonActive || state.loading)
                     .padding(.top, 36)
-                    .disabled(component.state.value.loading)
 
-                    if component.state.value.loading {
+                    if state.loading {
                         ProgressView()
                             .scaleEffect(1.2)
                             .padding(.top, 16)
@@ -116,42 +135,16 @@ struct RegisterView: View {
                 .padding(.horizontal, 28)
             }
         }
-        .onChange(of: email) { newValue in
-            component.changeEmail(email: newValue)
-        }
-        .onChange(of: password) { newValue in
-            component.changePassword(password: newValue)
-        }
-        .onChange(of: confirmPassword) { newValue in
-            component.changeConfirmPassword(confirmPassword: newValue)
-        }
-        .onChange(of: component.state.value.email) { newValue in
-            if email != newValue {
-                email = newValue
-            }
-        }
-        .onChange(of: component.state.value.password) { newValue in
-            if password != newValue {
-                password = newValue
-            }
-        }
-        .onChange(of: component.state.value.confirmPassword) { newValue in
-            if confirmPassword != newValue {
-                confirmPassword = newValue
-            }
-        }
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
-                Button(action: {
-                    component.onBackClicked()
-                }) {
+                Button(action: { component.onBackClicked() }) {
                     HStack {
                         Image(systemName: "chevron.left")
                         Text("Назад")
                     }
                     .foregroundColor(AppColors.Palette.accent.color)
                 }
-                .disabled(component.state.value.loading)
+                .disabled(state.loading)
             }
         }
         .navigationBarBackButtonHidden(true)

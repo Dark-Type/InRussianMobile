@@ -11,55 +11,58 @@ import SwiftUI
 struct EducationComponentView: View {
     let component: EducationComponent
 
-    // Options
     private let languageOptions = [
-        "Русский", "Английский", "Китайский", "Узбекский", "Таджикский",
-        "Хинди", "Казахский", "Французский", "Немецкий", "Испанский"
+        "Русский", "Английский", "Китайский", "Узбекский", "Таджикский", "Хинди", "Казахский", "Французский", "Немецкий", "Испанский",
+        "Португальский", "Итальянский", "Японский", "Корейский", "Турецкий", "Польский", "Украинский", "Белорусский", "Литовский", "Латышский",
+        "Эстонский", "Грузинский", "Армянский", "Азербайджанский", "Монгольский", "Вьетнамский", "Тайский", "Бирманский", "Лаосский", "Кхмерский",
+        "Индонезийский", "Малайский", "Филиппинский (Тагальский)", "Суахили", "Арабский", "Персидский", "Пушту", "Курдский", "Туркменский", "Киргизский",
+        "Башкирский", "Татарский", "Чувашский", "Марийский", "Мордовский", "Удмуртский", "Коми", "Карельский", "Финский", "Шведский",
+        "Норвежский", "Датский", "Исландский", "Венгерский", "Чешский", "Словацкий", "Словенский", "Хорватский", "Сербский", "Болгарский",
+        "Македонский", "Румынский", "Албанский", "Греческий", "Еврейский (Иврит)", "Йидиш", "Бенгальский", "Панджаби", "Гуджарати", "Тамильский",
+        "Телугу", "Каннада", "Малаялам", "Маратхи", "Сингальский", "Непальский", "Синдхи", "Урду", "Пушту", "Сингальский",
+        "Тайский", "Лаосский", "Бирманский", "Кхмерский", "Болгарский", "Македонский", "Венгерский", "Чешский", "Словацкий", "Польский",
+        "Нидерландский", "Фламандский", "Африкаанс", "Каталанский", "Галисийский", "Баскский", "Фризский", "Ирландский", "Шотландский (Гэльский)", "Уэльский",
+        "Корнский", "Бретонский", "Люксембургский", "Албанский", "Ретороманский", "Сардский", "Сицилийский", "Неаполитанский", "Пьемонтский", "Лигурийский",
+        "Ломбардский", "Венетский", "Фриульский", "Сардский", "Мальтийский", "Креольский (Гаитянский)", "Сомалийский", "Амхарский", "Тигринья", "Оромо",
+        "Суахили", "Лингала", "Кикуйю", "Шона", "Зулу", "Коса", "Сото", "Тсвана", "Тсонга", "Венда",
+        "Чичева", "Ломве", "Яо", "Ганда", "Луганда", "Руанда", "Кирунди", "Масаи", "Сукума", "Ньянджа",
+        "Мандинка", "Волоф", "Фула", "Хауса", "Йоруба", "Игбо", "Эве", "Га", "Акан", "Тви",
+        "Бамбара", "Сонгаи", "Туарегский", "Берберский", "Маори", "Тонганский", "Самоанский", "Гавайский", "Фиджийский", "Тахитянский",
+        "Микронезийский", "Маршалльский", "Палауанский", "Тувалуанский", "Науруанский", "Бислама", "Пиджин-Инглиш", "Креольский (Сейшельский)", "Креольский (Реюньонский)", "Креольский (Маврикийский)",
+        "Эсперанто", "Интерлингва", "Идо", "Волапюк"
     ]
 
-    // State
-    @State private var languages: [String]
+    @ObservedObject private var observedState: ObservableValue<EducationComponentState>
+
     @State private var understandsRussian: Bool
     @State private var speaksRussian: Bool
     @State private var readsRussian: Bool
     @State private var writesRussian: Bool
-    @State private var kindOfActivity: String
-    @State private var education: String
-    @State private var purposeOfRegistration: String
-
-    // Pickers / modals
-    @State private var showLanguagesPicker = false
 
     init(component: EducationComponent) {
         self.component = component
-        _languages = State(initialValue: component.state.value.languages)
-        _understandsRussian = State(initialValue: component.state.value.understandsRussian)
-        _speaksRussian = State(initialValue: component.state.value.speaksRussian)
-        _readsRussian = State(initialValue: component.state.value.readsRussian)
-        _writesRussian = State(initialValue: component.state.value.writesRussian)
-        _kindOfActivity = State(initialValue: component.state.value.kindOfActivity)
-        _education = State(initialValue: component.state.value.education)
-        _purposeOfRegistration = State(initialValue: component.state.value.purposeOfRegistration)
+        self.observedState = ObservableValue(component.state)
+
+        let s = component.state.value
+        _understandsRussian = State(initialValue: s.understandsRussian)
+        _speaksRussian = State(initialValue: s.speaksRussian)
+        _readsRussian = State(initialValue: s.readsRussian)
+        _writesRussian = State(initialValue: s.writesRussian)
     }
 
     // MARK: - Labels
 
-    private var languagesPlaceholder: Text {
+    private func languagesPlaceholder(for languages: [String]) -> Text {
         if languages.isEmpty {
             return Text("Языки").foregroundColor(.secondary) + Text("*").foregroundColor(.red)
         } else {
-            return Text("") 
+            return Text("")
         }
     }
 
-    private var isFormFilled: Bool {
-        !languages.isEmpty &&
-            !kindOfActivity.isEmpty &&
-            !education.isEmpty &&
-            !purposeOfRegistration.isEmpty
-    }
-
     var body: some View {
+        let state = observedState.value
+
         ZStack {
             Color(.secondarySystemBackground).ignoresSafeArea()
 
@@ -74,31 +77,79 @@ struct EducationComponentView: View {
 
                 Form {
                     Section {
-
                         LanguageChipField(
-                            placeholder: languagesPlaceholder,
-                            selections: $languages,
-                            showPicker: $showLanguagesPicker,
+                            placeholder: languagesPlaceholder(for: state.languages),
+                            selections: Binding(
+                                get: { state.languages },
+                                set: { newList in
+                                    let old = state.languages
+
+                                    old.filter { !newList.contains($0) }
+                                        .forEach { component.deleteLanguage(string: $0) }
+
+                                    newList.filter { !old.contains($0) }
+                                        .forEach { component.selectLanguage(language: $0) }
+                                }
+                            ),
+                            showPicker: Binding(
+                                get: { state.isOpenLanguages },
+                                set: { component.onChangeExpanded(boolean: $0) }
+                            ),
                             accent: AppColors.Palette.accent.color,
                             backgroundColor: AppColors.Palette.componentBackground.color
                         )
                         .listRowBackground(AppColors.Palette.componentBackground.color)
 
-                        CheckboxView(isChecked: $understandsRussian, label: "Понимает русский")
-                            .listRowBackground(AppColors.Palette.componentBackground.color)
-                        CheckboxView(isChecked: $speaksRussian, label: "Говорит по-русски")
-                            .listRowBackground(AppColors.Palette.componentBackground.color)
-                        CheckboxView(isChecked: $readsRussian, label: "Читает по-русски")
-                            .listRowBackground(AppColors.Palette.componentBackground.color)
-                        CheckboxView(isChecked: $writesRussian, label: "Пишет по-русски")
-                            .listRowBackground(AppColors.Palette.componentBackground.color)
+                        CheckboxView(
+                            isChecked: $understandsRussian,
+                            label: "Понимает русский"
+                        )
+                        .listRowBackground(AppColors.Palette.componentBackground.color)
 
-                        CustomAsteriskTextField(placeholder: "Вид деятельности", text: $kindOfActivity)
-                            .listRowBackground(AppColors.Palette.componentBackground.color)
-                        CustomAsteriskTextField(placeholder: "Образование", text: $education)
-                            .listRowBackground(AppColors.Palette.componentBackground.color)
-                        CustomAsteriskTextField(placeholder: "Цель регистрации", text: $purposeOfRegistration)
-                            .listRowBackground(AppColors.Palette.componentBackground.color)
+                        CheckboxView(
+                            isChecked: $speaksRussian,
+                            label: "Говорит по-русски"
+                        )
+                        .listRowBackground(AppColors.Palette.componentBackground.color)
+
+                        CheckboxView(
+                            isChecked: $readsRussian,
+                            label: "Читает по-русски"
+                        )
+                        .listRowBackground(AppColors.Palette.componentBackground.color)
+
+                        CheckboxView(
+                            isChecked: $writesRussian,
+                            label: "Пишет по-русски"
+                        )
+                        .listRowBackground(AppColors.Palette.componentBackground.color)
+
+                        CustomAsteriskTextField(
+                            placeholder: "Вид деятельности",
+                            text: Binding(
+                                get: { state.kindOfActivity },
+                                set: { component.changeActivity(activity: $0) }
+                            )
+                        )
+                        .listRowBackground(AppColors.Palette.componentBackground.color)
+
+                        CustomAsteriskTextField(
+                            placeholder: "Образование",
+                            text: Binding(
+                                get: { state.education },
+                                set: { component.changeEducation(education: $0) }
+                            )
+                        )
+                        .listRowBackground(AppColors.Palette.componentBackground.color)
+
+                        CustomAsteriskTextField(
+                            placeholder: "Цель регистрации",
+                            text: Binding(
+                                get: { state.purposeOfRegistration },
+                                set: { component.changePurpose(purpose: $0) }
+                            )
+                        )
+                        .listRowBackground(AppColors.Palette.componentBackground.color)
                     }
                 }
                 .scrollContentBackground(.hidden)
@@ -106,24 +157,17 @@ struct EducationComponentView: View {
                 .padding(.bottom, 36)
             }
 
-            
-            if showLanguagesPicker {
-                DimmedModalBackground { withAnimation { showLanguagesPicker = false } }
+            if state.isOpenLanguages {
+                DimmedModalBackground { withAnimation { component.onChangeExpanded(boolean: false) } }
                 OptionListModal(
                     title: "Добавить язык",
                     options: languageOptions,
-                    selected: Set(languages),
+                    selected: Set(state.languages),
                     allowsMultiple: true,
                     accent: AppColors.Palette.accent.color,
-                    onSelect: { lang in
-                        if !languages.contains(lang) {
-                            languages.append(lang)
-                        }
-                    },
-                    onRemove: { lang in
-                        languages.removeAll { $0 == lang }
-                    },
-                    onDone: { withAnimation { showLanguagesPicker = false } }
+                    onSelect: { lang in component.selectLanguage(language: lang) },
+                    onRemove: { lang in component.deleteLanguage(string: lang) },
+                    onDone: { withAnimation { component.onChangeExpanded(boolean: false) } }
                 )
             }
         }
@@ -132,9 +176,7 @@ struct EducationComponentView: View {
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
-                Button {
-                    component.onBack()
-                } label: {
+                Button { component.onBack() } label: {
                     HStack {
                         Image(systemName: "chevron.left")
                         Text("Назад")
@@ -143,20 +185,21 @@ struct EducationComponentView: View {
                 }
             }
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
-                    component.onNext()
-                } label: {
-                    HStack(spacing: 0) {
+                Button { component.onNext() } label: {
+                    HStack {
                         Text("Далее")
-                            .font(.system(size: 17, weight: .semibold))
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 17, weight: .semibold))
                     }
-                    .foregroundColor(isFormFilled ? AppColors.Palette.accent.color : AppColors.Palette.inactive.color)
+                    .foregroundColor(state.continueEnable ? AppColors.Palette.accent.color : AppColors.Palette.inactive.color)
                 }
-                .disabled(!isFormFilled)
+                .disabled(!state.continueEnable)
             }
         }
+        // Keep local checkbox UI in sync if framework state changes externally
+        .onChange(of: state.understandsRussian) { understandsRussian = $0 }
+        .onChange(of: state.speaksRussian) { speaksRussian = $0 }
+        .onChange(of: state.readsRussian) { readsRussian = $0 }
+        .onChange(of: state.writesRussian) { writesRussian = $0 }
     }
 }
 
@@ -183,7 +226,7 @@ struct LanguageChipField: View {
                 .onTapGesture { withAnimation { showPicker = true } }
             } else {
                 HStack(alignment: .top, spacing: 8) {
-                    FlowLayout(spacing: 8, runSpacing: 8,  alignment: .leading) {
+                    FlowLayout(spacing: 8, runSpacing: 8, alignment: .leading) {
                         ForEach(selections, id: \.self) { item in
                             ChipView(
                                 text: item,
@@ -220,4 +263,3 @@ struct LanguageChipField: View {
         }
     }
 }
-

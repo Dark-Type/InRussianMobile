@@ -24,7 +24,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 sealed interface ProfileOutput {
-    data object NavigateBack : ProfileOutput
+    data object NavigateToAuth : ProfileOutput
+    data object NavigateToOnboarding : ProfileOutput
+
 }
 
 interface ProfileComponent {
@@ -34,6 +36,9 @@ interface ProfileComponent {
     fun openAbout()
     fun openPrivacyPolicy()
     fun onBack()
+
+    fun onShowOnboarding()
+    fun onShowAuth()
 
     sealed interface Child {
         data class MainChild(val component: ProfileMainComponent) : Child
@@ -82,10 +87,10 @@ class DefaultProfileComponent(
     override fun onBack() {
         if (stack.value.backStack.isNotEmpty()) {
             navigation.pop()
-        } else {
-            onOutput(ProfileOutput.NavigateBack)
         }
     }
+    override fun onShowOnboarding() = onOutput(ProfileOutput.NavigateToOnboarding)
+    override fun onShowAuth() = onOutput(ProfileOutput.NavigateToAuth)
 
     private fun child(
         configuration: ProfileConfiguration,
@@ -97,6 +102,7 @@ class DefaultProfileComponent(
                     DefaultProfileMainComponent(
                         componentContext = componentContext,
                         userRepository = userRepository,
+                        onOutput = onOutput,
                         badgeRepository = badgeRepository,
                         settingsRepository = settingsRepository,
                         onEdit = ::openEditProfile,
@@ -140,6 +146,9 @@ interface ProfileMainComponent {
     fun cycleTheme()
     fun onSelectTheme(theme: AppTheme)
     fun onNotificationSwitchClick(enable: Boolean)
+
+    fun onShowOnboarding()
+    fun onShowAuth()
 }
 
 
@@ -147,10 +156,12 @@ class DefaultProfileMainComponent(
     componentContext: ComponentContext,
     private val userRepository: UserRepository,
     private val badgeRepository: BadgeRepository,
+    private val onOutput: (ProfileOutput) -> Unit,
     private val settingsRepository: SettingsRepository,
     private val onEdit: () -> Unit,
     private val onAbout: () -> Unit,
     private val onPrivacy: () -> Unit
+
 ) : ProfileMainComponent, ComponentContext by componentContext {
 
     private val scope = CoroutineScope(Dispatchers.Main.immediate)
@@ -207,6 +218,8 @@ class DefaultProfileMainComponent(
     override fun onNotificationSwitchClick(enable: Boolean) {
         _state.value = state.value.copy(notificationsEnabled = enable)
     }
+    override fun onShowOnboarding() = onOutput(ProfileOutput.NavigateToOnboarding)
+    override fun onShowAuth() = onOutput(ProfileOutput.NavigateToAuth)
 
     fun dispose() {
         scope.cancel()

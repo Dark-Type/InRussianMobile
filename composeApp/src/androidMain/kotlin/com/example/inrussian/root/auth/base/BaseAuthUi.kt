@@ -109,9 +109,18 @@ fun BaseAuthUi(component: BaseAuthComponent) {
                 ),
             shape = RoundedCornerShape(8.dp)
         ) {
-            Icon(painterResource(Res.drawable.vk), "", modifier = Modifier.size(24.dp))
-            Spacer(Modifier.width(14.dp))
-            Text(stringResource(Res.string.sign_in_with_vk))
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(stringResource(Res.string.sign_in_with_vk))
+                Spacer(Modifier.width(14.dp))
+                Icon(
+                    painter = painterResource(Res.drawable.vk),
+                    contentDescription = "",
+                    modifier = Modifier.size(24.dp),
+                    tint = androidx.compose.ui.graphics.Color.Unspecified
+                )
+            }
         }
         Button(
             onClick = { component.onYandexClicked() },
@@ -123,14 +132,21 @@ fun BaseAuthUi(component: BaseAuthComponent) {
                 .copy(containerColor = Black, disabledContainerColor = Orange.copy(alpha = 0.8f)),
             shape = RoundedCornerShape(8.dp)
         ) {
-            Icon(
-                painterResource(Res.drawable.yandex),
-                "",
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(Modifier.width(14.dp))
-            Text(stringResource(Res.string.sign_in_with_yandex))
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Text(stringResource(Res.string.sign_in_with_yandex))
+                Spacer(modifier = Modifier.width(14.dp))
+                Icon(
+                    painter = painterResource(Res.drawable.yandex),
+                    contentDescription = "",
+                    modifier = Modifier.size(24.dp),
+                    tint = androidx.compose.ui.graphics.Color.Unspecified
+                )
+            }
         }
+        Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
