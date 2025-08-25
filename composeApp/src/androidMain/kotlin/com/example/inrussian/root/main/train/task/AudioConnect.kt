@@ -6,16 +6,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.inrussian.models.models.task.AudioTask
-import com.example.inrussian.models.models.task.Task
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import com.example.inrussian.components.main.train.tasks.AudioConnectTaskComponent
 import com.example.inrussian.models.models.TaskState
+import com.example.inrussian.models.models.task.AudioTask
 import com.example.inrussian.models.models.task.TextTaskModel
 import com.example.inrussian.ui.theme.Black
 import com.example.inrussian.ui.theme.DarkGrey
@@ -30,36 +31,13 @@ import inrussian.composeapp.generated.resources.pause
 import inrussian.composeapp.generated.resources.play_button
 import org.jetbrains.compose.resources.vectorResource
 
-@Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xFFEAEAEA)
+//@Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xFFEAEAEA)
 @Composable
 fun AudioConnect(
-    elements: List<Task> = listOf(
-        AudioTask("", true),
-        TextTaskModel (
-            "",
-            "какой даун это придумал",
-            state = TaskState.Selected
-        ),
-        AudioTask(""),
-        TextTaskModel(
-            "",
-            "какой даун это придумал",
-            state = TaskState.NotSelected
-        ),
-        AudioTask("", true),
-        TextTaskModel(
-            "",
-            "какой даун это придумал",
-            state = TaskState.NotSelected
-        ),
-        AudioTask(""),
-        TextTaskModel(
-            "",
-            "какой даун это придумал",
-            state = TaskState.NotSelected
-        ),
-    )
+    component: AudioConnectTaskComponent,
+    onContinueClick: (() -> Unit) -> Unit
 ) {
+    val state by component.state.subscribeAsState()
     Box(Modifier.fillMaxSize())
     Grid(
         2,
@@ -67,7 +45,7 @@ fun AudioConnect(
         hSpacing = 30.dp,
         vSpacing = 32.dp
     ) {
-        itemsIndexed(elements) { index, element, mod ->
+        itemsIndexed(state.elements) { index, element, mod ->
 
             val (background, textColor) = when (element.state) {
                 TaskState.Correct -> Green to White
@@ -94,17 +72,17 @@ fun AudioConnect(
                 }
             else
                 PuzzleLayoutOut(onClick = {}, color = background, modifier = mod) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
+
                         Text(
                             text = (element as TextTaskModel).text,
+                            it,
                             textAlign = TextAlign.Center,
                             color = textColor
                         )
-                    }
                 }
+        }
+        onContinueClick{
+            component.onContinueClick()
         }
     }
 }

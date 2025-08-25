@@ -7,4 +7,8 @@ data class TextTaskModel(
     val text: String = "",
     val isAnswer: Boolean = false,
     override var state: TaskState = TaskState.NotSelected,
-) : Task(id, state)
+) : Task(id, state){
+    override fun copyWithState(newState: TaskState): Task {
+        return this.copy(state = newState)
+    }
+}

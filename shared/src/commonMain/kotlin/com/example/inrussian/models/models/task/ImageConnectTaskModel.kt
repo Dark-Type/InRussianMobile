@@ -11,4 +11,8 @@ data class ImageConnectTaskModel(
     val imageUrl: String,
     @SerialName("ImageConnectTaskModel_state")
     override var state: TaskState = TaskState.NotSelected
-) : Task(id, state)
+) : Task(id, state){
+    override fun copyWithState(newState: TaskState): Task {
+        return this.copy(state = newState)
+    }
+}

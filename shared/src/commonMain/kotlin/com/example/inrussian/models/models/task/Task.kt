@@ -10,4 +10,6 @@ sealed class Task(
     open val id: String,
     @SerialName("state_id")
     open var state: TaskState,
-)
+) {
+    abstract fun copyWithState(newState: TaskState): Task
+}

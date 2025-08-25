@@ -11,7 +11,8 @@ import com.example.inrussian.utils.queueOf
 interface TrainStore : Store<Intent, State, Label> {
     sealed interface Intent {
         data class ContinueClick(val isPass: Boolean) : Intent
-        data class UpdateTasks(val tasks: List<FullTaskMode>)
+        data class OnButtonStateChange(val isEnable: Boolean) : Intent
+        data class InCheckStateChange(val inCheck: Boolean) : Intent
     }
 
     data class State(
@@ -20,6 +21,8 @@ interface TrainStore : Store<Intent, State, Label> {
         val currentTaskIndex: Int = 0,
         val showedTask: FullTaskMode? = null,
         val errorCounter: Int = 0,
+        val isChecking: Boolean = true,
+        val isButtonEnable: Boolean = false,
         val isLoading: Boolean = true
     ) {
         val percent: Float? = tasks?.let { it.size.toFloat() / currentTaskIndex.toFloat() }
@@ -34,6 +37,8 @@ interface TrainStore : Store<Intent, State, Label> {
         data class AddTaskInQueue(val task: FullTaskMode) : Msg
         data object UpdateCounter : Msg
         data object UpdateIndexAndTask : Msg
+        data class UpdateButtonState(val isEnable: Boolean) : Msg
+        data class UpdateCheckState(val inCheck: Boolean) : Msg
     }
 
     sealed interface Label {

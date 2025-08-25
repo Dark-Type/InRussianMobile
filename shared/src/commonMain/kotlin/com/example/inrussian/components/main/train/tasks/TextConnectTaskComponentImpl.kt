@@ -5,12 +5,10 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
 import com.example.inrussian.models.models.TaskBody.TextTask
 import com.example.inrussian.models.models.TaskState
-import com.example.inrussian.models.models.task.AudioTask
-import com.example.inrussian.models.models.task.ImageConnectTaskModel
 import com.example.inrussian.models.models.task.Task
-import com.example.inrussian.models.models.task.TextInsertTask
 import com.example.inrussian.models.models.task.TextTaskModel
 import com.example.inrussian.utils.componentCoroutineScope
+import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -18,211 +16,130 @@ import kotlin.uuid.Uuid
 class TextConnectTaskComponentImpl(
     component: ComponentContext,
     private val onContinueClicked: (Boolean) -> Unit,
+    private val inChecking: (Boolean) -> Unit,
+    private val onButtonEnable: (Boolean) -> Unit,
     listTextTasks: TextTask
-) :
-    TextConnectTaskComponent,
-    ComponentContext by component {
-    val correctList = mutableListOf<Pair<Task, Task>>()
+) : TextConnectTaskComponent, ComponentContext by component {
+    var correctList = mutableListOf<Pair<Task, Task>>()
     override val state = MutableValue(TextConnectTaskComponent.State())
     val scope = componentCoroutineScope()
 
     init {
-
-        val list = MutableList<Pair<Task, Task>?>(listTextTasks.variant.size) { null }
-        val order = randomUniqueListShuffle(0, list.size, list.size)
-        Logger.i { order.toString() }
-        listTextTasks.variant.forEachIndexed { index, element ->
-            correctList.add(
-                TextTaskModel(
-                    id = Uuid.random().toString(), text = element.first
-                ) to TextTaskModel(
-                    id = Uuid.random().toString(), isAnswer = true, text = element.second
-                )
-            )
-            list[index] = (TextTaskModel(
-                id = Uuid.random().toString(), text = element.first
-            ) to TextTaskModel(
-                id = Uuid.random().toString(),
-                isAnswer = true,
-                text = listTextTasks.variant[order[index]].second
-            ))
-
+        val tasks = listTextTasks.variant.map { (qText, aText) ->
+            val q = TextTaskModel(id = Uuid.random().toString(), text = qText, isAnswer = false)
+            val a = TextTaskModel(id = Uuid.random().toString(), text = aText, isAnswer = true)
+            q to a
         }
-        state.value = state.value.copy(list.map { it!! })
+
+        val shuffledAnswers = tasks.map { it.second }.shuffled()
+        val elements = tasks.mapIndexed { index, (q, _) -> q to shuffledAnswers[index] }
+
+        this.correctList = tasks.toMutableList()
+        state.value = state.value.copy(elements = elements)
+        Logger.i { "current-> $correctList" }
+        Logger.i { "elements-> ${state.value.elements}" }
+        scope.launch {
+            state.subscribe {
+                Logger.i { (it.pairs.size == it.elements.size).toString() + "<- is enable" }
+                onButtonEnable(it.pairs.size == it.elements.size)
+            }
+        }
     }
+
     override fun onTaskClick(taskId: String) {
-        val cur = state.value
-        if (cur.isChecked) return
-
-        val elements = cur.elements
-        val clickedIndex = elements.indexOfFirst { it.first.id == taskId || it.second.id == taskId }
-        if (clickedIndex == -1) return
-
-        val (first, second) = elements[clickedIndex]
-        val clickedElement = if (first.id == taskId) first else second
-
-        // Проверяем, находится ли элемент в существующей паре
-        val existingPair = cur.pairs.find { it.first.id == taskId || it.second.id == taskId }
-
-        if (existingPair != null) {
-            // Удаляем пару и снимаем выделение с обоих элементов
-            val updatedPairs = cur.pairs - existingPair
-            val updatedElements = elements.map { elementPair ->
-                val newFirst = if (elementPair.first.id == existingPair.first.id ||
-                    elementPair.first.id == existingPair.second.id) {
-                    elementPair.first.withState(TaskState.NotSelected)
-                } else {
-                    elementPair.first
-                }
-
-                val newSecond = if (elementPair.second.id == existingPair.first.id ||
-                    elementPair.second.id == existingPair.second.id) {
-                    elementPair.second.withState(TaskState.NotSelected)
-                } else {
-                    elementPair.second
-                }
-
-                newFirst to newSecond
-            }
-
-            // Проверяем, все ли возможные пары соединены
-            val isAllConnectedNow = updatedPairs.size == elements.size
-
-            state.value = cur.copy(
-                elements = updatedElements,
-                pairs = updatedPairs as MutableList<Pair<Task, Task>>,
-                selectedTask = null,
-                isAllConnected = isAllConnectedNow
-            )
-            return
-        }
-
-        // Если элемент не в паре
-        when (cur.selectedTask) {
-            null -> {
-                // Выделяем новый элемент
-                val updatedElements = elements.map { elementPair ->
-                    if (elementPair.first.id == taskId) {
-                        elementPair.first.withState(TaskState.Selected) to elementPair.second
-                    } else if (elementPair.second.id == taskId) {
-                        elementPair.first to elementPair.second.withState(TaskState.Selected)
-                    } else {
-                        elementPair
-                    }
-                }
-                state.value = cur.copy(
-                    elements = updatedElements,
-                    selectedTask = clickedElement
+        if (!state.value.isChecked) {
+            if (state.value.selectedTask == null) {
+                val pairConnectedTask =
+                    state.value.pairs.find { it.first.id == taskId || it.second.id == taskId }
+                if (state.value.selectedTask?.id == taskId) state.value = state.value.copy(
+                    selectedTask = state.value.selectedTask?.copyWithState(TaskState.NotSelected)
                 )
-            }
-            else -> {
-                if (cur.selectedTask.id == taskId) {
-                    // Снимаем выделение с текущего элемента
-                    val updatedElements = elements.map { elementPair ->
-                        if (elementPair.first.id == taskId) {
-                            elementPair.first.withState(TaskState.NotSelected) to elementPair.second
-                        } else if (elementPair.second.id == taskId) {
-                            elementPair.first to elementPair.second.withState(TaskState.NotSelected)
-                        } else {
-                            elementPair
-                        }
-                    }
-                    state.value = cur.copy(
-                        elements = updatedElements,
-                        selectedTask = null
-                    )
-                } else {
-                    // Проверяем, можно ли создать пару (элементы из разных категорий)
-                    val isSameType = (cur.selectedTask as? TextTaskModel)?.isAnswer ==
-                            (clickedElement as? TextTaskModel)?.isAnswer
-
-                    if (isSameType) {
-                        // Элементы из одной категории - просто заменяем выделенный элемент
-                        val updatedElements = elements.map { elementPair ->
-                            val newFirst = when {
-                                elementPair.first.id == cur.selectedTask.id ->
-                                    elementPair.first.withState(TaskState.NotSelected)
-                                elementPair.first.id == taskId ->
-                                    elementPair.first.withState(TaskState.Selected)
-                                else -> elementPair.first
-                            }
-
-                            val newSecond = when {
-                                elementPair.second.id == cur.selectedTask.id ->
-                                    elementPair.second.withState(TaskState.NotSelected)
-                                elementPair.second.id == taskId ->
-                                    elementPair.second.withState(TaskState.Selected)
-                                else -> elementPair.second
-                            }
-
-                            newFirst to newSecond
-                        }
-
-                        state.value = cur.copy(
-                            elements = updatedElements,
-                            selectedTask = clickedElement
-                        )
-                    } else {
-                        // Элементы из разных категорий - создаем пару
-                        val newPair = cur.selectedTask to clickedElement
-                        val updatedPairs = cur.pairs + newPair
-
-                        val updatedElements = elements.map { elementPair ->
-                            val newFirst = when (elementPair.first.id) {
-                                cur.selectedTask.id, taskId ->
-                                    elementPair.first.withState(TaskState.Connect)
-                                else -> elementPair.first
-                            }
-
-                            val newSecond = when (elementPair.second.id) {
-                                cur.selectedTask.id, taskId ->
-                                    elementPair.second.withState(TaskState.Connect)
-                                else -> elementPair.second
-                            }
-
-                            newFirst to newSecond
-                        }
-
-                        // Проверяем, все ли возможные пары соединены
-                        val isAllConnectedNow = updatedPairs.size == elements.size
-
-                        state.value = cur.copy(
-                            elements = updatedElements,
-                            pairs = updatedPairs as MutableList<Pair<Task, Task>>,
-                            selectedTask = null,
-                            isAllConnected = isAllConnectedNow
-                        )
-                    }
+                else if (pairConnectedTask == null) state.value =
+                    state.value.copy(selectedTask = findById(taskId).apply {
+                        state = TaskState.Selected
+                    })
+                else {
+                    findById(pairConnectedTask.first.id).state = TaskState.NotSelected
+                    findById(pairConnectedTask.second.id).state = TaskState.NotSelected
+                    state.value.pairs.remove(pairConnectedTask)
                 }
+            } else {
+                val task = findById(taskId)
+                val pairConnectedTask =
+                    state.value.pairs.find { it.first.id == taskId || it.second.id == taskId }
+                if (pairConnectedTask == null)
+
+                    if ((state.value.selectedTask as TextTaskModel).isAnswer == (task as TextTaskModel).isAnswer) {
+                        state.value.updateTaskInPairs(taskId, newState = TaskState.Selected)
+                        state.value.selectedTask?.state = TaskState.NotSelected
+                    } else {
+                        if (task.state != TaskState.Selected) {
+
+                            state.value.pairs.add(if (!task.isAnswer) task to state.value.selectedTask!! else state.value.selectedTask!! to task)
+                            state.value.selectedTask?.state = TaskState.Connect
+                            state.value = state.value.copy(selectedTask = null)
+                            task.state = TaskState.Connect
+                        } else if (task == state.value.selectedTask) {
+                            state.value.selectedTask?.state = TaskState.NotSelected
+                            state.value = state.value.copy(selectedTask = null)
+                        }
+                    }
+            }
+
+        }
+        Logger.d { state.value.toString() }
+
+    }
+
+    fun findById(taskId: String): Task {
+        val taskPair = state.value.elements.find { it.first.id == taskId || it.second.id == taskId }
+        return if (taskPair?.second?.id == taskId) taskPair.second else taskPair!!.first
+    }
+
+    fun TextConnectTaskComponent.State.updateTaskInPairs(
+        taskId: String, newState: TaskState
+    ): TextConnectTaskComponent.State {
+        val updatedPairs = pairs.map { pair ->
+            when {
+                pair.first.id == taskId -> pair.first.copyWithState(newState) to pair.second
+                pair.second.id == taskId -> pair.first to pair.second.copyWithState(newState)
+                else -> pair
             }
         }
-    }
-    fun Task.withState(state: TaskState): Task = when (this) {
-        is TextTaskModel -> TextTaskModel(id = id, text = text, state = state)
-        is AudioTask -> AudioTask(id = id, isPlay, state = state)
-        is ImageConnectTaskModel -> ImageConnectTaskModel(
-            id = id,
-            imageUrl = imageUrl,
-            state = state
-        )
-
-        is TextInsertTask -> TextInsertTask(label, sentence, id, state)
+        return this.copy(pairs = updatedPairs.toMutableList())
     }
 
     override fun onContinueClick() {
         if (state.value.isChecked) {
+            inChecking(true)
             state.value.hasError?.let { onContinueClicked(it) }
         } else {
+            var hasError = false
+            val answerList = state.value.copy().elements
+
             state.value.pairs.forEachIndexed { i, e ->
-                if (e.second.id != correctList[i].second.id)
-                    state.value = state.value.copy(
-                        hasError = false, isChecked = true
-                    )
+                if (correctList.find { it.first.id == e.first.id }?.second?.id != e.second.id) {
+
+                    state.value.elements.find { it.first.id == e.first.id }?.first?.state =
+                        TaskState.Incorrect
+
+                    state.value.elements.find { it.second.id == e.second.id }?.second?.state =
+                        TaskState.Incorrect
+                    hasError = true
+                } else {
+                    state.value.elements.find { it.first.id == e.first.id }?.first?.state =
+                        TaskState.Correct
+
+                    state.value.elements.find { it.second.id == e.second.id }?.second?.state =
+                        TaskState.Correct
+
+                }
             }
-            if (state.value.hasError == null)
-                state.value = state.value.copy(
-                    hasError = true, isChecked = true
-                )
+            state.value =
+                state.value.copy(elements = answerList, hasError = hasError, isChecked = true)
+
+            inChecking(false)
+
         }
     }
 }

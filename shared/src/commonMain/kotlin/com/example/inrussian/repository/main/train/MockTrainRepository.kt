@@ -35,6 +35,7 @@ class MockTrainRepository(
     private val tasks = listOf<FullTaskMode>(
         FullTaskMode(
             id = "efc6b249-7b7f-4be5-a8bd-960283668284",
+            taskText = "Прослушайте диалог и ответьте на вопрос:\u2028На каком направлении может учиться спикер 2?",
             taskType = listOf(TaskType.WRITE),
             taskBody = TaskBody.TextTask(
                 variant = listOf(
@@ -50,6 +51,7 @@ class MockTrainRepository(
         FullTaskMode(
             id = "a4049d03-1ed6-4ade-9de8-15391acca01e",
             taskType = listOf(TaskType.CONNECT_IMAGE),
+            taskText = "Прослушайте диалог и ответьте на вопрос:\u2028На каком направлении может учиться спикер 2?",
             taskBody = TaskBody.ImageTask(
                 variant = listOf(
                     Pair(

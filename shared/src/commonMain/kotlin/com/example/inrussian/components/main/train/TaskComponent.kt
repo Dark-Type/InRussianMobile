@@ -16,6 +16,7 @@ import com.example.inrussian.components.main.train.TrainComponentCopy.Config.Ima
 import com.example.inrussian.components.main.train.TrainComponentCopy.Config.TextConnectConfig
 import com.example.inrussian.components.main.train.TrainComponentCopy.Config.TextInputConfig
 import com.example.inrussian.components.main.train.TrainComponentCopy.Config.TextInputWithVariantConfig
+import com.example.inrussian.components.main.train.tasks.AudioConnectTaskComponent
 import com.example.inrussian.components.main.train.tasks.ImageConnectTaskComponent
 import com.example.inrussian.components.main.train.tasks.ImageConnectTaskComponentImpl
 import com.example.inrussian.components.main.train.tasks.TextConnectTaskComponent
@@ -35,11 +36,14 @@ import kotlinx.serialization.Serializable
 
 interface TrainComponentCopy {
     val childSlot: Value<ChildSlot<Config, Child>>
+
+    val state: Value<TrainStore.State>
     fun onConfirmClick()
     fun onBack()
 
     sealed interface Child {
         data class TextConnectChild(val component: TextConnectTaskComponent) : Child
+        data class AudioConnectChild(val component: AudioConnectTaskComponent) : Child
         data class ImageConnectChild(val component: ImageConnectTaskComponent) : Child
         data object EmptyChild : Child
     }
@@ -79,7 +83,7 @@ class TrainComponentImpl(
     private val courseId: String,
 ) : TrainComponentCopy, ComponentContext by componentContext {
     val scope = componentCoroutineScope()
-    val state = store.asValue()
+    override val state = store.asValue()
 
 
     private val navigation = SlotNavigation<Config>()
@@ -95,7 +99,9 @@ class TrainComponentImpl(
     init {
         scope.launch {
             state.subscribe {
-                Logger.i { it.showedTask?.let { it1 -> "activete: ${it1.taskBody::class}" }.toString() }
+                Logger.i {
+                    it.showedTask?.let { it1 -> "activete: ${it1.taskBody::class}" }.toString()
+                }
                 navigation.activate(
                     configuration = when (it.showedTask?.taskBody) {
                         is AudioTask -> AudioConnectConfig(it.showedTask.taskBody)
@@ -126,7 +132,9 @@ class TrainComponentImpl(
                 TextConnectChild(
                     component = TextConnectTaskComponentImpl(
                         context,
-                        ::onNextClick,
+                        onContinueClicked = ::onNextClick,
+                        inChecking = ::inCheck,
+                        onButtonEnable = ::onChangeButtonState,
                         config.tasks
                     )
                 )
@@ -137,7 +145,9 @@ class TrainComponentImpl(
                 ImageConnectChild(
                     component = ImageConnectTaskComponentImpl(
                         context,
-                        ::onNextClick,
+                        onContinueClicked = ::onNextClick,
+                        inChecking = ::inCheck,
+                        onButtonEnable = ::onChangeButtonState,
                         config.tasks
                     )
                 )
@@ -156,9 +166,19 @@ class TrainComponentImpl(
 
     }
 
+    fun inCheck(inCheck: Boolean) {
+        Logger.i { "in check" }
+        store.accept(TrainStore.Intent.InCheckStateChange(inCheck))
+    }
 
     fun onNextClick(isPassed: Boolean) {
         store.accept(TrainStore.Intent.ContinueClick(isPassed))
+    }
+
+    fun onChangeButtonState(isEnable: Boolean) {
+        Logger.i { "stay enable" }
+        store.accept(TrainStore.Intent.OnButtonStateChange(isEnable))
+
     }
 
     companion object {

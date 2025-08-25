@@ -8,4 +8,8 @@ data class TextInsertTask(
     val sentence: List<Sentence>,
     override val id: String = "",
     override var state: TaskState = TaskState.NotSelected,
-) : Task(id, state)
+) : Task(id, state){
+    override fun copyWithState(newState: TaskState): Task {
+        return this.copy(state = newState)
+    }
+}

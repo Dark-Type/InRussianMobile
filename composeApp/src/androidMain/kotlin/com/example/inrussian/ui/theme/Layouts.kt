@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -27,8 +25,9 @@ fun Grid(
     vSpacing: Dp = 0.dp,
     reverseLayout: Boolean = false,
     dataSize: Int,
+    withSpacer: Boolean = false,
     verticalArrangement: Arrangement.Vertical = if (!reverseLayout) Arrangement.Top else Arrangement.Bottom,
-    horizontalArrangement:  Arrangement.Horizontal = Arrangement.Start,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
     content: @Composable GridScope.() -> Unit
 ) {
     val scope = GridScope()
@@ -55,13 +54,18 @@ fun Grid(
                     val elementIndex = rowIndex * columns + columnIndex
                     if (elementIndex < elements.size) {
                         elements[elementIndex](
-                            Modifier.weight(1f).fillMaxHeight()
+                            Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
                         )
                     } else {
                         Spacer(Modifier.weight(1f))
                     }
                     if (columnIndex != columns - 1) {
-                        Spacer(Modifier.width(hSpacing))
+                        if (withSpacer)
+                            Spacer(Modifier.weight(1f))
+                        else
+                            Spacer(Modifier.width(hSpacing))
                     }
                 }
             }
@@ -88,6 +92,7 @@ class GridScope internal constructor() {
             }
         }
     }
+
     inline fun <T> itemsIndexed(
         items: Array<T>,
         crossinline itemContent: @Composable GridScope.(index: Int, item: T, modifier: Modifier) -> Unit
@@ -98,9 +103,11 @@ class GridScope internal constructor() {
             }
         }
     }
+
     fun item(content: @Composable (Modifier) -> Unit) {
         items += content
     }
+
     inline fun <T> items(
         items: Array<T>,
         crossinline itemContent: @Composable GridScope.(item: T, modifier: Modifier) -> Unit
@@ -124,11 +131,11 @@ class GridScope internal constructor() {
     }
 
     inline fun items(
-        items: Int, crossinline content: @Composable (Modifier) -> Unit
+        items: Int, crossinline content: @Composable (Modifier, Int) -> Unit
     ) {
         for (element in 0 until items) {
             item { mod ->
-                content(mod)
+                content(mod, element)
             }
         }
     }

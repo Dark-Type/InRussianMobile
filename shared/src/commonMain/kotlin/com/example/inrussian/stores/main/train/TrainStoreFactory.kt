@@ -11,6 +11,10 @@ import com.example.inrussian.stores.main.train.TrainStore.Action
 import com.example.inrussian.stores.main.train.TrainStore.Intent
 import com.example.inrussian.stores.main.train.TrainStore.Label
 import com.example.inrussian.stores.main.train.TrainStore.Msg
+import com.example.inrussian.stores.main.train.TrainStore.Msg.AddTaskInQueue
+import com.example.inrussian.stores.main.train.TrainStore.Msg.UpdateButtonState
+import com.example.inrussian.stores.main.train.TrainStore.Msg.UpdateCounter
+import com.example.inrussian.stores.main.train.TrainStore.Msg.UpdateIndexAndTask
 import com.example.inrussian.stores.main.train.TrainStore.State
 import com.example.inrussian.utils.ErrorDecoder
 import kotlinx.coroutines.Dispatchers
@@ -48,11 +52,14 @@ class TrainStoreFactory(
                 is Intent.ContinueClick -> {
                     val state = state()
                     if (!intent.isPass) {
-                        dispatch(Msg.UpdateCounter)
-                        state.showedTask?.let { dispatch(Msg.AddTaskInQueue(it)) }
+                        dispatch(UpdateCounter)
+                        state.showedTask?.let { dispatch(AddTaskInQueue(it)) }
                     }
-                    dispatch(Msg.UpdateIndexAndTask)
+                    dispatch(UpdateIndexAndTask)
                 }
+
+                is Intent.OnButtonStateChange -> dispatch(UpdateButtonState(intent.isEnable))
+                is Intent.InCheckStateChange -> dispatch(Msg.UpdateCheckState(intent.inCheck))
             }
         }
     }
@@ -60,12 +67,12 @@ class TrainStoreFactory(
 
     private object ReducerImpl : Reducer<State, Msg> {
         override fun State.reduce(msg: Msg): State = when (msg) {
-            is Msg.AddTaskInQueue -> copy(rejectedTask = rejectedTask.apply {
+            is AddTaskInQueue -> copy(rejectedTask = rejectedTask.apply {
                 offerSync(msg.task)
             })
 
-            Msg.UpdateCounter -> copy(errorCounter = errorCounter + 1)
-            Msg.UpdateIndexAndTask -> copy(
+            UpdateCounter -> copy(errorCounter = errorCounter + 1)
+            UpdateIndexAndTask -> copy(
                 currentTaskIndex = currentTaskIndex + 1,
                 showedTask = tasks?.get(currentTaskIndex + 1)
             )
@@ -74,6 +81,9 @@ class TrainStoreFactory(
                 Logger.i() { "copy" }
                 copy(tasks = msg.tasks, showedTask = msg.tasks.firstOrNull())
             }
+
+            is UpdateButtonState -> copy(isButtonEnable = msg.isEnable)
+            is Msg.UpdateCheckState -> copy(isChecking = msg.inCheck)
         }
     }
 
