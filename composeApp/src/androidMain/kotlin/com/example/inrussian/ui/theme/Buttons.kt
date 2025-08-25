@@ -21,7 +21,12 @@ import org.jetbrains.compose.resources.vectorResource
 
 
 @Composable
-fun CommonButton(text: String, enable: Boolean, onClick: () -> Unit,modifier: Modifier = Modifier) {
+fun CommonButton(
+    text: String,
+    enable: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Button(
         onClick = onClick,
         enabled = enable,
@@ -45,7 +50,6 @@ fun BackButton(enable: Boolean, onClick: () -> Unit) {
         )
     }
 }
-
 
 
 @Composable

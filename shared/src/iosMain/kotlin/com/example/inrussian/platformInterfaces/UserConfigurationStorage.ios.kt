@@ -8,6 +8,7 @@ class UserConfigurationStorageImpl(
 ) : UserConfigurationStorage {
 
     private val key = "last_configuration"
+    private val tokenKey = "user_token"
 
     override fun save(configuration: Configuration) {
         val value = when (configuration) {
@@ -15,18 +16,28 @@ class UserConfigurationStorageImpl(
             Configuration.Onboarding -> "Onboarding"
             Configuration.Main -> "Main"
         }
-        println("UserConfigurationStorageImpl.save: writing value=$value")
         defaults.setObject(value, forKey = key)
     }
 
     override fun get(): Configuration? {
         val stored = defaults.stringForKey(key)
-        println("UserConfigurationStorageImpl.get: read value=${stored ?: "null"}")
         return when (stored) {
             "Auth" -> Configuration.Auth
             "Onboarding" -> Configuration.Onboarding
             "Main" -> Configuration.Main
             else -> Configuration.Auth
         }
+    }
+
+    override fun saveToken(token: String) {
+        defaults.setObject(token, forKey = tokenKey)
+    }
+
+    override fun getToken(): String? {
+        return defaults.stringForKey(tokenKey)
+    }
+
+    override fun deleteToken() {
+        defaults.removeObjectForKey(tokenKey)
     }
 }
