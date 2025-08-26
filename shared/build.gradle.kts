@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -31,6 +32,7 @@ kotlin {
 
                 export(libs.decompose)
                 export(libs.essenty.lifecycle)
+                export(libs.ktor.client.darwin)
 //                export(libs.resources)
 //                export("dev.icerock.moko:graphics:0.10.0")
 
@@ -56,6 +58,9 @@ kotlin {
                 implementation(libs.mvikotlin.coroutines)
                 implementation(libs.koin.core)
                 implementation(libs.kotlinx.serialization.json)
+                implementation(libs.ktor.client.core)
+                implementation(libs.ktor.client.content.negotiation)
+                implementation(libs.ktor.serialization.kotlinx.json)
             }
         }
 
