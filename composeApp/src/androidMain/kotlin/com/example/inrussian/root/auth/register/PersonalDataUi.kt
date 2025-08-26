@@ -192,11 +192,6 @@ fun PersonaDataUi(component: PersonalDataComponent) {
                     state.phoneNumber, component::changePhone, stringResource(Res.string.phone),
                     isRequired = true
                 )
-                HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-                InputFormField(
-                    state.email, component::changeEmail, stringResource(Res.string.email),
-                    isRequired = true
-                )
             }
         }
         DataPickerSimple(state.showDataPicker, component::onDataChange)
@@ -282,7 +277,7 @@ fun DataPickerSimple(showDataPicker: Boolean, onSelect: (String) -> Unit) {
 }
 
 
-class PersonalDataUi() : PersonalDataComponent {
+class   PersonalDataUi() : PersonalDataComponent {
     @Preview(showBackground = true, showSystemUi = true)
     @Composable
     fun Preview() {
@@ -318,9 +313,6 @@ class PersonalDataUi() : PersonalDataComponent {
         TODO("Not yet implemented")
     }
 
-    override fun changeEmail(email: String) {
-        TODO("Not yet implemented")
-    }
 
     override fun changeGenderChoose(isOpen: Boolean) {
         TODO("Not yet implemented")

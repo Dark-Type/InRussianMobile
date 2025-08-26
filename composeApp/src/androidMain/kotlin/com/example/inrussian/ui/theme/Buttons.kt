@@ -42,7 +42,7 @@ fun CommonButton(
 
 @Composable
 fun BackButton(enable: Boolean, onClick: () -> Unit) {
-    IconButton(onClick) {
+    IconButton({if(enable) onClick() }) {
         Icon(
             vectorResource(Res.drawable.back_arrow),
             "",
@@ -56,7 +56,7 @@ fun BackButton(enable: Boolean, onClick: () -> Unit) {
 fun RowScope.ContinueButton(enable: Boolean, onClick: () -> Unit) {
 
     Spacer(Modifier.weight(1f))
-    IconButton(onClick) {
+    IconButton({if(enable) onClick() }) {
         Icon(
             vectorResource(Res.drawable.front_arror),
             "",

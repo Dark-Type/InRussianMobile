@@ -2,6 +2,9 @@ package com.example.inrussian.components.onboarding.personalData
 
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
+import com.example.inrussian.stores.auth.login.LoginStore
+import com.example.inrussian.stores.auth.register.RegisterStore
+import com.example.inrussian.stores.auth.register.RegisterStore.Intent
 
 interface PersonalDataComponent {
     fun onNext()
@@ -15,7 +18,6 @@ interface PersonalDataComponent {
         val gender: String = "",
         val birthDate: String = "",
         val phoneNumber: String = "",
-        val email: String = "",
         val isGenderOpen: Boolean = false,
         val showDataPicker: Boolean = false,
     ) {
@@ -24,8 +26,7 @@ interface PersonalDataComponent {
                     name.isNotEmpty() &&
                     gender.isNotEmpty() &&
                     birthDate.isNotEmpty() &&
-                    phoneNumber.isNotEmpty() &&
-                    email.isNotEmpty()
+                    phoneNumber.isNotEmpty()
     }
 
     fun changeSurname(surname: String)
@@ -34,7 +35,6 @@ interface PersonalDataComponent {
     fun changeGender(gender: String)
     fun changeDob(dob: String)
     fun changePhone(phone: String)
-    fun changeEmail(email: String)
     fun changeGenderChoose(isOpen: Boolean)
     fun openDataPicker()
     fun onDataChange(date: String)
@@ -49,7 +49,8 @@ sealed class PersonalDataOutput {
 }
 
 class DefaultPersonalDataComponent(
-    private val onOutput: (PersonalDataOutput) -> Unit
+    private val onOutput: (PersonalDataOutput) -> Unit,
+    val store: RegisterStore,
 ) : PersonalDataComponent {
 
     private val _state = MutableValue(
@@ -60,7 +61,6 @@ class DefaultPersonalDataComponent(
             gender = "",
             birthDate = "",
             phoneNumber = "",
-            email = ""
         )
     )
     override val state: Value<PersonalDataComponent.State> get() = _state
@@ -89,10 +89,6 @@ class DefaultPersonalDataComponent(
         _state.value = _state.value.copy(phoneNumber = phone)
     }
 
-    override fun changeEmail(email: String) {
-        _state.value = _state.value.copy(email = email)
-    }
-
     override fun changeGenderChoose(isOpen: Boolean) {
         _state.value = _state.value.copy(isGenderOpen = isOpen)
     }
@@ -115,6 +111,7 @@ class DefaultPersonalDataComponent(
     }
 
     override fun onContinue() {
+        store.accept(Intent.UpdatePersonalData(state = state.value))
         onOutput(PersonalDataOutput.Filled)
     }
 

@@ -9,6 +9,9 @@ import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.example.inrussian.domain.Validator
 import com.example.inrussian.models.ErrorType
 import com.example.inrussian.models.RegisterError
+import com.example.inrussian.models.models.RegisterModel
+import com.example.inrussian.models.models.SystemLanguage
+import com.example.inrussian.repository.auth.AuthRepository
 import com.example.inrussian.stores.auth.register.RegisterStore.Action
 import com.example.inrussian.stores.auth.register.RegisterStore.Intent
 import com.example.inrussian.stores.auth.register.RegisterStore.Label
@@ -24,6 +27,10 @@ import com.example.inrussian.stores.auth.register.RegisterStore.Msg.Loading
 import com.example.inrussian.stores.auth.register.RegisterStore.Msg.PasswordChanged
 import com.example.inrussian.stores.auth.register.RegisterStore.Msg.PasswordError
 import com.example.inrussian.stores.auth.register.RegisterStore.Msg.PasswordTransform
+import com.example.inrussian.stores.auth.register.RegisterStore.Msg.UpdateCitizenship
+import com.example.inrussian.stores.auth.register.RegisterStore.Msg.UpdateEducation
+import com.example.inrussian.stores.auth.register.RegisterStore.Msg.UpdateLanguage
+import com.example.inrussian.stores.auth.register.RegisterStore.Msg.UpdatePersonalData
 import com.example.inrussian.stores.auth.register.RegisterStore.State
 import com.example.inrussian.utils.ErrorDecoder
 import kotlinx.coroutines.launch
@@ -31,7 +38,8 @@ import kotlinx.coroutines.launch
 class RegisterStoreFactory(
     private val storeFactory: StoreFactory,
     private val errorDecoder: ErrorDecoder,
-    private val validator: Validator
+    private val validator: Validator,
+    private val authRepository: AuthRepository,
 ) {
     fun create(): RegisterStore =
         object : RegisterStore, Store<Intent, State, Label> by storeFactory.create(
@@ -50,68 +58,93 @@ class RegisterStoreFactory(
         }
 
         override fun executeIntent(intent: Intent) {
-            when (intent) {
-                Intent.SignUpClick -> {
-                    scope.launch {
-                        val state = state()
-                        Logger.d { "validate" }
-                        try {
-                            Logger.d { "validate1" }
-                            dispatch(Loading)
-                            validator.validateEmail(state.email)
-                            validator.validatePassword(state.password)
-                            validator.validateConfirmPassword(state.password, state.confirmPassword)
-                            Logger.d { "validate2" }
+            scope.launch {
+                when (intent) {
+                    Intent.SignUpClick -> {
+                        scope.launch {
+                            dispatch(FinishLoading)
                             publish(Label.SubmittedSuccessfully)
 
-                        } catch (e: ErrorType) {
-                            Logger.d { "error: $e" }
-                            if (e is RegisterError) {
-                                when (e) {
-                                    ErrorType.InvalidEmail -> dispatch(
-                                        EmailError(
-                                            errorDecoder.decode(
-                                                e
-                                            )
-                                        )
-                                    )
+                        }
+                    }
 
-                                    ErrorType.InvalidPassword -> dispatch(
-                                        PasswordError(
-                                            errorDecoder.decode(
-                                                e
-                                            )
-                                        )
-                                    )
+                    is Intent.EmailChange -> dispatch(EmailChanged(intent.email))
+                    Intent.EmailImageClick -> dispatch(EmailChanged(""))
+                    is Intent.PasswordChange -> dispatch(
+                        PasswordChanged(
+                            intent.password
+                        )
+                    )
 
-                                    ErrorType.UnAuthorize -> dispatch(
-                                        PasswordError(
-                                            errorDecoder.decode(
-                                                e
+                    Intent.PasswordImageClick -> dispatch(PasswordTransform)
+                    is Intent.ConfirmPasswordChange -> dispatch(ConfirmPasswordChanged(intent.password))
+                    Intent.ConfirmPasswordImageClick -> dispatch(ConfirmPasswordTransform)
+                    is Intent.UpdateCitizenship -> dispatch(UpdateCitizenship(intent.state))
+                    is Intent.UpdateEducation -> {
+                        dispatch(UpdateEducation(intent.state))
+                        try {
+                            val state = state()
+                            try {
+                                Logger.d { "validate1" }
+                                dispatch(Loading)
+                                validator.validateEmail(state.email)
+                                validator.validatePassword(state.password)
+                                validator.validateConfirmPassword(
+                                    state.password,
+                                    state.confirmPassword
+                                )
+                                Logger.d { "validate2" }
+                                authRepository.register(
+                                    RegisterModel(
+                                        email = state.email,
+                                        password = state.password,
+                                        phone = state.personalDataState!!.phoneNumber,
+                                        systemLanguage = SystemLanguage.valueOf(state.languageState!!.selectedLanguage)
+                                    )
+                                )
+
+                                publish(Label.SubmittedSuccessfully)
+
+                            } catch (e: ErrorType) {
+                                Logger.d { "error: $e" }
+                                if (e is RegisterError) {
+                                    when (e) {
+                                        ErrorType.InvalidEmail -> dispatch(
+                                            EmailError(
+                                                errorDecoder.decode(
+                                                    e
+                                                )
                                             )
                                         )
-                                    )
+
+                                        ErrorType.InvalidPassword -> dispatch(
+                                            PasswordError(
+                                                errorDecoder.decode(
+                                                    e
+                                                )
+                                            )
+                                        )
+
+                                        ErrorType.UnAuthorize -> dispatch(
+                                            PasswordError(
+                                                errorDecoder.decode(
+                                                    e
+                                                )
+                                            )
+                                        )
+                                    }
                                 }
                             }
+                        } catch (e: Throwable) {
                         }
-                        dispatch(FinishLoading)
-
                     }
+
+                    is Intent.UpdateLanguage -> dispatch(UpdateLanguage(intent.state))
+                    is Intent.UpdatePersonalData -> dispatch(UpdatePersonalData(intent.state))
                 }
-
-                is Intent.EmailChange -> dispatch(EmailChanged(intent.email))
-                Intent.EmailImageClick -> dispatch(EmailChanged(""))
-                is Intent.PasswordChange -> dispatch(
-                    PasswordChanged(
-                        intent.password
-                    )
-                )
-
-                Intent.PasswordImageClick -> dispatch(PasswordTransform)
-                is Intent.ConfirmPasswordChange -> dispatch(ConfirmPasswordChanged(intent.password))
-                Intent.ConfirmPasswordImageClick -> dispatch(ConfirmPasswordTransform)
             }
         }
+
     }
 
 
@@ -141,6 +174,10 @@ class RegisterStoreFactory(
             is ConfirmPasswordChanged -> copy(confirmPassword = msg.password)
             is Msg.ConfirmPasswordError -> copy(confirmPasswordError = msg.messageId)
             ConfirmPasswordTransform -> copy(showConfirmPassword = !showConfirmPassword)
+            is UpdateCitizenship -> copy(citizenshipState = msg.state)
+            is UpdateEducation -> copy(educationState = msg.state)
+            is UpdateLanguage -> copy(languageState = msg.state)
+            is UpdatePersonalData -> copy(personalDataState = msg.state)
         }
     }
 }

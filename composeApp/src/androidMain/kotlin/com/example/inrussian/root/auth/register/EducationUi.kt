@@ -35,13 +35,13 @@ import com.example.inrussian.ui.theme.reallyLightGrey
 import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.activity_type
 import inrussian.composeapp.generated.resources.can_write_rus_speech
-import inrussian.composeapp.generated.resources.citizenship
 import inrussian.composeapp.generated.resources.education
 import inrussian.composeapp.generated.resources.education_placeholder
 import inrussian.composeapp.generated.resources.purpose
 import inrussian.composeapp.generated.resources.understand_rus_language
 import inrussian.composeapp.generated.resources.understand_rus_speech
 import inrussian.composeapp.generated.resources.understand_rus_text
+import inrussian.composeapp.generated.resources.which_language
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -270,7 +270,7 @@ fun EducationUi(component: EducationComponent) {
                 onClick = component::deleteLanguage,
                 onChangeExpanded = component::onChangeExpanded,
                 onAddClick = component::selectLanguage,
-                placeholder = stringResource(Res.string.citizenship)
+                placeholder = stringResource(Res.string.which_language)
             )
 
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))

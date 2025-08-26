@@ -19,13 +19,14 @@ interface TrainStore : Store<Intent, State, Label> {
         val tasks: List<FullTaskMode>? = null,
         val rejectedTask: SuspendingQueue<FullTaskMode> = queueOf(),
         val currentTaskIndex: Int = 0,
+        val isStartRepeat: Boolean = false,
         val showedTask: FullTaskMode? = null,
         val errorCounter: Int = 0,
         val isChecking: Boolean = true,
         val isButtonEnable: Boolean = false,
         val isLoading: Boolean = true
     ) {
-        val percent: Float? = tasks?.let { it.size.toFloat() / currentTaskIndex.toFloat() }
+        val percent: Float? = tasks?.let {  currentTaskIndex.toFloat() / it.size.toFloat() }
     }
 
     sealed interface Action {
@@ -34,11 +35,15 @@ interface TrainStore : Store<Intent, State, Label> {
 
     sealed interface Msg {
         data class UpdateTasks(val tasks: List<FullTaskMode>) : Msg
+        data object UpdateTaskFromQueue : Msg
+        data class UpdateTask(val task: FullTaskMode?) : Msg
         data class AddTaskInQueue(val task: FullTaskMode) : Msg
         data object UpdateCounter : Msg
         data object UpdateIndexAndTask : Msg
         data class UpdateButtonState(val isEnable: Boolean) : Msg
         data class UpdateCheckState(val inCheck: Boolean) : Msg
+        data class StartRepeat(val isRepeat: Boolean) : Msg
+        data class StayNewCounter(val counter: Int) : Msg
     }
 
     sealed interface Label {

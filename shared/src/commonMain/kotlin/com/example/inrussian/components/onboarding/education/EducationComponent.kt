@@ -2,6 +2,8 @@ package com.example.inrussian.components.onboarding.education
 
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
+import com.example.inrussian.stores.auth.register.RegisterStore
+import com.example.inrussian.stores.auth.register.RegisterStore.Intent
 
 interface EducationComponent {
     val state: Value<State>
@@ -45,7 +47,8 @@ sealed class EducationOutput {
 }
 
 class DefaultEducationComponent(
-    private val onOutput: (EducationOutput) -> Unit
+    private val onOutput: (EducationOutput) -> Unit,
+    private val store: RegisterStore
 ) : EducationComponent {
 
     private val _state = MutableValue(
@@ -64,6 +67,7 @@ class DefaultEducationComponent(
     override val state: Value<EducationComponent.State> get() = _state
 
     override fun onNext() {
+        store.accept(Intent.UpdateEducation(state = state.value))
         onOutput(EducationOutput.Filled)
     }
 

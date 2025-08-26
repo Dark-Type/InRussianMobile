@@ -160,22 +160,22 @@ val navigationModule = module {
 
     factory<LanguageFactory>(qualifier = QLanguageFactory) {
         { componentContext, onOutput ->
-            DefaultLanguageComponent(componentContext, onOutput)
+            DefaultLanguageComponent(componentContext, onOutput,store = get())
         }
     }
     factory<PersonalDataFactory>(qualifier = QPersonalDataFactory) {
         { componentContext, onOutput ->
-            DefaultPersonalDataComponent(onOutput)
+            DefaultPersonalDataComponent(onOutput,store = get())
         }
     }
     factory<CitizenshipFactory>(qualifier = QCitizenshipFactory) {
         { componentContext, onOutput ->
-            DefaultCitizenshipComponent(onOutput)
+            DefaultCitizenshipComponent(onOutput,store = get())
         }
     }
     factory<EducationFactory>(qualifier = QEducationFactory) {
         { componentContext, onOutput ->
-            DefaultEducationComponent(onOutput)
+            DefaultEducationComponent(onOutput,store = get())
         }
     }
     factory<ConfirmationFactory>(qualifier = QConfirmationFactory) {

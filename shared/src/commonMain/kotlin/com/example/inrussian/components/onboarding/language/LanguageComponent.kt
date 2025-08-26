@@ -3,6 +3,8 @@ package com.example.inrussian.components.onboarding.language
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.ComponentContext
+import com.example.inrussian.stores.auth.register.RegisterStore
+import com.example.inrussian.stores.auth.register.RegisterStore.Intent
 
 interface LanguageComponent {
     fun onNext()
@@ -30,7 +32,8 @@ sealed class LanguageOutput {
 
 class DefaultLanguageComponent(
     componentContext: ComponentContext,
-    private val onOutput: (LanguageOutput) -> Unit
+    private val onOutput: (LanguageOutput) -> Unit,
+    private val store: RegisterStore,
 ) : LanguageComponent, ComponentContext by componentContext {
 
     private val _state = MutableValue(
@@ -39,6 +42,7 @@ class DefaultLanguageComponent(
     override val state: Value<LanguageComponent.State> get() = _state
 
     override fun onNext() {
+        store.accept(Intent.UpdateLanguage(state = state.value))
         onOutput(LanguageOutput.Filled)
     }
 

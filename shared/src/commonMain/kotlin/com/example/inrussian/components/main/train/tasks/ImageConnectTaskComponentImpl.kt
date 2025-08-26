@@ -115,6 +115,7 @@ class ImageConnectTaskComponentImpl(
     override fun onContinueClick() {
         if (state.value.isChecked) {
             inChecking(true)
+            Logger.i { "state.value.hasError-> " + state.value.hasError }
             state.value.hasError?.let { onContinueClicked(it) }
         } else {
             var hasError = false

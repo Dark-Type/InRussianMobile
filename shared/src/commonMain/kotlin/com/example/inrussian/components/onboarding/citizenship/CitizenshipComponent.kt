@@ -1,7 +1,9 @@
 package com.example.inrussian.components.onboarding.citizenship
 
-import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.MutableValue
+import com.arkivanov.decompose.value.Value
+import com.example.inrussian.stores.auth.register.RegisterStore
+import com.example.inrussian.stores.auth.register.RegisterStore.Intent
 
 interface CitizenshipComponent {
     val state: Value<State>
@@ -48,7 +50,8 @@ sealed class CitizenshipOutput {
 }
 
 class DefaultCitizenshipComponent(
-    private val onOutput: (CitizenshipOutput) -> Unit
+    private val onOutput: (CitizenshipOutput) -> Unit,
+    private val store: RegisterStore,
 ) : CitizenshipComponent {
 
     private val _state = MutableValue(
@@ -64,6 +67,7 @@ class DefaultCitizenshipComponent(
     override val state: Value<CitizenshipComponent.State> get() = _state
 
     override fun onNext() {
+        store.accept(Intent.UpdateCitizenship(state = state.value))
         onOutput(CitizenshipOutput.Filled)
     }
 

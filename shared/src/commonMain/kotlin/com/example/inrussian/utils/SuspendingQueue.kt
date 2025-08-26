@@ -14,7 +14,7 @@ class SuspendingQueue<T>(initialCapacity: Int = 16) {
     suspend fun poll(): T? = mutex.withLock {
         q.poll()
     }
-
+    fun pollS(): T? =  q.poll()
     suspend fun peek(): T? = mutex.withLock {
         q.peek()
     }

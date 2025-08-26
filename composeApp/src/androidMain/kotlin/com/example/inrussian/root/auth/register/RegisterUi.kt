@@ -13,9 +13,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import com.arkivanov.decompose.value.MutableValue
 import com.example.inrussian.components.auth.register.RegisterComponent
+import com.example.inrussian.stores.auth.register.RegisterStore
 import com.example.inrussian.ui.theme.BackButton
 import com.example.inrussian.ui.theme.CommonButton
 import com.example.inrussian.ui.theme.CommonTextField
@@ -97,44 +100,44 @@ fun RegisterUi(component: RegisterComponent) {
     }
 }
 
-//class RegisterUi : RegisterComponent {
-//    override fun onRegister(email: String, password: String) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun onBackClicked() {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun changeEmail(email: String) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun changePassword(password: String) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun changeConfirmPassword(confirmPassword: String) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun onShowPasswordClick() {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun onShowConfirmPasswordClick() {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun onEmailDeleteClick() {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override val state = MutableStateFlow(RegisterStore.State())
-//
-//    @Preview(showBackground = true, showSystemUi = true)
-//    @Composable
-//    fun PreviewRegisterUi() {
-//        RegisterUi(this)
-//    }
-//}
+class RegisterUi : RegisterComponent {
+    override fun onRegister(email: String, password: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onBackClicked() {
+        TODO("Not yet implemented")
+    }
+
+    override fun changeEmail(email: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun changePassword(password: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun changeConfirmPassword(confirmPassword: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onShowPasswordClick() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onShowConfirmPasswordClick() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onEmailDeleteClick() {
+        TODO("Not yet implemented")
+    }
+
+    override val state = MutableValue(RegisterStore.State())
+
+    @Preview(showBackground = true, showSystemUi = true)
+    @Composable
+    fun PreviewRegisterUi() {
+      //  RegisterUi(this)
+    }
+}

@@ -19,15 +19,17 @@ class LoginStoreFactory(
     private val repository: AuthRepository,
 ) {
     fun create(): LoginStore =
-        object : LoginStore, Store<LoginStore.Intent, LoginStore.State, LoginStore.Label> by storeFactory.create(
-            name = "LoginStore",
-            initialState = LoginStore.State(),
-            bootstrapper = SimpleBootstrapper(),
-            executorFactory = ::ExecutorImpl,
-            reducer = ReducerImpl,
-        ) {}
+        object : LoginStore,
+            Store<LoginStore.Intent, LoginStore.State, LoginStore.Label> by storeFactory.create(
+                name = "LoginStore",
+                initialState = LoginStore.State(),
+                bootstrapper = SimpleBootstrapper(),
+                executorFactory = ::ExecutorImpl,
+                reducer = ReducerImpl,
+            ) {}
 
-    private inner class ExecutorImpl : CoroutineExecutor<LoginStore.Intent, LoginStore.Action, LoginStore.State, LoginStore.Msg, LoginStore.Label>() {
+    private inner class ExecutorImpl :
+        CoroutineExecutor<LoginStore.Intent, LoginStore.Action, LoginStore.State, LoginStore.Msg, LoginStore.Label>() {
 
         override fun executeAction(action: LoginStore.Action) {
         }
@@ -38,47 +40,55 @@ class LoginStoreFactory(
                     scope.launch {
                         val state = state()
                         try {
-                            dispatch(LoginStore.Msg.Loading)
-//                            val token = repository.login(
-//                                LoginModel(
-//                                    email = state.email,
-//                                    password = state.password
-//                                )
-//                            ).refreshToken
-//                            repository.saveRefreshToken(token)
-                            // ВЕРНУТЬ ПРИ ЗАЦЕПЕ API
-                            publish(LoginStore.Label.SubmittedSuccessfully)
+                            try {
+                                dispatch(LoginStore.Msg.Loading)
+                                val token = repository.login(
+                                    LoginModel(
+                                        email = state.email,
+                                        password = state.password
+                                    )
+                                ).refreshToken
+                                repository.saveRefreshToken(token)
 
-                        } catch (e: ErrorType) {
-                            if (e is LoginError) {
-                                when (e) {
-                                    ErrorType.InvalidEmail -> dispatch(
-                                        LoginStore.Msg.EmailError(
-                                            errorDecoder.decode(
-                                                e
+                                publish(LoginStore.Label.SubmittedSuccessfully)
+
+                            } catch (e: ErrorType) {
+                                if (e is LoginError) {
+                                    when (e) {
+                                        ErrorType.InvalidEmail -> dispatch(
+                                            LoginStore.Msg.EmailError(
+                                                errorDecoder.decode(
+                                                    e
+                                                )
                                             )
                                         )
-                                    )
 
-                                    ErrorType.InvalidPassword -> dispatch(
-                                        LoginStore.Msg.PasswordError(
-                                            errorDecoder.decode(
-                                                e
+                                        ErrorType.InvalidPassword -> dispatch(
+                                            LoginStore.Msg.PasswordError(
+                                                errorDecoder.decode(
+                                                    e
+                                                )
                                             )
                                         )
-                                    )
 
-                                    ErrorType.UnAuthorize -> dispatch(
-                                        LoginStore.Msg.PasswordError(
-                                            errorDecoder.decode(
-                                                e
+                                        ErrorType.UnAuthorize -> dispatch(
+                                            LoginStore.Msg.PasswordError(
+                                                errorDecoder.decode(
+                                                    e
+                                                )
                                             )
                                         )
-                                    )
+                                    }
                                 }
-                            }
-                            publish(LoginStore.Label.SubmissionFailed)
+                                publish(LoginStore.Label.SubmissionFailed)
 
+                            }
+                        } catch (e: Throwable) {
+                            dispatch(
+                                LoginStore.Msg.EmailError(
+                                    "Неверныая почта или пароль"
+                                )
+                            )
                         }
                         dispatch(LoginStore.Msg.FinishLoading)
 
@@ -86,15 +96,17 @@ class LoginStoreFactory(
                 }
 
                 is LoginStore.Intent.EmailChange -> {
-                    Logger.i {  "changeEmail"}
+                    Logger.i { "changeEmail" }
                     dispatch(LoginStore.Msg.EmailChanged(intent.email))
                 }
+
                 LoginStore.Intent.EmailImageClick -> dispatch(LoginStore.Msg.EmailChanged(""))
                 is LoginStore.Intent.PasswordChange -> dispatch(
                     LoginStore.Msg.PasswordChanged(
                         intent.password
                     )
                 )
+
                 LoginStore.Intent.PasswordImageClick -> dispatch(LoginStore.Msg.PasswordTransform)
             }
         }
@@ -105,7 +117,7 @@ class LoginStoreFactory(
         override fun LoginStore.State.reduce(msg: LoginStore.Msg): LoginStore.State = when (msg) {
             LoginStore.Msg.Confirm -> copy(loading = true)
             is LoginStore.Msg.EmailChanged -> {
-                Logger.i {  "changeEmail2"}
+                Logger.i { "changeEmail2" }
                 copy(
                     email = msg.email,
                     emailError = null,

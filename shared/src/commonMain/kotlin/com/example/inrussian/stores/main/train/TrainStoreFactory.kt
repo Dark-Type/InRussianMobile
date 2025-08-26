@@ -1,6 +1,5 @@
 package com.example.inrussian.stores.main.train
 
-import co.touchlab.kermit.Logger
 import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.SimpleBootstrapper
 import com.arkivanov.mvikotlin.core.store.Store
@@ -41,26 +40,99 @@ class TrainStoreFactory(
                 is Action.LoadTasks -> {
                     scope.launch(Dispatchers.Main) {
                         dispatch(Msg.UpdateTasks(repository.getTasksByCourseId(action.courseId)))
-                        Logger.i() { "Update" }
                     }
                 }
             }
         }
 
         override fun executeIntent(intent: Intent) {
-            when (intent) {
-                is Intent.ContinueClick -> {
-                    val state = state()
-                    if (!intent.isPass) {
-                        dispatch(UpdateCounter)
-                        state.showedTask?.let { dispatch(AddTaskInQueue(it)) }
-                    }
-                    dispatch(UpdateIndexAndTask)
-                }
+            scope.launch {
+                when (intent) {
+                    is Intent.ContinueClick -> {
+                        val st = state()
 
-                is Intent.OnButtonStateChange -> dispatch(UpdateButtonState(intent.isEnable))
-                is Intent.InCheckStateChange -> dispatch(Msg.UpdateCheckState(intent.inCheck))
+                        // Добавляем задачу в очередь, если ответ неправильный
+                        val willAddToRejected = !intent.isPass
+                        if (willAddToRejected) {
+                            dispatch(UpdateCounter)
+                            st.showedTask?.let { dispatch(AddTaskInQueue(it)) }
+                        }
+
+                        // Определяем, нужно ли переходить к следующей задаче
+                        val shouldMoveToNext = if (st.isStartRepeat) {
+                            // В режиме повтора всегда переходим к следующей задаче в очереди
+                            true
+                        } else {
+                            // В основном режиме переходим к следующей, если это не последняя задача
+                            (st.currentTaskIndex + 1) < (st.tasks?.size ?: 0)
+                        }
+
+                        if (shouldMoveToNext) {
+                            if (st.isStartRepeat) {
+                                // В режиме повтора берем следующую задачу из очереди
+                                if (st.rejectedTask.size()!=0) {
+                                    dispatch(Msg.UpdateTaskFromQueue)
+                                } else {
+                                    // Если очередь пуста, завершаем повтор
+                                    dispatch(Msg.StartRepeat(false))
+                                    dispatch(Msg.UpdateTask(null))
+                                }
+                            } else {
+                                // В основном режиме переходим к следующей задаче
+                                dispatch(UpdateIndexAndTask)
+                            }
+                        } else {
+                            // Это последняя задача в основном режиме
+                            if (st.rejectedTask.size()!=0) {
+                                // Если есть задачи в очереди, начинаем повтор
+                                dispatch(Msg.StartRepeat(true))
+                                dispatch(Msg.UpdateTaskFromQueue)
+                            } else {
+                                // Если очереди нет, завершаем
+                                dispatch(Msg.UpdateTask(null))
+                            }
+                        }
+                    }                    /*is Intent.ContinueClick -> {
+                        val st = state()
+
+                        val willAddToRejected = !intent.isPass
+                        if (willAddToRejected) {
+                            dispatch(UpdateCounter)
+                            st.showedTask?.let { dispatch(AddTaskInQueue(it)) }
+                        }
+
+                        val oldRejectedSize = st.rejectedTask.size()
+                        val newRejectedSize = oldRejectedSize + if (willAddToRejected) 1 else 0
+
+                        val tasksSize = st.tasks?.size ?: 0
+                        val isLastMain = (st.currentTaskIndex + 1) >= tasksSize
+
+                        if (!st.isStartRepeat) {
+                            if (!isLastMain) {
+                                dispatch(UpdateIndexAndTask)
+                            } else {
+                                if (newRejectedSize > 0) {
+                                    dispatch(Msg.StartRepeat(true))
+                                    dispatch(Msg.UpdateTaskFromQueue)
+                                } else {
+                                    dispatch(Msg.UpdateTask(null))
+                                }
+                            }
+                        } else {
+                            if (st.rejectedTask.size() != 0) {
+                                dispatch(Msg.UpdateTaskFromQueue)
+                            } else {
+                                dispatch(Msg.StartRepeat(false))
+                                dispatch(Msg.UpdateTask(null))
+                            }
+                        }
+                    }
+*/
+                    is Intent.OnButtonStateChange -> dispatch(UpdateButtonState(intent.isEnable))
+                    is Intent.InCheckStateChange -> dispatch(Msg.UpdateCheckState(intent.inCheck))
+                }
             }
+
         }
     }
 
@@ -72,19 +144,54 @@ class TrainStoreFactory(
             })
 
             UpdateCounter -> copy(errorCounter = errorCounter + 1)
+
+            UpdateIndexAndTask -> {
+                val newIndex = currentTaskIndex + 1
+                copy(
+                    currentTaskIndex = newIndex,
+                    showedTask = tasks?.getOrNull(newIndex)
+                )
+            }
+
+            is Msg.UpdateTasks -> {
+                copy(tasks = msg.tasks, showedTask = msg.tasks.firstOrNull())
+            }
+
+            is UpdateButtonState -> copy(isButtonEnable = msg.isEnable)
+            is Msg.UpdateCheckState -> copy(isChecking = msg.inCheck)
+            is Msg.StartRepeat -> copy(isStartRepeat = msg.isRepeat)
+            is Msg.StayNewCounter -> copy(currentTaskIndex = msg.counter)
+
+            Msg.UpdateTaskFromQueue -> {
+                val nextTask = rejectedTask.pollS()
+                copy(showedTask = nextTask)
+            }
+
+            is Msg.UpdateTask -> copy(showedTask = msg.task)
+        }
+        /*override fun State.reduce(msg: Msg): State = when (msg) {
+
+            is AddTaskInQueue -> copy(rejectedTask = rejectedTask.apply {
+                offerSync(msg.task)
+            })
+
+            UpdateCounter -> copy(errorCounter = errorCounter + 1)
             UpdateIndexAndTask -> copy(
                 currentTaskIndex = currentTaskIndex + 1,
                 showedTask = tasks?.get(currentTaskIndex + 1)
             )
 
             is Msg.UpdateTasks -> {
-                Logger.i() { "copy" }
-                copy(tasks = msg.tasks, showedTask = msg.tasks.firstOrNull())
+                copy(tasks = msg.tasks, showedTask = msg.tasks[currentTaskIndex])
             }
 
             is UpdateButtonState -> copy(isButtonEnable = msg.isEnable)
             is Msg.UpdateCheckState -> copy(isChecking = msg.inCheck)
-        }
+            is Msg.StartRepeat -> copy(isStartRepeat = isStartRepeat)
+            is Msg.StayNewCounter -> copy(currentTaskIndex = msg.counter)
+            Msg.UpdateTaskFromQueue -> copy(showedTask = rejectedTask.pollS())
+            is Msg.UpdateTask -> copy(showedTask = msg.task)
+        }*/
     }
 
 
@@ -92,3 +199,28 @@ class TrainStoreFactory(
         private const val TAG = "AuthStoreFactory"
     }
 }
+/*scope.launch {
+               when (intent) {
+                   is Intent.ContinueClick -> {
+                       val state = state()
+                       if (!intent.isPass) {
+                           dispatch(UpdateCounter)
+                           state.showedTask?.let { dispatch(AddTaskInQueue(it)) }
+                       }
+                       if (state.currentTaskIndex + 1 == state.tasks?.size && state.rejectedTask.size() != 0 || state.isStartRepeat) {
+                           dispatch(Msg.StartRepeat(true))
+                           if (state.rejectedTask.size() != 0)
+                               dispatch(Msg.UpdateTaskFromQueue)
+                           else
+                               dispatch(Msg.StartRepeat(false))
+                       }
+                       if (state.rejectedTask.size() == 0 && state.isStartRepeat) {
+                           dispatch(UpdateTask(null))
+                       } else
+                           dispatch(UpdateIndexAndTask)
+                   }
+
+                   is Intent.OnButtonStateChange -> dispatch(UpdateButtonState(intent.isEnable))
+                   is Intent.InCheckStateChange -> dispatch(Msg.UpdateCheckState(intent.inCheck))
+               }
+           }*/

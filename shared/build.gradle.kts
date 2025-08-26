@@ -2,6 +2,7 @@ import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
+val ktor_version = "3.1.3"
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
@@ -42,17 +43,17 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                implementation(libs.kotlinx.coroutines.core)
+                implementation(libs.kotlinx.serialization.core)
+                api(libs.ktor.client.serialization)
 
+                api(libs.kotlinx.datetime)
                 api(libs.decompose)
                 api(libs.essenty.lifecycle)
 
-//                api(libs.resources)
-//                api(libs.resources.compose)
-//                api(libs.kotlinx.datetime)
                 implementation(libs.kermit)
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.decompose)
-//                implementation(compose.components.resources)
                 implementation(libs.mvikotlin)
                 implementation(libs.mvikotlin.main)
                 implementation(libs.mvikotlin.coroutines)
@@ -64,6 +65,12 @@ kotlin {
             }
         }
 
+
+        iosMain {
+            dependencies {
+                api(libs.ktor.client.darwin)
+            }
+        }
     }
 }
 
