@@ -14,7 +14,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.arkivanov.decompose.value.MutableValue
+import com.example.inrussian.components.main.train.FullTask
+import com.example.inrussian.components.main.train.Task
 import com.example.inrussian.components.main.train.TasksComponent
 import com.example.inrussian.components.main.train.TasksOption
 import com.example.inrussian.components.main.train.TasksState
@@ -81,4 +85,58 @@ fun FilteredTasksList(state: TasksState, component: TasksComponent) {
             modifier = Modifier.fillMaxWidth()
         ) { Text("Назад") }
     }
+}
+
+class TaskUiPrimitives : TasksComponent {
+    @Composable
+    @Preview(showBackground = true, showSystemUi = true)
+    fun Preview() {
+        FilteredTasksList(state.value, this)
+    }
+
+    override val state = MutableValue(
+        TasksState(
+            isLoading = false,
+            option = TasksOption.Theory,
+            sectionId = "sectionId",
+            activeFullTask =
+                FullTask(Task(""))
+
+        ),
+
+        )
+
+    override fun selectOption(optionId: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun toggleOption(optionId: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun reorderWordOrder(newOrder: List<String>) {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateTextInput(text: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun submitAnswer() {
+        TODO("Not yet implemented")
+    }
+
+    override fun nextAfterResult() {
+        TODO("Not yet implemented")
+    }
+
+    override fun markCurrentAs(correct: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onBack() {
+        TODO("Not yet implemented")
+    }
+
+
 }

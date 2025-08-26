@@ -9,7 +9,7 @@ import com.arkivanov.decompose.router.stack.pushNew
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.example.inrussian.di.SectionDetailComponentFactory
-import com.example.inrussian.di.TasksComponentFactory
+import com.example.inrussian.di.TrainComponentFactory
 import com.example.inrussian.repository.main.train.TrainRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -168,12 +168,12 @@ interface SectionDetailComponent {
     fun onBack()
 }
 
-typealias TasksComponentFactory = (
+typealias TrainComponentFactory = (
     ComponentContext,
     String,
     TasksOption,
     (TasksOutput) -> Unit
-) -> TasksComponent
+) -> TrainComponentCopy
 
 typealias SectionDetailComponentFactory = (
     ComponentContext,
@@ -186,7 +186,7 @@ class DefaultSectionDetailComponent(
     private val repository: TrainRepository,
     override val sectionId: String,
     private val onOutput: (SectionDetailOutput) -> Unit,
-    private val tasksFactory: TasksComponentFactory
+    private val tasksFactory: TrainComponentFactory
 ) : SectionDetailComponent, ComponentContext by componentContext {
 
     private val navigation = StackNavigation<InnerConfig>()
@@ -229,11 +229,13 @@ class DefaultSectionDetailComponent(
         when (config) {
             InnerConfig.Details -> InnerChild.DetailsChild(this)
             is InnerConfig.Tasks -> InnerChild.TasksChild(
-                tasksFactory(ctx, sectionId, config.option) { out ->
+                tasksFactory(ctx, sectionId) { out ->
                     when (out) {
                         TasksOutput.NavigateBack -> onBack()
                         TasksOutput.CompletedSection ->
                             _state.value = _state.value.copy(showCompletionDialog = true)
+
+                        SectionDetailOutput.NavigateBack -> onBack()
                     }
                 }
             )
@@ -246,7 +248,7 @@ class DefaultSectionDetailComponent(
 
     sealed interface InnerChild {
         data class DetailsChild(val component: SectionDetailComponent) : InnerChild
-        data class TasksChild(val component: TasksComponent) : InnerChild
+        data class TasksChild(val component: TrainComponentCopy) : InnerChild
     }
 }
 

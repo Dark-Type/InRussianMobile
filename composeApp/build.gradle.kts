@@ -73,6 +73,7 @@ android {
 
 dependencies {
     debugImplementation(compose.uiTooling)
+    implementation(libs.coil.compose)
     implementation (libs.accompanist.insets)
 }
 

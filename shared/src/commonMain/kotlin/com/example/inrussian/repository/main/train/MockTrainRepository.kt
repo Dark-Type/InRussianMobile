@@ -3,6 +3,9 @@ package com.example.inrussian.repository.main.train
 import com.example.inrussian.components.main.train.AnswerType
 import com.example.inrussian.components.main.train.ContentType
 import com.example.inrussian.components.main.train.PRACTICE_TASK_TYPES
+import com.example.inrussian.components.main.train.Section
+import com.example.inrussian.components.main.train.ShortCourse
+import com.example.inrussian.components.main.train.THEORY_TASK_TYPES
 import com.example.inrussian.components.main.train.Task
 import com.example.inrussian.components.main.train.TaskAnswerItem
 import com.example.inrussian.components.main.train.TaskAnswerOptionItem
@@ -10,10 +13,9 @@ import com.example.inrussian.components.main.train.TaskContentItem
 import com.example.inrussian.components.main.train.TaskType
 import com.example.inrussian.components.main.train.TasksOption
 import com.example.inrussian.components.main.train.ThemeMeta
-import com.example.inrussian.components.main.train.Section
-import com.example.inrussian.components.main.train.ShortCourse
-import com.example.inrussian.components.main.train.THEORY_TASK_TYPES
 import com.example.inrussian.components.main.train.UserTaskQueueItem
+import com.example.inrussian.models.models.FullTaskMode
+import com.example.inrussian.models.models.TaskBody
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,31 +26,72 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonArray
 import kotlin.random.Random
+import kotlin.uuid.ExperimentalUuidApi
 
 class MockTrainRepository(
-    private val scope: CoroutineScope,
-    private val userId: String = "u_1"
+    private val scope: CoroutineScope, private val userId: String = "u_1"
 ) : TrainRepository {
+    @OptIn(ExperimentalUuidApi::class)
+    private val tasks = listOf<FullTaskMode>(
+        FullTaskMode(
+            id = "efc6b249-7b7f-4be5-a8bd-960283668284",
+            taskText = "Прослушайте диалог и ответьте на вопрос:\u2028На каком направлении может учиться спикер 2?",
+            taskType = listOf(TaskType.WRITE),
+            taskBody = TaskBody.TextTask(
+                variant = listOf(
+                    Pair("зонт1", "雨伞1"),
+                    Pair("зонт2", "雨伞2"),
+                    Pair("зонт3", "雨伞3"),
+                    Pair("зонт4", "雨伞4"),
+                )
+            ),
+        ),
 
+
+        FullTaskMode(
+            id = "a4049d03-1ed6-4ade-9de8-15391acca01e",
+            taskType = listOf(TaskType.CONNECT_IMAGE),
+            taskText = "Прослушайте диалог и ответьте на вопрос:\u2028На каком направлении может учиться спикер 2?",
+            taskBody = TaskBody.ImageTask(
+                variant = listOf(
+                    Pair(
+                        "зонт1",
+                        "https://avatars.mds.yandex.net/i?id=02acd4f4c4fed4c3ea617be5d54b5d63921bed98-5147227-images-thumbs&n=13"
+                    ),
+                    Pair(
+                        "зонт2",
+                        "https://avatars.mds.yandex.net/i?id=02acd4f4c4fed4c3ea617be5d54b5d63921bed98-5147227-images-thumbs&n=13"
+                    ),
+                    Pair(
+                        "зонт3",
+                        "https://avatars.mds.yandex.net/i?id=02acd4f4c4fed4c3ea617be5d54b5d63921bed98-5147227-images-thumbs&n=13"
+                    ),
+                    Pair(
+                        "зонт4",
+                        "https://avatars.mds.yandex.net/i?id=02acd4f4c4fed4c3ea617be5d54b5d63921bed98-5147227-images-thumbs&n=13"
+                    ),
+                )
+            ),
+        ),
+    )
     private val json = Json
 
     /* Courses */
     private val courses = listOf(
-        ShortCourse("kc1", "KMP Practice"),
-        ShortCourse("kc2", "Compose Practice")
+        ShortCourse("kc1", "KMP Practice"), ShortCourse("kc2", "Compose Practice")
     )
 
     /* Sections per course */
     private val sectionsState = MutableStateFlow(
-        courses.associate { c -> c.id to generateSections(c.id) }
-    )
+        courses.associate { c -> c.id to generateSections(c.id) })
 
     /* Tasks per section */
     private val tasksPerSection = mutableMapOf<String, MutableStateFlow<List<Task>>>()
 
     /* Modular assets */
     private val contentsPerTask = mutableMapOf<String, MutableStateFlow<List<TaskContentItem>>>()
-    private val optionsPerTask = mutableMapOf<String, MutableStateFlow<List<TaskAnswerOptionItem>>>()
+    private val optionsPerTask =
+        mutableMapOf<String, MutableStateFlow<List<TaskAnswerOptionItem>>>()
     private val answerPerTask = mutableMapOf<String, MutableStateFlow<TaskAnswerItem?>>()
 
     /* Queue per section */
@@ -158,31 +201,34 @@ class MockTrainRepository(
         recomputeSection(sectionId)
     }
 
+    override suspend fun getTasksByCourseId(courseId: String) =
+        tasks
+
+
     /* ---------------- Generation ---------------- */
 
-    private fun generateSections(courseId: String): List<Section> =
-        (1..3).map { idx ->
-            val themes = (1..Random.nextInt(2, 4)).map { tIdx ->
-                ThemeMeta(
-                    id = "th_${courseId}_$idx$tIdx",
-                    order = tIdx,
-                    theoryCount = Random.nextInt(2, 4),
-                    practiceCount = Random.nextInt(2, 4)
-                )
-            }
-            val totalTheory = themes.sumOf { it.theoryCount }
-            val totalPractice = themes.sumOf { it.practiceCount }
-            Section(
-                id = "sec_${courseId}_$idx",
-                courseId = courseId,
-                title = "Section $idx of ${courseId.uppercase()}",
-                totalTheory = totalTheory,
-                totalPractice = totalPractice,
-                completedTheory = 0,
-                completedPractice = 0,
-                themes = themes
+    private fun generateSections(courseId: String): List<Section> = (1..3).map { idx ->
+        val themes = (1..Random.nextInt(2, 4)).map { tIdx ->
+            ThemeMeta(
+                id = "th_${courseId}_$idx$tIdx",
+                order = tIdx,
+                theoryCount = Random.nextInt(2, 4),
+                practiceCount = Random.nextInt(2, 4)
             )
         }
+        val totalTheory = themes.sumOf { it.theoryCount }
+        val totalPractice = themes.sumOf { it.practiceCount }
+        Section(
+            id = "sec_${courseId}_$idx",
+            courseId = courseId,
+            title = "Section $idx of ${courseId.uppercase()}",
+            totalTheory = totalTheory,
+            totalPractice = totalPractice,
+            completedTheory = 0,
+            completedPractice = 0,
+            themes = themes
+        )
+    }
 
     private data class Generated(
         val tasks: List<Task>,
@@ -202,7 +248,9 @@ class MockTrainRepository(
                 val type = listOf(TaskType.LISTEN_AND_CHOOSE, TaskType.READ_AND_CHOOSE).random()
                 val id = "t_${theme.id}_TH_$i"
                 val (contents, options, answer) = buildAssets(id, section.id, theme.id, type)
-                tasks += Task(id, section.id, theme.id, type, text = "Theory ${i + 1}", answer = answer)
+                tasks += Task(
+                    id, section.id, theme.id, type, text = "Theory ${i + 1}", answer = answer
+                )
                 contentsMap[id] = contents
                 optionsMap[id] = options
                 answersMap[id] = answer
@@ -216,7 +264,9 @@ class MockTrainRepository(
                 ).random()
                 val id = "t_${theme.id}_PR_$i"
                 val (contents, options, answer) = buildAssets(id, section.id, theme.id, type)
-                tasks += Task(id, section.id, theme.id, type, text = "Practice ${i + 1}", answer = answer)
+                tasks += Task(
+                    id, section.id, theme.id, type, text = "Practice ${i + 1}", answer = answer
+                )
                 contentsMap[id] = contents
                 optionsMap[id] = options
                 answersMap[id] = answer
@@ -233,10 +283,7 @@ class MockTrainRepository(
     )
 
     private fun buildAssets(
-        taskId: String,
-        sectionId: String,
-        themeId: String,
-        type: TaskType
+        taskId: String, sectionId: String, themeId: String, type: TaskType
     ): AssetBundle {
         val contents = mutableListOf<TaskContentItem>()
         val options = mutableListOf<TaskAnswerOptionItem>()
@@ -390,10 +437,7 @@ class MockTrainRepository(
                 )
                 words.forEachIndexed { i, w ->
                     options += TaskAnswerOptionItem(
-                        taskId = taskId,
-                        optionText = w,
-                        isCorrect = true,
-                        orderNum = i
+                        taskId = taskId, optionText = w, isCorrect = true, orderNum = i
                     )
                 }
                 val correctArray = buildJsonArray {
@@ -405,6 +449,18 @@ class MockTrainRepository(
                     correctAnswer = correctArray
                 )
             }
+
+            TaskType.WRITE -> TODO()
+            TaskType.LISTEN -> TODO()
+            TaskType.READ -> TODO()
+            TaskType.SPEAK -> TODO()
+            TaskType.REMIND -> TODO()
+            TaskType.MARK -> TODO()
+            TaskType.FILL -> TODO()
+            TaskType.CONNECT_AUDIO -> TODO()
+            TaskType.CONNECT_IMAGE -> TODO()
+            TaskType.CONNECT_TRANSLATE -> TODO()
+            TaskType.SELECT -> TODO()
         }
 
         return AssetBundle(
@@ -417,9 +473,7 @@ class MockTrainRepository(
     /* ---------------- Retry & Progress ---------------- */
 
     override suspend fun scheduleReinforcement(
-        sectionId: String,
-        taskId: String,
-        offsetRange: IntRange
+        sectionId: String, taskId: String, offsetRange: IntRange
     ) {
         val queueFlow = queuePerSection[sectionId] ?: return
         val tasks = tasksPerSection[sectionId]?.value ?: return
@@ -467,6 +521,7 @@ class MockTrainRepository(
         newQueue.add(insertionIndex, newItem)
         queueFlow.value = newQueue.reindex()
     }
+
     private fun recomputeSection(sectionId: String) {
         val allSections = sectionsState.value.values.flatten()
         val target = allSections.firstOrNull { it.id == sectionId } ?: return
@@ -480,8 +535,7 @@ class MockTrainRepository(
         val completedPractice = practiceIds.count { it in completed }
 
         val updated = target.copy(
-            completedTheory = completedTheory,
-            completedPractice = completedPractice
+            completedTheory = completedTheory, completedPractice = completedPractice
         )
 
         sectionsState.value = sectionsState.value.mapValues { (_, list) ->

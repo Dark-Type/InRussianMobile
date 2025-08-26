@@ -9,6 +9,8 @@ import com.example.inrussian.stores.auth.recovery.RecoveryStore
 import com.example.inrussian.stores.auth.recovery.RecoveryStoreFactory
 import com.example.inrussian.stores.auth.register.RegisterStore
 import com.example.inrussian.stores.auth.register.RegisterStoreFactory
+import com.example.inrussian.stores.main.train.TrainStore
+import com.example.inrussian.stores.main.train.TrainStoreFactory
 import com.example.inrussian.stores.root.RootStore
 import com.example.inrussian.stores.root.RootStoreFactory
 import com.example.inrussian.utils.ErrorDecoder
@@ -33,6 +35,14 @@ val storeModule = module {
             validator = get(),
             repository = get()
         ).create()
+    }
+
+    factory<TrainStore> { (courseId: String) ->
+        TrainStoreFactory(
+            storeFactory = get(),
+            errorDecoder = get(),
+            repository = get(),
+        ).create(courseId)
     }
 
     factory<RegisterStore> {
