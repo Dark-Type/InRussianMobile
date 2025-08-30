@@ -13,3 +13,4 @@ interface LoginError
 interface RegisterError
 
 interface PasswordRecoveryError
+interface PhoneError

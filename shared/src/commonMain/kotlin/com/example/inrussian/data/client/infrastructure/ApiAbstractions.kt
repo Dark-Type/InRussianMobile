@@ -1,4 +1,4 @@
-package org.openapitools.client.infrastructure
+package com.example.inrussian.data.client.infrastructure
 
 typealias MultiValueMap = MutableMap<String,List<String>>
 

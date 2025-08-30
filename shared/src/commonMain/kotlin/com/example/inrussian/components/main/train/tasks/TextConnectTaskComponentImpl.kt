@@ -1,14 +1,17 @@
 package com.example.inrussian.components.main.train.tasks
 
-import co.touchlab.kermit.Logger
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
+import com.arkivanov.decompose.value.Value
+import com.arkivanov.decompose.value.update
+import com.example.inrussian.components.main.train.tasks.TextConnectTaskComponent.PointF
+import com.example.inrussian.components.main.train.tasks.TextConnectTaskComponent.RectF
+import com.example.inrussian.components.main.train.tasks.TextConnectTaskComponent.State
 import com.example.inrussian.models.models.TaskBody.TextTask
-import com.example.inrussian.models.models.TaskState
-import com.example.inrussian.models.models.task.Task
-import com.example.inrussian.models.models.task.TextTaskModel
-import com.example.inrussian.utils.componentCoroutineScope
-import kotlinx.coroutines.launch
+import com.example.inrussian.utils.DragSource
+import com.example.inrussian.utils.Piece
+import kotlin.math.abs
+import kotlin.random.Random
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -18,9 +21,167 @@ class TextConnectTaskComponentImpl(
     private val onContinueClicked: (Boolean) -> Unit,
     private val inChecking: (Boolean) -> Unit,
     private val onButtonEnable: (Boolean) -> Unit,
-    listTextTasks: TextTask
-) : TextConnectTaskComponent, ComponentContext by component {
-    var correctList = mutableListOf<Pair<Task, Task>>()
+    listTextTasks: TextTask,
+
+    ) : TextConnectTaskComponent, ComponentContext by component {
+    private val _state = MutableValue(
+        State(
+            leftPieces = listTextTasks.variant.map {
+                Piece(Uuid.random().toString(), it.first)
+            },
+            rightPieces = (listTextTasks.variant.map {
+                Piece(
+                    Uuid.random().toString(),
+                    it.second,
+                    it.first
+                )
+            }).shuffled(Random(42))
+        ))
+    override val state: Value<State> = _state
+    override fun onTaskClick(taskId: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onContinueClick() {
+        TODO("Not yet implemented")
+    }
+
+    // ------- POSITIONING (called from Compose, with platform-agnostic RectF/PointF) -------
+    override fun onLeftPositioned(leftId: String, rect: RectF) {
+        val anchor = rect.center()
+        _state.update { s ->
+            val map = s.leftAnchors.toMutableMap()
+            putIfChanged(map, leftId, anchor)
+            s.copy(leftAnchors = map)
+        }
+    }
+
+    override fun onPairLeftPositioned(leftId: String, rect: RectF) {
+        val anchor = rect.center()
+        _state.update { s ->
+            val map = s.pairLeftAnchors.toMutableMap()
+            putIfChanged(map, leftId, anchor)
+            s.copy(pairLeftAnchors = map)
+        }
+    }
+
+    override fun onRightPositioned(rightId: String, rect: RectF) {
+        _state.update { s ->
+            val map = s.rightRects.toMutableMap()
+            putIfChangedRect(map, rightId, rect)
+            s.copy(rightRects = map)
+        }
+    }
+
+    // ------- DRAG LIFECYCLE -------
+    override fun startDrag(fromPair: Boolean, leftId: String) {
+        _state.update { s ->
+            val source =
+                if (fromPair) DragSource.FromPair(leftId) else DragSource.FromUnmatched(leftId)
+            val startPos = if (fromPair) s.pairLeftAnchors[leftId]
+                ?: s.leftAnchors[leftId] else s.leftAnchors[leftId]
+            s.copy(dragSource = source, dragPos = startPos, hoveredRightId = null)
+        }
+    }
+
+    override fun dragBy(delta: PointF) {
+        _state.update { s ->
+            val start = s.dragPos ?: s.dragSource?.let { ds ->
+                s.pairLeftAnchors[ds.leftId] ?: s.leftAnchors[ds.leftId]
+            }
+            val next = start?.let { PointF(it.x + delta.x, it.y + delta.y) }
+            val hovered = hitTestRight(s.rightRects, next)
+            s.copy(dragPos = next, hoveredRightId = hovered)
+        }
+    }
+
+    // overloaded convenience when caller only has leftId and delta
+    override fun dragBy(leftId: String, delta: PointF) {
+        _state.update { s ->
+            val start = s.dragPos ?: s.leftAnchors[leftId]
+            val next = start?.let { PointF(it.x + delta.x, it.y + delta.y) }
+            val hovered = hitTestRight(s.rightRects, next)
+            s.copy(dragPos = next, hoveredRightId = hovered)
+        }
+    }
+
+    override fun endDrag() {
+        applyDrop()
+        _state.update { s -> s.copy(dragSource = null, dragPos = null, hoveredRightId = null) }
+    }
+
+    override fun cancelDrag() {
+        _state.update { s -> s.copy(dragSource = null, dragPos = null, hoveredRightId = null) }
+    }
+
+    override fun reset() {
+        _state.update { s ->
+            s.copy(
+                matches = emptyMap(),
+                dragSource = null,
+                dragPos = null,
+                hoveredRightId = null,
+                rightRects = emptyMap(),
+                leftAnchors = emptyMap(),
+                pairLeftAnchors = emptyMap()
+            )
+        }
+    }
+
+    // ------- internal helpers -------
+    private fun applyDrop() {
+        val current = _state.value
+        val src = current.dragSource ?: return
+        val rid = current.hoveredRightId ?: return
+
+        _state.update { s ->
+            val newMatches = s.matches.toMutableMap()
+            val prevLeft = newMatches.entries.firstOrNull { it.value == rid }?.key
+            if (prevLeft != null && prevLeft != src.leftId) {
+                newMatches.remove(prevLeft)
+            }
+            newMatches[src.leftId] = rid
+            s.copy(matches = newMatches)
+        }
+    }
+
+    companion object {
+        private fun putIfChanged(
+            map: MutableMap<String, PointF>,
+            id: String,
+            value: PointF,
+            eps: Float = 0.5f
+        ) {
+            val old = map[id]
+            if (old == null || abs(old.x - value.x) > eps || abs(old.y - value.y) > eps) {
+                map[id] = value
+            }
+        }
+
+        private fun putIfChangedRect(
+            map: MutableMap<String, RectF>,
+            id: String,
+            value: RectF,
+            eps: Float = 0.5f
+        ) {
+            val old = map[id]
+            if (old == null ||
+                abs(old.left - value.left) > eps ||
+                abs(old.top - value.top) > eps ||
+                abs(old.right - value.right) > eps ||
+                abs(old.bottom - value.bottom) > eps
+            ) {
+                map[id] = value
+            }
+        }
+
+        fun hitTestRight(rightRects: Map<String, RectF>, point: PointF?): String? {
+            if (point == null || !point.isFinite()) return null
+            return rightRects.entries.firstOrNull { (_, rect) -> rect.containsInclusive(point) }?.key
+        }
+    }
+
+    /*var correctList = mutableListOf<Pair<Task, Task>>()
     override val state = MutableValue(TextConnectTaskComponent.State())
     val scope = componentCoroutineScope()
 
@@ -141,5 +302,5 @@ class TextConnectTaskComponentImpl(
             inChecking(false)
 
         }
-    }
+    }*/
 }

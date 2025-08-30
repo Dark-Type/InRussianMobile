@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.value.MutableValue
-import com.example.inrussian.components.main.home.Course
+import com.example.inrussian.components.main.home.CourseModel
 import com.example.inrussian.components.main.home.CourseDetailsComponent
 import com.example.inrussian.components.main.home.CourseDetailsState
 import com.example.inrussian.components.main.home.CourseSection
@@ -195,7 +195,7 @@ class CourseDetailsComponentUi() : CourseDetailsComponent {
     override val courseId: String = ""
     override val state = MutableValue(
         CourseDetailsState(
-            course = Course(name = "通过工作考试的培训 / Курс на патент", authorId = "Ido"),
+            course = CourseModel(name = "通过工作考试的培训 / Курс на патент", authorId = "Ido"),
             isEnrolled = true,
             sections = listOf(CourseSection("", "Инструкция", 100, 50)),
             progressPercent = 0,

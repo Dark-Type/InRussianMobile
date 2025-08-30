@@ -3,7 +3,7 @@ package com.example.inrussian.components.main.home
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Course(
+data class CourseModel(
     val id: String = "",
     val name: String = "",
     val posterId: String? = null,
@@ -26,14 +26,14 @@ data class CourseSection(
 )
 
 data class CoursesListState(
-    val recommended: List<Course>,
-    val enrolled: List<Course>,
+    val recommended: List<CourseModel>,
+    val enrolled: List<CourseModel>,
     val isLoading: Boolean = false
 )
 
 
 data class CourseDetailsState(
-    val course: Course?,
+    val course: CourseModel?,
     val isEnrolled: Boolean,
     val sections: List<CourseSection>,
     val progressPercent: Int,

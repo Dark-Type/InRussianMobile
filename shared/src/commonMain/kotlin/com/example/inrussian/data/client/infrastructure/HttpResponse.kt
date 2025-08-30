@@ -1,4 +1,4 @@
-package org.openapitools.client.infrastructure
+package com.example.inrussian.data.client.infrastructure
 
 import io.ktor.http.Headers
 import io.ktor.http.isSuccess

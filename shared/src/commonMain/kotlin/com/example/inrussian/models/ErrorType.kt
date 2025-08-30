@@ -13,4 +13,7 @@ sealed class ErrorType : Throwable() {
     data object UnAuthorize : ErrorType(), NetworkError
 
     data object IncorrectCode : ErrorType(), PasswordRecoveryError
+    data object OtherErrors : ErrorType()
+    data object InvalidPhone : ErrorType(), FieldError, PhoneError, RegisterError
+    data object EmailExist : ErrorType(), RegisterError, EmailError
 }

@@ -7,5 +7,5 @@ import org.koin.dsl.module
 
 val authModule = module {
     single<DefaultApi> { DefaultApi() }
-    single<AuthRepository> { AuthRepositoryImpl(get()) }
+    single<AuthRepository> { AuthRepositoryImpl(get(),get()) }
 }

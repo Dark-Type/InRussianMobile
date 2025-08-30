@@ -5,6 +5,7 @@ import android.graphics.PorterDuffXfermode
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
@@ -20,6 +21,7 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
+
 enum class TabSide { LEFT, RIGHT, TOP, BOTTOM }
 
 @Composable
@@ -30,7 +32,7 @@ fun PuzzleLayoutIn(
     elementModifier: Modifier = Modifier,
     background: Color = White,
     onClick: () -> Unit,
-    element: @Composable (Modifier) -> Unit,
+    element: @Composable BoxScope.(Modifier) -> Unit,
 ) {
     Box(
         modifier
@@ -88,7 +90,7 @@ fun PuzzleLayoutOut(
     elementModifier: Modifier = Modifier,
     color: Color = White,
     onClick: () -> Unit,
-    element: @Composable (Modifier) -> Unit,
+    element: @Composable BoxScope. (Modifier) -> Unit,
 ) {
     Box(
         modifier

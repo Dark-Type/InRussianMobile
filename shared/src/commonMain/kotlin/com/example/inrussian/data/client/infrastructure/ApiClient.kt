@@ -22,8 +22,6 @@ import io.ktor.http.content.PartData
 import io.ktor.http.contentType
 import kotlin.Unit
 import kotlinx.serialization.json.Json
-import org.openapitools.client.infrastructure.RequestConfig
-import org.openapitools.client.infrastructure.RequestMethod
 
 open class ApiClient(
         private val baseUrl: String
@@ -57,7 +55,7 @@ open class ApiClient(
     private val authentications: Map<String, Authentication>? = null
 
     companion object {
-        const val BASE_URL: String = "http://10.0.2.2:9080"
+        const val BASE_URL: String = "https://hits-playground.ru/api"
         val JSON_DEFAULT: Json = Json {
           ignoreUnknownKeys = true
           prettyPrint = true

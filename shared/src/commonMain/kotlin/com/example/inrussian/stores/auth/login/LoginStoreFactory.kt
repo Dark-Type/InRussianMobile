@@ -87,7 +87,7 @@ class LoginStoreFactory(
                         } catch (e: Throwable) {
                             dispatch(
                                 LoginStore.Msg.EmailError(
-                                    SharedRes.strings.my_string
+                                    SharedRes.strings.invalid_email
                                 )
                             )
                         }

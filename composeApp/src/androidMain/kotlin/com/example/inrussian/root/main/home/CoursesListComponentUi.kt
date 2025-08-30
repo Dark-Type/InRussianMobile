@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.value.MutableValue
-import com.example.inrussian.components.main.home.Course
+import com.example.inrussian.components.main.home.CourseModel
 import com.example.inrussian.components.main.home.CoursesListComponent
 import com.example.inrussian.components.main.home.CoursesListState
 import com.example.inrussian.root.main.profile.LabelText
@@ -91,7 +91,7 @@ fun CoursesListComponentUi(component: CoursesListComponent) {
 }
 
 @Composable
-fun RecommendedCourseItem(course: Course, onClick: (Course) -> Unit) {
+fun RecommendedCourseItem(course: CourseModel, onClick: (CourseModel) -> Unit) {
     Box(
         Modifier
             .padding(start = 10.dp)
@@ -122,7 +122,7 @@ fun RecommendedCourseItem(course: Course, onClick: (Course) -> Unit) {
 }
 
 @Composable
-fun CourseItem(course: Course, onClick: (Course) -> Unit) {
+fun CourseItem(course: CourseModel, onClick: (CourseModel) -> Unit) {
     Row(
         Modifier
             .clip(RoundedCornerShape(10.dp))
@@ -174,8 +174,8 @@ class CoursesListComponentUi : CoursesListComponent {
 
     override val state = MutableValue(
         CoursesListState(
-            recommended = listOf(Course(name = "通过工作考试的培训 / Курс на патент")),
-            enrolled = listOf(Course(name = "通过工作考试的培训 / Курс на патент")),
+            recommended = listOf(CourseModel(name = "通过工作考试的培训 / Курс на патент")),
+            enrolled = listOf(CourseModel(name = "通过工作考试的培训 / Курс на патент")),
             isLoading = false
         )
     )
