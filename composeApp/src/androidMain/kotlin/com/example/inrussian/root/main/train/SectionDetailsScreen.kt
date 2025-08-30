@@ -183,47 +183,6 @@ fun SectionDetailsScreen(
 
     }
 
-
-    /*  Column(
-          Modifier
-              .fillMaxSize()
-              .padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)
-      ) {
-          Text(section.title, style = MaterialTheme.typography.titleLarge)
-          LinearProgressIndicator(
-              progress = { section.progressPercent / 100f }, modifier = Modifier.fillMaxWidth()
-          )
-          Text("Прогресс: ${section.progressPercent}% (${section.completedTasks}/${section.totalTasks})")
-          Text("Теория: ${section.completedTheory}/${section.totalTheory}")
-          Text("Практика: ${section.completedPractice}/${section.totalPractice}")
-
-          Spacer(Modifier.height(16.dp))
-          Text("Режимы:", style = MaterialTheme.typography.titleMedium)
-
-          Button(
-              onClick = { component.openTasks(TasksOption.Continue) },
-              modifier = Modifier.fillMaxWidth()
-          ) { Text("Продолжить (очередь)") }
-
-          OutlinedButton(
-              onClick = { component.openTasks(TasksOption.All) }, modifier = Modifier.fillMaxWidth()
-          ) { Text("Все задачи") }
-
-          OutlinedButton(
-              onClick = { component.openTasks(TasksOption.Theory) },
-              modifier = Modifier.fillMaxWidth()
-          ) { Text("Только теория") }
-
-          OutlinedButton(
-              onClick = { component.openTasks(TasksOption.Practice) },
-              modifier = Modifier.fillMaxWidth()
-          ) { Text("Только практика") }
-
-          Spacer(Modifier.height(8.dp))
-          OutlinedButton(
-              onClick = { component.onBack() }, modifier = Modifier.fillMaxWidth()
-          ) { Text("Назад") }
-      }*/
 }
 
 class SectionDetailsScreen : SectionDetailComponent {

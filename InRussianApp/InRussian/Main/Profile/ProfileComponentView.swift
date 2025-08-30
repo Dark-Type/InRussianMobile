@@ -26,9 +26,9 @@ struct ProfileComponentView: View {
             } else if let edit = current as? ProfileComponentChildEditProfileChild {
                 EditProfileView(component: edit.component)
             } else if let about = current as? ProfileComponentChildAboutChild {
-                StaticTextScreen(component: about.component, onBack: about.component.onBack)
+                StaticTextScreenView(component: about.component, onBack: about.component.onBack)
             } else if let privacy = current as? ProfileComponentChildPrivacyPolicyChild {
-                StaticTextScreen(component: privacy.component, onBack: privacy.component.onBack)
+                StaticTextScreenView(component: privacy.component, onBack: privacy.component.onBack)
             } else {
                 EmptyView()
             }

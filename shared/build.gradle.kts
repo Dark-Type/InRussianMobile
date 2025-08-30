@@ -64,6 +64,11 @@ kotlin {
                 implementation(libs.ktor.serialization.kotlinx.json)
             }
         }
+        val iosMain by getting {
+            dependencies {
+                api(libs.ktor.client.darwin)
+            }
+        }
 
 
         iosMain {

@@ -151,7 +151,7 @@ fun TrainCardItem(
         horizontalAlignment = Alignment.CenterHorizontally
 
     ) {
-        Box() {
+        Box {
 
             val color = when {
                 courseSection.progressPercent < 35 -> Orange

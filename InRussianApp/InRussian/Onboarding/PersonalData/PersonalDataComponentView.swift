@@ -237,7 +237,7 @@ private struct BirthDatePickerButton: View {
     }
 }
 
-private struct GenderPickerOverlay: View {
+struct GenderPickerOverlay: View {
     let genderOptions: [String]
     let selectedGender: String
     let onSelect: (String) -> Void
@@ -284,7 +284,7 @@ private struct GenderPickerOverlay: View {
     }
 }
 
-private struct DatePickerOverlay: View {
+struct DatePickerOverlay: View {
     let birthDate: String
     let onDateChange: (String) -> Void
     let onDone: () -> Void

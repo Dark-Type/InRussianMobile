@@ -7,16 +7,25 @@
 
 import SwiftUI
 
- struct AvatarView: View {
+struct AvatarView: View {
     let avatarId: String?
+    let displayName: String?
+
+    private var initial: String {
+        let name = (displayName ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        if let first = name.first { return String(first).uppercased() }
+        return "A"
+    }
+
     var body: some View {
         ZStack {
             Circle()
-                .fill(Color(uiColor: .secondarySystemBackground))
-            Text("A")
+                .fill(Color(.accent))
+            Text(initial)
                 .font(.title)
                 .bold()
+                .foregroundColor(.white)
         }
-        .frame(width: 96, height: 96)
+        .frame(width: 116, height: 116)
     }
 }

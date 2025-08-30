@@ -8,6 +8,7 @@
 import Shared
 import SwiftUI
 
+// Root host that mirrors the Android TrainComponentUi
 struct TrainComponentView: View {
     let component: TrainComponent
     @StateValue private var stack: ChildStack<AnyObject, any TrainComponentChild>
@@ -32,9 +33,18 @@ struct TrainComponentView: View {
     }
 }
 
+// MARK: - Courses (mirrors TrainCoursesScreen)
+
 private struct TrainCoursesListView: View {
     let component: TrainCoursesListComponent
     @StateValue private var state: TrainCoursesState
+
+    // Predefine grid to reduce type inference work
+    private let gridColumns: [GridItem] = [
+        GridItem(.flexible(), spacing: 20),
+        GridItem(.flexible(), spacing: 20),
+        GridItem(.flexible(), spacing: 20)
+    ]
 
     init(component: TrainCoursesListComponent) {
         self.component = component
@@ -42,53 +52,134 @@ private struct TrainCoursesListView: View {
     }
 
     var body: some View {
-        if state.isLoading {
-            ProgressCentered()
-        } else {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    ForEach(state.courses, id: \.course.id) { bundle in
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text(bundle.course.title)
-                                .font(.title3).bold()
-                            ForEach(bundle.sections, id: \.id) { section in
-                                SectionCard(section: section) {
-                                    component.onSectionClick(sectionId: section.id)
+        ZStack {
+            // Fill the whole screen with secondary background
+            Color(uiColor: .secondarySystemBackground)
+                .ignoresSafeArea()
+
+            if state.isLoading {
+                ProgressCentered()
+            } else {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 28) {
+                        // Courses
+                        VStack(spacing: 20) {
+                            ForEach(state.courses, id: \.course.id) { bundle in
+                                let coursePercent = Int(bundle.course.percent)
+                                let accent: Color = colorFor(percent: coursePercent)
+
+                                VStack(alignment: .leading, spacing: 16) {
+                                    HStack(spacing: 12) {
+                                        Text(bundle.course.title)
+                                            .font(.title3).bold()
+                                            .foregroundStyle(accent)
+                                            .lineLimit(2)
+                                            .multilineTextAlignment(.leading)
+                                        Spacer()
+                                        Text("\(coursePercent)%")
+                                            .font(.headline).bold()
+                                            .foregroundColor(AppColors.Palette.stroke.color)
+                                    }
+
+                                    LazyVGrid(columns: gridColumns, spacing: 20) {
+                                        ForEach(bundle.sections, id: \.id) { section in
+                                            SectionItemView(
+                                                title: section.title,
+                                                progress: Int(section.progressPercent),
+                                                ringColor: colorFor(percent: Int(section.progressPercent))
+                                            ) {
+                                                component.onSectionClick(sectionId: section.id)
+                                            }
+                                        }
+                                    }
                                 }
+                                .padding(16) // comfortable inner padding
+                                .background(
+                                    // Use component background without borders
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(AppColors.Palette.componentBackground.color)
+                                )
                             }
                         }
                     }
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 28)
                 }
-                .padding(16)
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        // Make "Главная" the navigation title
+        .navigationTitle("Главная")
+        .navigationBarTitleDisplayMode(.large)
+    }
+
+    private func colorFor(percent: Int) -> Color {
+        if percent < 30 { return .red }
+        if percent < 85 { return .yellow }
+        return .green
     }
 }
 
-private struct SectionCard: View {
-    let section: Shared.Section
+private struct SectionItemView: View {
+    let title: String
+    let progress: Int
+    let ringColor: Color
     let onTap: () -> Void
 
     var body: some View {
         Button(action: onTap) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text(section.title)
-                    .font(.headline)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                ProgressView(value: Double(section.progressPercent), total: 100)
-                Text("Прогресс: \(section.progressPercent)% (\(section.completedTasks)/\(section.totalTasks))")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+            VStack(spacing: 12) {
+                ProgressRing(
+                    percent: progress,
+                    color: ringColor,
+                    size: 60,
+                    lineWidth: 6
+                )
+                if !title.isEmpty {
+                    Text(title)
+                        .font(.caption)
+                        .multilineTextAlignment(.center)
+                        .foregroundColor(.primary)
+                        .lineLimit(2)
+                        .frame(maxWidth: .infinity)
+                }
             }
-            .padding(12)
+            .padding(14)
+            .frame(maxWidth: .infinity)
             .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color(uiColor: .secondarySystemBackground))
+                // Use component background and remove borders
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(AppColors.Palette.componentBackground.color)
             )
         }
         .buttonStyle(.plain)
     }
 }
+
+private struct ProgressRing: View {
+    let percent: Int
+    let color: Color
+    let size: CGFloat
+    let lineWidth: CGFloat
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .stroke(color.opacity(0.4), style: StrokeStyle(lineWidth: lineWidth))
+            Circle()
+                .trim(from: 0, to: CGFloat(max(0, min(1, Double(percent) / 100.0))))
+                .stroke(color, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
+                .rotationEffect(.degrees(-90))
+            Text("\(percent)%")
+                .font(.caption)
+                .bold()
+                .foregroundColor(color)
+        }
+        .frame(width: size, height: size)
+    }
+}
+
+// MARK: - Section detail host (mirrors SectionDetailHost)
 
 private struct SectionDetailHostView: View {
     let component: SectionDetailComponent
@@ -100,41 +191,24 @@ private struct SectionDetailHostView: View {
         _state = StateValue(component.state)
         if let defaultComponent = component as? DefaultSectionDetailComponent {
             _innerStack = StateValue(defaultComponent.childStack)
-        }
-        else {
-            fatalError()
+        } else {
+            fatalError("Unsupported SectionDetailComponent type")
         }
     }
 
     var body: some View {
-        NavigationView {
-            ZStack {
-                if let defaultComponent = component as? DefaultSectionDetailComponent {
-                    let inner = innerStack.active.instance
-                    if inner is DefaultSectionDetailComponentInnerChildDetailsChild {
-                        SectionDetailsView(component: component, state: state)
-                    } else if let tasksChild = inner as? DefaultSectionDetailComponentInnerChildTasksChild {
-                        TasksComponentView(component: tasksChild.component)
-                    } else {
-                        EmptyView()
-                    }
-                } else {
-                    // Fallback for non-default components
+        ZStack {
+            if let _ = component as? DefaultSectionDetailComponent {
+                let inner = innerStack.active.instance
+                if inner is DefaultSectionDetailComponentInnerChildDetailsChild {
                     SectionDetailsView(component: component, state: state)
+                } else if let tasksChild = inner as? DefaultSectionDetailComponentInnerChildTasksChild {
+                    TrainTasksView(component: tasksChild.component)
+                } else {
+                    Text("Unsupported child").foregroundStyle(.secondary)
                 }
-            }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: {
-                        component.onBack()
-                    }) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "chevron.left")
-                            Text("Назад")
-                        }
-                    }
-                }
+            } else {
+                Text("Unsupported SectionDetailComponent type")
             }
         }
         .overlay {
@@ -142,8 +216,20 @@ private struct SectionDetailHostView: View {
                 CompletionDialog { component.onBack() }
             }
         }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: { component.onBack() }) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "chevron.left")
+                        Text("Назад")
+                    }
+                }
+            }
+        }
     }
 }
+
+// MARK: - Section details screen (mirrors SectionDetailsScreen)
 
 private struct SectionDetailsView: View {
     let component: SectionDetailComponent
@@ -153,510 +239,665 @@ private struct SectionDetailsView: View {
         if state.isLoading || state.section == nil {
             ProgressCentered()
         } else if let section = state.section {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    Text(section.title)
-                        .font(.title2).bold()
+            ZStack {
+                // Full-screen background
+                Color(uiColor: .secondarySystemBackground)
+                    .ignoresSafeArea()
 
-                    ProgressView(value: Double(section.progressPercent), total: 100)
-                    Text("Прогресс: \(section.progressPercent)% (\(section.completedTasks)/\(section.totalTasks))")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                // Content
+                GeometryReader { _ in
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 28) {
+                            // Stats card
+                            HStack(spacing: 16) {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text("Освоено: \(section.completedTasks)")
+                                        .foregroundColor(.secondary)
+                                    Text("К освоению: \(section.completedTasks)")
+                                        .foregroundColor(.secondary)
+                                    Text("Не пройдено: \(section.completedTasks)")
+                                        .foregroundColor(.secondary)
+                                }
+                                Spacer()
+                                let p = Int(section.progressPercent)
+                                ProgressRing(
+                                    percent: p,
+                                    color: percentColor(p),
+                                    size: 110,
+                                    lineWidth: 6
+                                )
+                            }
+                            .padding(18)
+                            .background(
+                                RoundedRectangle(cornerRadius: 14)
+                                    .fill(AppColors.Palette.componentBackground.color)
+                            )
 
-                    Text("Теория: \(section.completedTheory)/\(section.totalTheory)")
-                        .font(.footnote)
-                    Text("Практика: \(section.completedPractice)/\(section.totalPractice)")
-                        .font(.footnote)
+                            Spacer()
+                            HStack(spacing: 16) {
+                                Button {
+                                    component.openTasks(option: .theory)
+                                } label: {
+                                    Text("Теория")
+                                        .font(.title3.bold())
+                                        .foregroundColor(.white)
+                                        .frame(maxWidth: .infinity)
+                                        .frame(height: 250) // double/triple height
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 14)
+                                                .fill(AppColors.Palette.secondary.color)
+                                        )
+                                }
+                                .buttonStyle(.plain)
 
-                    Divider()
-                        .padding(.vertical, 8)
-
-                    Text("Режимы:")
-                        .font(.headline)
-
-                    VStack(spacing: 10) {
-                        Button {
-                            component.openTasks(option: .continue_)
-                        } label: {
-                            Text("Продолжить (очередь)")
-                                .frame(maxWidth: .infinity)
+                                Button {
+                                    component.openTasks(option: .practice)
+                                } label: {
+                                    Text("Практика")
+                                        .font(.title3.bold())
+                                        .foregroundColor(.white)
+                                        .frame(maxWidth: .infinity)
+                                        .frame(height: 250) // double/triple height
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 14)
+                                                .fill(AppColors.Palette.secondary.color)
+                                        )
+                                }
+                                .buttonStyle(.plain)
+                            }
+                            Spacer(minLength: 120)
+                            CustomButton(text: "Продолжить обучение", color: .accent) {
+                                component.openTasks(option: .continue_)
+                            }
+                            .padding(.top, 8)
+                            .padding(.bottom, 24)
                         }
-                        .buttonStyle(.borderedProminent)
-
-                        Button {
-                            component.openTasks(option: .all)
-                        } label: {
-                            Text("Все задачи")
-                                .frame(maxWidth: .infinity)
-                        }
-                        .buttonStyle(.bordered)
-
-                        Button {
-                            component.openTasks(option: .theory)
-                        } label: {
-                            Text("Только теория")
-                                .frame(maxWidth: .infinity)
-                        }
-                        .buttonStyle(.bordered)
-
-                        Button {
-                            component.openTasks(option: .practice)
-                        } label: {
-                            Text("Только практика")
-                                .frame(maxWidth: .infinity)
-                        }
-                        .buttonStyle(.bordered)
+                        .padding(.horizontal, 20)
+                        .padding(.top, 12)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
-                .padding(16)
+            }
+            // Navigation title at top
+            .navigationTitle(section.title)
+            .navigationBarTitleDisplayMode(.large)
+            .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    Button(action: { component.onBack() }) {
+                        ZStack {
+                            Circle()
+                                .fill(Color.gray.opacity(0.6))
+                                .frame(width: 44, height: 44)
+                            Image(systemName: "chevron.left")
+                                .foregroundColor(.white)
+                                .font(.system(size: 14, weight: .semibold))
+                        }
+                    }
+                }
             }
         }
     }
+
+    private func percentColor(_ percent: Int) -> Color {
+        if percent < 35 { return .orange }
+        if percent < 85 { return .yellow }
+        return Color(red: 0.25, green: 0.70, blue: 0.40)
+    }
 }
 
-struct TasksComponentView: View {
-    let component: TasksComponent
-    @StateValue private var state: TasksState
+// MARK: - Train tasks UI (mirrors TaskUi with TrainComponentCopy)
 
-    init(component: TasksComponent) {
+private struct TrainTasksView: View {
+    let component: TrainComponentCopy
+    @StateValue private var slot: ChildSlot<AnyObject, any TrainComponentCopyChild>
+    @StateValue private var state: TrainStoreState
+
+    @State private var pendingAction: (() -> Void)?
+
+    init(component: TrainComponentCopy) {
         self.component = component
+        _slot = StateValue(component.childSlot as! Value<ChildSlot<AnyObject, any TrainComponentCopyChild>>)
         _state = StateValue(component.state)
     }
 
     var body: some View {
-        NavigationView {
-            VStack {
-                if state.isLoading {
-                    ProgressCentered()
+        VStack(spacing: 16) {
+            ProgressView(value: Double(truncating: state.percent ?? 0), total: 1)
+                .tint(.orange)
+                .frame(maxWidth: .infinity)
+
+            TaskDescriptionView(
+                text: state.showedTask?.taskText ?? "",
+                onInfo: {} // later
+            )
+
+            // Task area
+            ZStack {
+                let current = slot.child?.instance
+                if current == nil {
+                    Text("тут совсем пусто")
+                        .font(.title)
+                        .foregroundColor(.primary)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                        .padding(.vertical, 40)
+                } else if current is TrainComponentCopyChildEmptyChild {
+                    EmptyTaskPlaceholderView()
+                } else if let image = current as? TrainComponentCopyChildImageConnectChild {
+                    ImageConnectTaskView(component: image.component) { action in
+                        pendingAction = action
+                    }
+                } else if let textConnect = current as? TrainComponentCopyChildTextConnectChild {
+                    TextConnectTaskView(component: textConnect.component) { action in
+                        pendingAction = action
+                    }
+                } else if let audio = current as? TrainComponentCopyChildAudioConnectChild {
+                    AudioConnectTaskView(component: audio.component) { action in
+                        pendingAction = action
+                    }
                 } else {
-                    switch state.option {
-                    case .continue_:
-                        ContinueQueueTasksView(state: state, component: component)
-                    case .all, .theory, .practice:
-                        FilteredTasksListView(state: state, component: component)
-                    default:
-                        FilteredTasksListView(state: state, component: component)
-                    }
+                    Text("Unsupported task")
+                        .foregroundStyle(.secondary)
                 }
             }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: {
-                        component.onBack()
-                    }) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "chevron.left")
-                            Text("Назад")
+            .frame(maxWidth: .infinity, minHeight: 220, alignment: .topLeading)
+
+            Button(action: { pendingAction?() }) {
+                Text(state.isChecking ? "Проверить" : "Продолжить")
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(.orange)
+            .disabled(!(state.isButtonEnable))
+
+            Spacer().frame(height: 8)
+        }
+        .padding(.horizontal, 28)
+        .padding(.bottom, 102)
+        .background(Color(UIColor.secondarySystemBackground))
+    }
+}
+
+// MARK: - Actual task implementations
+
+// AudioConnect (mirrors @audio_connect.kt)
+private struct AudioConnectTaskView: View {
+    let component: AudioConnectTaskComponent
+    @StateValue private var state: AudioConnectTaskComponentState
+
+    private let setOnContinue: (@escaping () -> Void) -> Void
+
+    init(component: AudioConnectTaskComponent, setOnContinue: @escaping (@escaping () -> Void) -> Void) {
+        self.component = component
+        _state = StateValue(component.state)
+        self.setOnContinue = setOnContinue
+    }
+
+    var body: some View {
+        let columns = [
+            GridItem(.flexible(), spacing: 30),
+            GridItem(.flexible(), spacing: 30)
+        ]
+        ZStack {
+            Color.clear
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+            LazyVGrid(columns: columns, spacing: 32) {
+                let total = state.elements.count
+                ForEach(0..<total, id: \.self) { index in
+                    let element = state.elements[index]
+
+                    if index % 2 == 0, let audio = element as? AudioTask {
+                        let base = element
+                        PuzzleTile(background: colorFor(taskState: audio.state)) {
+                            HStack {
+                                Spacer()
+                                Image(systemName: audio.isPlay ? "play.fill" : "pause.fill")
+                                    .foregroundColor(Color(UIColor.darkGray))
+                                Spacer()
+                            }
                         }
+                        .onTapGesture {
+                            component.onTaskClick(taskId: base.id)
+                        }
+                    } else if let text = element as? TextTaskModel {
+                        let base = element
+                        PuzzleTile(background: colorFor(taskState: text.state)) {
+                            Text(text.text)
+                                .foregroundColor(textColorFor(taskState: text.state))
+                                .multilineTextAlignment(.center)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 8)
+                        }
+                        .onTapGesture {
+                            component.onTaskClick(taskId: base.id)
+                        }
+                    } else {
+                        Color.clear.frame(height: 44)
                     }
                 }
             }
+            .padding(.vertical, 4)
+        }
+        .onAppear {
+            setOnContinue {
+                component.onContinueClick()
+            }
+        }
+    }
+
+    private func colorFor(taskState: TaskState?) -> Color {
+        switch taskState {
+        case is TaskStateCorrect: return .green
+        case is TaskStateIncorrect: return .red
+        case is TaskStateSelected: return .orange
+        case is TaskStateConnect: return Color.orange.opacity(0.5)
+        default: return .white
+        }
+    }
+
+    private func textColorFor(taskState: TaskState?) -> Color {
+        switch taskState {
+        case is TaskStateCorrect, is TaskStateIncorrect, is TaskStateSelected, is TaskStateConnect:
+            return .white
+        default:
+            return .black
         }
     }
 }
 
-private struct ContinueQueueTasksView: View {
-    let state: TasksState
-    let component: TasksComponent
+// ImageConnect (mirrors @image_connect_task.kt)
+private struct ImageConnectTaskView: View {
+    let component: ImageConnectTaskComponent
+    @StateValue private var state: ImageConnectTaskComponentState
+
+    private let setOnContinue: (@escaping () -> Void) -> Void
+
+    init(component: ImageConnectTaskComponent, setOnContinue: @escaping (@escaping () -> Void) -> Void) {
+        self.component = component
+        _state = StateValue(component.state)
+        self.setOnContinue = setOnContinue
+    }
+
+    var body: some View {
+        let columns = [GridItem(.flexible()), GridItem(.flexible())]
+        LazyVGrid(columns: columns, spacing: 24) {
+            let pairsCount = state.elements.count
+            ForEach(0..<pairsCount, id: \.self) { idx in
+                let pair = state.elements[idx] as! KotlinPair<AnyObject, AnyObject>
+                let first = pair.first
+                let second = pair.second
+
+                if let left = first as? TextTaskModel, let baseLeft = first as? Task_ {
+                    PuzzleTile(background: colorFor(taskState: left.state)) {
+                        Text(left.text)
+                            .foregroundColor(.primary)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.vertical, 8)
+                    }
+                    .onTapGesture {
+                        component.onTaskClick(taskId: baseLeft.id)
+                    }
+                } else {
+                    Color.clear.frame(height: 44)
+                }
+
+                if let right = second as? ImageConnectTaskModel, let baseRight = second as? Task_ {
+                    PuzzleTile(background: colorFor(taskState: right.state)) {
+                        let urlString = right.imageUrl
+                        if let url = URL(string: urlString) {
+                            AsyncImage(url: url) { image in
+                                image
+                                    .resizable()
+                                    .scaledToFit()
+                            } placeholder: {
+                                Rectangle()
+                                    .foregroundColor(.gray.opacity(0.3))
+                                    .frame(height: 45)
+                            }
+                            .frame(height: 45)
+                        } else {
+                            Rectangle()
+                                .foregroundColor(.gray.opacity(0.2))
+                                .frame(height: 45)
+                        }
+                    }
+                    .onTapGesture {
+                        component.onTaskClick(taskId: baseRight.id)
+                    }
+                } else {
+                    Color.clear.frame(height: 44)
+                }
+            }
+        }
+        .onAppear {
+            setOnContinue {
+                component.onContinueClick()
+            }
+        }
+    }
+
+    private func colorFor(taskState: TaskState?) -> Color {
+        switch taskState {
+        case is TaskStateCorrect: return .green
+        case is TaskStateIncorrect: return .red
+        case is TaskStateSelected: return .orange
+        case is TaskStateConnect: return Color.orange.opacity(0.5)
+        default: return .white
+        }
+    }
+}
+
+// TextConnect (mirrors @text_connect_screen.kt)
+private struct TextConnectTaskView: View {
+    let component: TextConnectTaskComponent
+    @StateValue private var state: TextConnectTaskComponentState
+
+    private let setOnContinue: (@escaping () -> Void) -> Void
+
+    init(component: TextConnectTaskComponent, setOnContinue: @escaping (@escaping () -> Void) -> Void) {
+        self.component = component
+        _state = StateValue(component.state)
+        self.setOnContinue = setOnContinue
+    }
+
+    var body: some View {
+        let columns = [GridItem(.flexible()), GridItem(.flexible())]
+        LazyVGrid(columns: columns, spacing: 24) {
+            let pairsCount = state.elements.count
+            ForEach(0..<pairsCount, id: \.self) { idx in
+                let pair = state.elements[idx] as! KotlinPair<AnyObject, AnyObject>
+
+                // LEFT (Text)
+                if let left = pair.first as? TextTaskModel, let baseLeft = pair.first as? Task_ {
+                    PuzzleTile(background: colorFor(taskState: left.state)) {
+                        Text(left.text)
+                            .foregroundColor(.primary)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.vertical, 8)
+                    }
+                    .onTapGesture {
+                        component.onTaskClick(taskId: baseLeft.id)
+                    }
+                } else {
+                    Color.clear.frame(height: 44)
+                }
+
+                // RIGHT (Text)
+                if let right = pair.second as? TextTaskModel, let baseRight = pair.second as? Task_ {
+                    PuzzleTile(background: colorFor(taskState: right.state)) {
+                        Text(right.text)
+                            .foregroundColor(.primary)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.vertical, 8)
+                    }
+                    .onTapGesture {
+                        component.onTaskClick(taskId: baseRight.id)
+                    }
+                } else {
+                    Color.clear.frame(height: 44)
+                }
+            }
+        }
+        .onAppear {
+            setOnContinue {
+                component.onContinueClick()
+            }
+        }
+    }
+
+    private func colorFor(taskState: TaskState?) -> Color {
+        switch taskState {
+        case is TaskStateCorrect: return .green
+        case is TaskStateIncorrect: return .red
+        case is TaskStateSelected: return .orange
+        case is TaskStateConnect: return Color.orange.opacity(0.5)
+        default: return .white
+        }
+    }
+}
+
+// TextInputTask (mirrors @text_input_task.kt)
+// This is a generic view; wire it with your component when integrating the text-input child.
+private struct TextInputTaskView: View {
+    let elements: [TextInsertTask]
+    let onGapChange: (Gap) -> Void
+
+    init(elements: [TextInsertTask], onGapChange: @escaping (Gap) -> Void) {
+        self.elements = elements
+        self.onGapChange = onGapChange
+    }
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 18) {
-                Text("Очередь задач")
-                    .font(.title2).bold()
+            VStack(alignment: .leading, spacing: 16) {
+                ForEach(Array(elements.enumerated()), id: \.offset) { _, element in
+                    Text(element.label)
+                        .font(.title3).bold()
 
-                ProgressView(value: Double(state.progressPercent), total: 100)
-                Text("Прогресс секции: \(state.progressPercent)% (\(state.completedTasks)/\(state.totalTasks))")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-
-                if let fullTask = state.activeFullTask {
-                    TaskContentView(
-                        fullTask: fullTask,
-                        state: state,
-                        component: component
-                    )
-
-                    Text("В очереди: \(state.remainingInQueue)")
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
-                } else {
-                    Text("Очередь пуста.")
-                        .foregroundColor(.secondary)
+                    VStack(alignment: .leading, spacing: 12) {
+                        ForEach(Array(element.sentence.enumerated()), id: \.offset) { _, sentence in
+                            GapSentenceView(sentence: sentence, onGapChange: onGapChange)
+                        }
+                    }
+                    .padding(.horizontal, 8)
                 }
             }
             .padding(16)
+            .background(Color.white)
         }
     }
 }
 
-private struct FilteredTasksListView: View {
-    let state: TasksState
-    let component: TasksComponent
+// MARK: - Helpers used by task UIs
 
-    private var title: String {
-        switch state.option {
-        case .all: return "Все задачи"
-        case .theory: return "Теоретические задачи"
-        case .practice: return "Практические задачи"
-        case .continue_: return "Очередь"
-        default: return "Задачи"
-        }
+private struct PuzzleTile<Content: View>: View {
+    let background: Color
+    let content: Content
+
+    init(background: Color, @ViewBuilder content: () -> Content) {
+        self.background = background
+        self.content = content()
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            Text(title)
-                .font(.title2).bold()
+        content
+            .frame(maxWidth: .infinity)
+            .padding(10)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(background)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(borderColor, lineWidth: 1)
+                    )
+            )
+    }
 
-            ProgressView(value: Double(state.progressPercent), total: 100)
-            Text("Прогресс: \(state.progressPercent)% (\(state.completedTasks)/\(state.totalTasks))")
-                .font(.caption)
-                .foregroundColor(.secondary)
-
-            if let activeTask = state.activeFullTask {
-                TaskContentView(
-                    fullTask: activeTask,
-                    state: state,
-                    component: component
-                )
-            } else if state.filteredTasks.isEmpty {
-                Text("Нет задач для отображения")
-                    .foregroundColor(.secondary)
-            } else {
-                Text("Задачи завершены")
-                    .foregroundColor(.secondary)
-            }
-        }
-        .padding(16)
+    private var borderColor: Color {
+        if background == .white { return Color(UIColor.darkGray).opacity(0.3) }
+        return .clear
     }
 }
 
-private struct TaskContentView: View {
-    let fullTask: FullTask
-    let state: TasksState
-    let component: TasksComponent
+// A simple wrapping layout to place text and inline TextFields for gaps
+@available(iOS 16.0, *)
+private struct WrapLayout: Layout {
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let width = proposal.width ?? .infinity
+        var x: CGFloat = 0
+        var y: CGFloat = 0
+        var rowHeight: CGFloat = 0
 
-    private var taskTypeLabel: String {
-        switch fullTask.task.isTheory {
-        case true:
-            return "ТЕОРИЯ"
-        case false:
-            return "ПРАКТИКА"
+        for subview in subviews {
+            let size = subview.sizeThatFits(.unspecified)
+            if x + size.width > width {
+                x = 0
+                y += rowHeight + 4
+                rowHeight = 0
+            }
+            rowHeight = max(rowHeight, size.height)
+            x += size.width + 4
+        }
+        return CGSize(width: width, height: y + rowHeight)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        let width = bounds.width
+        var x: CGFloat = 0
+        var y: CGFloat = 0
+        var rowHeight: CGFloat = 0
+
+        for subview in subviews {
+            let size = subview.sizeThatFits(.unspecified)
+            if x + size.width > width {
+                x = 0
+                y += rowHeight + 4
+                rowHeight = 0
+            }
+            subview.place(at: CGPoint(x: bounds.minX + x, y: bounds.minY + y),
+                          proposal: ProposedViewSize(width: size.width, height: size.height))
+            rowHeight = max(rowHeight, size.height)
+            x += size.width + 4
+        }
+    }
+}
+
+private struct GapSentenceView: View {
+    let sentence: Sentence
+    let onGapChange: (Gap) -> Void
+
+    var body: some View {
+        if #available(iOS 16.0, *) {
+            WrapLayout {
+                ForEach(segments(from: sentence), id: \.id) { seg in
+                    switch seg.kind {
+                    case .text(let t):
+                        Text(t)
+                            .font(.system(size: 15))
+                            .foregroundColor(Color(UIColor.darkGray).opacity(0.7))
+                    case .gap(let gap):
+                        GapField(gap: gap, onGapChange: onGapChange)
+                    }
+                }
+            }
+        } else {
+            VStack(alignment: .leading, spacing: 8) {
+                Text(sentence.text)
+                    .font(.system(size: 15))
+                    .foregroundColor(Color(UIColor.darkGray).opacity(0.7))
+                ForEach(Array((sentence.gaps).enumerated()), id: \.offset) { _, gap in
+                    GapField(gap: gap, onGapChange: onGapChange)
+                        .frame(maxWidth: 200)
+                }
+            }
         }
     }
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(taskTypeLabel)
-                .font(.caption)
-                .foregroundColor(.secondary)
-
-            Text(fullTask.task.text ?? "")
-                .font(.body)
-
-            ForEach(fullTask.contents, id: \.id) { contentItem in
-                TaskContentItemView(contentItem: contentItem)
-            }
-
-            if let answer = fullTask.answer {
-                TaskInteractionView(
-                    fullTask: fullTask,
-                    answerType: answer.answerType,
-                    state: state,
-                    component: component
-                )
-            }
-
-            SubmissionArea(state: state, component: component)
+    private struct Segment: Identifiable {
+        enum Kind {
+            case text(String)
+            case gap(Gap)
         }
-        .padding(14)
+
+        let id = UUID()
+        let kind: Kind
+    }
+
+    private func segments(from sentence: Sentence) -> [Segment] {
+        var result: [Segment] = []
+        var start = 0
+        let text = sentence.text
+        let gaps: [Gap] = sentence.gaps
+
+        for i in 0..<gaps.count {
+            let gap = gaps[i]
+            let idx = Int(gap.index)
+            if idx > start && idx <= text.count {
+                let to = min(idx + 1, text.count)
+                let startIndex = text.index(text.startIndex, offsetBy: start)
+                let endIndex = text.index(text.startIndex, offsetBy: to)
+                let part = String(text[startIndex..<endIndex])
+                result.append(Segment(kind: .text(part)))
+            }
+            result.append(Segment(kind: .gap(gap)))
+            start = idx
+        }
+        if start < text.count {
+            let startIndex = text.index(text.startIndex, offsetBy: start)
+            let part = String(text[startIndex...])
+            result.append(Segment(kind: .text(part)))
+        }
+        return result
+    }
+}
+
+private struct GapField: View {
+    let gap: Gap
+    let onGapChange: (Gap) -> Void
+
+    @State private var text: String = ""
+
+    var body: some View {
+        let correct = gap.correctWord
+        let width: CGFloat = max(44, CGFloat(correct.count) * 9)
+
+        TextField("", text: Binding(
+            get: { gap.enter.isEmpty ? text : gap.enter },
+            set: { new in
+                text = new
+                // Use doCopy from KMM bridge (or create a new Gap with init)
+                onGapChange(gap.doCopy(enter: new, correctWord: gap.correctWord, index: gap.index))
+            }
+        ))
+        .textFieldStyle(.roundedBorder)
+        .font(.system(size: 15, weight: .medium))
+        .foregroundColor(Color(UIColor.darkGray).opacity(0.8))
+        .frame(width: width, height: 28)
+    }
+}
+
+// MARK: - Shared bits
+
+private struct EmptyTaskPlaceholderView: View {
+    var body: some View {
+        VStack {
+            Text("тут совсем пусто")
+                .font(.title)
+                .foregroundColor(.primary)
+        }
+        .frame(maxWidth: .infinity, minHeight: 180)
         .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(Color(uiColor: .secondarySystemBackground))
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(uiColor: .systemBackground))
         )
     }
 }
 
-private struct TaskContentItemView: View {
-    let contentItem: TaskContentItem
+private struct TaskDescriptionView: View {
+    let text: String
+    let onInfo: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            switch contentItem.contentType {
-            case ContentType.text:
-                if let text = contentItem.description_ {
-                    Text(text)
-                        .font(.body)
-                }
-            case ContentType.image:
-                if let imageUrl = contentItem.contentId {
-                    AsyncImage(url: URL(string: imageUrl)) { image in
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                    } placeholder: {
-                        Rectangle()
-                            .foregroundColor(.gray.opacity(0.3))
-                            .frame(height: 150)
-                    }
-                    .frame(maxHeight: 200)
-                    .cornerRadius(8)
-                }
-            case ContentType.audio:
-                if let audioUrl = contentItem.contentId {
-                    HStack {
-                        Image(systemName: "play.circle")
-                        Text("Аудио")
-                        Spacer()
-                    }
-                    .padding(12)
-                    .background(Color.blue.opacity(0.1))
-                    .cornerRadius(8)
-                }
-            default:
-                EmptyView()
-            }
-        }
-    }
-}
-
-private struct TaskInteractionView: View {
-    let fullTask: FullTask
-    let answerType: AnswerType
-    let state: TasksState
-    let component: TasksComponent
-
-    var body: some View {
-        switch answerType {
-        case AnswerType.singleChoiceShort, AnswerType.singleChoiceLong:
-            SingleChoiceView(fullTask: fullTask, state: state, component: component)
-        case AnswerType.multipleChoiceShort, AnswerType.multipleChoiceLong:
-            MultipleChoiceView(fullTask: fullTask, state: state, component: component)
-        case AnswerType.textInput:
-            TextInputView(state: state, component: component)
-        case AnswerType.wordOrder:
-            WordOrderView(fullTask: fullTask, state: state, component: component)
-        case AnswerType.wordSelection:
-            WordSelectionView(fullTask: fullTask, state: state, component: component)
-        default:
-            EmptyView()
-        }
-    }
-}
-
-private struct SingleChoiceView: View {
-    let fullTask: FullTask
-    let state: TasksState
-    let component: TasksComponent
-
-    var body: some View {
-        VStack(spacing: 8) {
-            ForEach(fullTask.options, id: \.id) { option in
-                SingleOptionButton(
-                    option: option,
-                    isSelected: state.singleSelection == option.id,
-                    onTap: {
-                        component.selectOption(optionId: option.id)
-                    }
-                )
-            }
-        }
-    }
-}
-
-private struct SingleOptionButton: View {
-    let option: TaskAnswerOptionItem
-    let isSelected: Bool
-    let onTap: () -> Void
-    
-    var body: some View {
-        Button(action: onTap) {
             HStack {
-                Text(option.optionText ?? "")
                 Spacer()
-                optionIcon
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(backgroundView)
-        }
-        .buttonStyle(.plain)
-    }
-    
-    private var optionIcon: some View {
-        Group {
-            if isSelected {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.blue)
-            } else {
-                Image(systemName: "circle")
-                    .foregroundColor(.gray)
-            }
-        }
-    }
-    
-    private var backgroundView: some View {
-        RoundedRectangle(cornerRadius: 8)
-            .fill(isSelected ? Color.blue.opacity(0.1) : Color.clear)
-    }
-}
-
-private struct MultipleChoiceView: View {
-    let fullTask: FullTask
-    let state: TasksState
-    let component: TasksComponent
-
-    var body: some View {
-        VStack(spacing: 8) {
-            ForEach(fullTask.options, id: \.id) { option in
-                Button(action: {
-                    component.toggleOption(optionId: option.id)
-                }) {
-                    HStack {
-                        Text(option.optionText ?? "")
-                        Spacer()
-                        if state.multiSelection.contains(option.id) {
-                            Image(systemName: "checkmark.square.fill")
-                                .foregroundColor(.blue)
-                        } else {
-                            Image(systemName: "square")
-                                .foregroundColor(.gray)
-                        }
-                    }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(state.multiSelection.contains(option.id) ? Color.blue.opacity(0.1) : Color.clear)
-                    )
-                }
-                .buttonStyle(.plain)
-            }
-        }
-    }
-}
-
-private struct TextInputView: View {
-    let state: TasksState
-    let component: TasksComponent
-
-    var body: some View {
-        TextField("Введите ответ...", text: Binding(
-            get: { state.textInput },
-            set: { component.updateTextInput(text: $0) }
-        ))
-        .textFieldStyle(.roundedBorder)
-    }
-}
-
-private struct WordOrderView: View {
-    let fullTask: FullTask
-    let state: TasksState
-    let component: TasksComponent
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Расставьте слова в правильном порядке:")
-                .font(.caption)
-                .foregroundColor(.secondary)
-
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 80))], spacing: 8) {
-                ForEach(Array(state.wordOrder.enumerated()), id: \.offset) { _, wordId in
-                    if let option = fullTask.options.first(where: { $0.id == wordId }) {
-                        Text(option.optionText ?? "")
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(Color.blue.opacity(0.2))
-                            .cornerRadius(8)
-                    }
+                Button(action: onInfo) {
+                    Image(systemName: "exclamationmark.circle")
+                        .foregroundColor(.orange)
+                        .font(.title3)
                 }
             }
-
-            Divider()
-
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 80))], spacing: 8) {
-                ForEach(fullTask.options.filter { !state.wordOrder.contains($0.id) }, id: \.id) { option in
-                    Button(action: {
-                        component.selectOption(optionId: option.id)
-                    }) {
-                        Text(option.optionText ?? "")
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(Color.gray.opacity(0.2))
-                            .cornerRadius(8)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
+            Text(text)
+                .font(.body)
         }
-    }
-}
-
-private struct WordSelectionView: View {
-    let fullTask: FullTask
-    let state: TasksState
-    let component: TasksComponent
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Выберите правильные слова:")
-                .font(.caption)
-                .foregroundColor(.secondary)
-
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 80))], spacing: 8) {
-                ForEach(fullTask.options, id: \.id) { option in
-                    Button(action: {
-                        component.selectOption(optionId: option.id)
-                    }) {
-                        Text(option.optionText ?? "")
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(state.wordSelection.contains(option.id) ? Color.blue.opacity(0.2) : Color.gray.opacity(0.1))
-                            .cornerRadius(8)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-        }
-    }
-}
-
-private struct SubmissionArea: View {
-    let state: TasksState
-    let component: TasksComponent
-
-    var body: some View {
-        if state.showResult {
-            let correct = state.lastSubmissionCorrect?.boolValue == true
-            let color = correct ? Color.green : Color.red
-            let message = correct ? "Верно!" : "Неверно"
-
-            HStack {
-                Text(message)
-                    .foregroundColor(color)
-                Spacer()
-                Button(action: {
-                    component.nextAfterResult()
-                }) {
-                    Text(correct ? "Далее" : "Попробовать ещё")
-                }
-                .buttonStyle(.borderedProminent)
-            }
-            .padding(12)
-            .background(color.opacity(0.1))
-            .cornerRadius(8)
-        } else {
-            Button(action: {
-                component.submitAnswer()
-            }) {
-                Text("Ответить")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.borderedProminent)
-            .disabled(!state.canSubmit)
-        }
+        .padding(.horizontal, 10)
+        .padding(.bottom, 16)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(uiColor: .systemBackground))
+        )
     }
 }
 

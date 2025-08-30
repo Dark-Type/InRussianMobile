@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -51,50 +50,7 @@ fun ContinueQueueTasks(state: TasksState, component: TasksComponent) {
         //  TaskDescription()
         //SpeakerElement()
         ChoiceElement()
-    }/*Column(
-        Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text("Очередь задач", style = MaterialTheme.typography.titleLarge)
-
-        LinearProgressIndicator(
-            progress = { state.progressPercent / 100f },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Text(
-            "Прогресс секции: ${state.progressPercent}% " +
-                    "(${state.completedTasks}/${state.totalTasks})",
-            style = MaterialTheme.typography.bodySmall
-        )
-
-        val full = state.activeFullTask
-        if (full == null) {
-            Text("Очередь пуста.", style = MaterialTheme.typography.bodyMedium)
-        } else {
-            TaskCard(
-                fullTask = full,
-                state = state,
-                showQueueMeta = true,
-                remainingInQueue = state.remainingInQueue,
-                onSelect = component::selectOption,
-                onToggle = component::toggleOption,
-                onReorderWordOrder = component::reorderWordOrder,
-                onWordAdd = { component.selectOption(it) },
-                onWordRemove = { *//* remove from order *//* },
-                onTextChange = component::updateTextInput
-            )
-            Spacer(Modifier.height(8.dp))
-            SubmissionArea(state = state, component = component)
-        }
-
-        Spacer(Modifier.weight(1f))
-        OutlinedButton(
-            onClick = { component.onBack() },
-            modifier = Modifier.fillMaxWidth()
-        ) { Text("Назад") }
-    }*/
+    }
 }
 
 @Composable
@@ -207,7 +163,7 @@ fun ChoiceItem(
 
 
 @Composable
-fun ColumnScope.SpeakerItem(isPlay: Boolean, text: String, transcription: String, label: String) {
+fun SpeakerItem(isPlay: Boolean, text: String, transcription: String, label: String) {
     Text(
         stringResource(Res.string.speaker) + " $label",
         fontSize = 20.sp,
