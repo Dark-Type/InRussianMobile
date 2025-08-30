@@ -4,6 +4,7 @@ import com.arkivanov.mvikotlin.core.store.Store
 import com.example.inrussian.stores.auth.recovery.RecoveryStore.Intent
 import com.example.inrussian.stores.auth.recovery.RecoveryStore.Label
 import com.example.inrussian.stores.auth.recovery.RecoveryStore.State
+import dev.icerock.moko.resources.StringResource
 
 
 interface RecoveryStore : Store<Intent, State, Label> {
@@ -23,15 +24,15 @@ interface RecoveryStore : Store<Intent, State, Label> {
 
     data class State(
         val email: String = "",
-        val emailError: String? = null,
+        val emailError: StringResource? = null,
         val password: String = "",
         val showPassword: Boolean = false,
-        val passwordError: String? = null,
+        val passwordError: StringResource? = null,
         val confirmPassword: String = "",
         val showConfirmPassword: Boolean = false,
-        val confirmPasswordError: String? = null,
+        val confirmPasswordError: StringResource? = null,
         val code: String = "",
-        val codeError: String? = null,
+        val codeError: StringResource? = null,
         val timerMinute: Int = 0,
         val timerSecond: Int = 0,
         val loading: Boolean = false,
@@ -53,10 +54,10 @@ interface RecoveryStore : Store<Intent, State, Label> {
         data class PasswordChanged(val password: String) : Msg
         data class ConfirmPasswordChanged(val confirmPassword: String) : Msg
         data class CodeChanged(val code: String) : Msg
-        data class EmailError(val messageId: String) : Msg
-        data class PasswordError(val messageId: String) : Msg
-        data class ConfirmPasswordError(val messageId: String) : Msg
-        data class CodeError(val messageId: String) : Msg
+        data class EmailError(val messageId: StringResource) : Msg
+        data class PasswordError(val messageId: StringResource) : Msg
+        data class ConfirmPasswordError(val messageId: StringResource) : Msg
+        data class CodeError(val messageId: StringResource) : Msg
         data object QuestionClick : Msg
         data object QuestionDismiss : Msg
         data object PasswordTransform : Msg

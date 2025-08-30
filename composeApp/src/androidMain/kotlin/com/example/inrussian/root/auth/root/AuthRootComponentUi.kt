@@ -3,8 +3,6 @@ package com.example.inrussian.root.auth.root
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.example.inrussian.components.auth.root.AuthRootComponent
-import com.example.inrussian.components.onboarding.root.OnboardingRootComponent
 import com.example.inrussian.root.auth.base.BaseAuthUi
 import com.example.inrussian.root.auth.login.LoginUi
 import com.example.inrussian.root.auth.recovery.code.EnterRecoveryCodeUi
@@ -17,6 +15,7 @@ import com.example.inrussian.root.auth.register.LanguageChooseUi
 import com.example.inrussian.root.auth.register.PersonaDataUi
 import com.example.inrussian.root.auth.register.RegisterUi
 import com.example.inrussian.root.auth.sso.SsoPopoverUi
+import com.example.inrussian.components.auth.root.AuthRootComponent
 
 @Composable
 fun AuthRootComponentUi(component: AuthRootComponent) {

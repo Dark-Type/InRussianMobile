@@ -1,11 +1,12 @@
 package com.example.inrussian.stores.auth.register
 
 import com.arkivanov.mvikotlin.core.store.Store
+import com.example.inrussian.models.ErrorKey
 import com.example.inrussian.components.onboarding.citizenship.CitizenshipComponent
 import com.example.inrussian.components.onboarding.education.EducationComponent
 import com.example.inrussian.components.onboarding.language.LanguageComponent
 import com.example.inrussian.components.onboarding.personalData.PersonalDataComponent
-import com.example.inrussian.models.ErrorKey
+import dev.icerock.moko.resources.StringResource
 import kotlinx.serialization.Serializable
 
 interface RegisterStore : Store<RegisterStore.Intent, RegisterStore.State, RegisterStore.Label> {
@@ -25,13 +26,13 @@ interface RegisterStore : Store<RegisterStore.Intent, RegisterStore.State, Regis
 
     data class State(
         val email: String = "",
-        val emailError: String? = null,
+        val emailError: StringResource? = null,
         val password: String = "",
         val showPassword: Boolean = false,
-        val passwordError: String? = null,
+        val passwordError: StringResource? = null,
         val confirmPassword: String = "",
         val showConfirmPassword: Boolean = false,
-        val confirmPasswordError: String? = null,
+        val confirmPasswordError: StringResource? = null,
         val languageState: LanguageComponent.State? = null,
         val citizenshipState: CitizenshipComponent.State? = null,
         val educationState: EducationComponent.State? = null,
@@ -53,9 +54,9 @@ interface RegisterStore : Store<RegisterStore.Intent, RegisterStore.State, Regis
         data class EmailChanged(val email: String) : Msg
         data class PasswordChanged(val password: String) : Msg
         data class ConfirmPasswordChanged(val password: String) : Msg
-        data class EmailError(val messageId: String) : Msg
-        data class PasswordError(val messageId: String) : Msg
-        data class ConfirmPasswordError(val messageId: String) : Msg
+        data class EmailError(val messageId: StringResource) : Msg
+        data class PasswordError(val messageId: StringResource) : Msg
+        data class ConfirmPasswordError(val messageId: StringResource) : Msg
         data class UpdateCitizenship(val state: CitizenshipComponent.State) : Msg
         data class UpdateEducation(val state: EducationComponent.State) : Msg
         data class UpdateLanguage(val state: LanguageComponent.State) : Msg
@@ -71,18 +72,5 @@ interface RegisterStore : Store<RegisterStore.Intent, RegisterStore.State, Regis
         data object SubmittedSuccessfully : Label
     }
 
-
-    @Serializable
-    data class PersistableState(
-        val email: String = "",
-        val password: String = "",
-        val showPassword: Boolean = false,
-        val confirmPassword: String = "",
-        val showConfirmPassword: Boolean = false,
-        val emailErrorKey: ErrorKey? = null,
-        val passwordErrorKey: ErrorKey? = null,
-        val confirmPasswordErrorKey: ErrorKey? = null,
-        val loading: Boolean = false
-    )
 
 }

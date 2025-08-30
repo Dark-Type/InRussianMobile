@@ -66,11 +66,7 @@ open class ApiClient(
         protected val UNSAFE_HEADERS: List<String> = listOf(HttpHeaders.ContentType)
     }
 
-    /**
-     * Set the username for the first HTTP basic authentication.
-     *
-     * @param username Username
-     */
+
     fun setUsername(username: String) {
         val auth = authentications?.values?.firstOrNull { it is HttpBasicAuth } as HttpBasicAuth?
                 ?: throw Exception("No HTTP basic authentication configured")

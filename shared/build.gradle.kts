@@ -2,13 +2,14 @@ import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-val ktor_version = "3.1.3"
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinSerialization)
-//    id("dev.icerock.mobile.multiplatform-resources")
+    id("dev.icerock.mobile.multiplatform-resources")
+
 }
+
 
 kotlin {
     applyDefaultHierarchyTemplate()
@@ -34,7 +35,7 @@ kotlin {
                 export(libs.decompose)
                 export(libs.essenty.lifecycle)
                 export(libs.ktor.client.darwin)
-//                export(libs.resources)
+                export(libs.resources)
 //                export("dev.icerock.moko:graphics:0.10.0")
 
             }
@@ -46,7 +47,7 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.serialization.core)
                 api(libs.ktor.client.serialization)
-
+                api(libs.resources)
                 api(libs.kotlinx.datetime)
                 api(libs.decompose)
                 api(libs.essenty.lifecycle)
@@ -104,10 +105,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 }
-//multiplatformResources {
-//    resourcesPackage.set("org.example.library") // required
-//    resourcesClassName.set("SharedRes") // optional, default MR
-//    resourcesVisibility.set(MRVisibility.Internal) // optional, default Public
-//    iosBaseLocalizationRegion.set("en") // optional, default "en"
-//    iosMinimalDeploymentTarget.set("11.0")
-//}
+multiplatformResources {
+    resourcesPackage.set("org.example.library")
+    resourcesClassName.set("SharedRes")
+   // resourcesVisibility.set(MRVisibility.Internal)
+    iosBaseLocalizationRegion.set("en")
+    iosMinimalDeploymentTarget.set("11.0")
+}

@@ -7,11 +7,11 @@ plugins {
 }
 
 
-//buildscript {
-//    repositories {
-//        gradlePluginPortal()
-//    }
-////    dependencies{
-////        classpath(libs.resources.generator)
-////    }
-//}
+buildscript {
+    repositories {
+        gradlePluginPortal()
+    }
+    dependencies{
+        classpath(libs.resources.generator)
+    }
+}

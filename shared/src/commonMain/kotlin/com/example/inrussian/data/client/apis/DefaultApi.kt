@@ -91,12 +91,7 @@ open class DefaultApi : ApiClient {
         httpClient: HttpClient
     ): super(baseUrl = baseUrl, httpClient = httpClient)
 
-    /**
-     * 
-     * 
-     * @param courseId 
-     * @return OverallCourseStatisticsResponse
-     */
+
     @Suppress("UNCHECKED_CAST")
     open suspend fun adminStatisticsCourseCourseIdGet(courseId: String): HttpResponse<OverallCourseStatisticsResponse> {
 

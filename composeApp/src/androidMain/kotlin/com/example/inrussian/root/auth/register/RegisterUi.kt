@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,7 +39,7 @@ import org.jetbrains.compose.resources.vectorResource
 @Composable
 fun RegisterUi(component: RegisterComponent) {
     val state by component.state.subscribeAsState()
-
+    val context = LocalContext.current
     Column(modifier = Modifier.padding(16.dp)) {
         Row {
             BackButton(enable = false, onClick = component::onBackClicked)
@@ -63,7 +64,7 @@ fun RegisterUi(component: RegisterComponent) {
                 Res.drawable.cancel
             ),
             onIconClick = component::onEmailDeleteClick,
-            error = state.emailError
+            error = state.emailError?.getString(context)
         )
         Spacer(modifier = Modifier.height(4.dp))
         CommonTextField(
@@ -76,7 +77,7 @@ fun RegisterUi(component: RegisterComponent) {
             onIconClick = component::onShowPasswordClick,
             visualTransformation = if (!state.showPassword) PasswordVisualTransformation() else null,
 
-            error = state.passwordError
+            error = state.passwordError?.getString(context)
         )
         Spacer(modifier = Modifier.height(4.dp))
         CommonTextField(
@@ -88,7 +89,7 @@ fun RegisterUi(component: RegisterComponent) {
             ),
             onIconClick = component::onShowConfirmPasswordClick,
             visualTransformation = if (!state.showConfirmPassword) PasswordVisualTransformation() else null,
-            error = state.confirmPasswordError
+            error = state.confirmPasswordError?.getString(context)
         )
         Spacer(modifier = Modifier.height(57.dp))
         CommonButton(
@@ -138,6 +139,6 @@ class RegisterUi : RegisterComponent {
     @Preview(showBackground = true, showSystemUi = true)
     @Composable
     fun PreviewRegisterUi() {
-      //  RegisterUi(this)
+        //  RegisterUi(this)
     }
 }

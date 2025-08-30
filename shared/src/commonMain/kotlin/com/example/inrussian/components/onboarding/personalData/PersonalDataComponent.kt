@@ -2,7 +2,6 @@ package com.example.inrussian.components.onboarding.personalData
 
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
-import com.example.inrussian.stores.auth.login.LoginStore
 import com.example.inrussian.stores.auth.register.RegisterStore
 import com.example.inrussian.stores.auth.register.RegisterStore.Intent
 

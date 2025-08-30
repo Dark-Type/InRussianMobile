@@ -14,6 +14,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
@@ -34,11 +35,12 @@ import inrussian.composeapp.generated.resources.sign_in
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
+import dev.icerock.moko.resources.desc.Resource
 
 @Composable
 fun LoginUi(component: LoginComponent) {
     val state by component.state.subscribeAsState()
-
+    val context = LocalContext.current
     Column(modifier = Modifier.padding(16.dp)) {
         Row {
             BackButton(enable = false, onClick = component::onBackClicked)
@@ -59,7 +61,7 @@ fun LoginUi(component: LoginComponent) {
             value = state.email,
             onValueChange = { component.onEmailChange(it) },
             label = stringResource(Res.string.email),
-            error = state.emailError,
+            error =state.emailError?.getString(context),
             icon = if (state.email.isBlank()) null else vectorResource(
                 Res.drawable.cancel
             ),
@@ -69,7 +71,7 @@ fun LoginUi(component: LoginComponent) {
             value = state.password,
             onValueChange = component::onPasswordChange,
             label = stringResource(Res.string.password),
-            error = state.passwordError,
+            error =  state.passwordError?.getString(context),
             icon = if (state.password.isBlank()) null else if (state.showPassword) vectorResource(
                 Res.drawable.eye_show
             ) else vectorResource(

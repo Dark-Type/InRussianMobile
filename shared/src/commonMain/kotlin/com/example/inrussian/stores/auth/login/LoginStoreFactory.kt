@@ -12,6 +12,7 @@ import com.example.inrussian.models.models.LoginModel
 import com.example.inrussian.repository.auth.AuthRepository
 import com.example.inrussian.utils.ErrorDecoder
 import kotlinx.coroutines.launch
+import org.example.library.SharedRes
 
 class LoginStoreFactory(
     private val storeFactory: StoreFactory,
@@ -86,7 +87,7 @@ class LoginStoreFactory(
                         } catch (e: Throwable) {
                             dispatch(
                                 LoginStore.Msg.EmailError(
-                                    "Неверныая почта или пароль"
+                                    SharedRes.strings.my_string
                                 )
                             )
                         }
