@@ -48,10 +48,8 @@ import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.inrussian.components.onboarding.language.LanguageComponent
 import com.example.inrussian.ui.theme.ContinueButton
-import com.example.inrussian.ui.theme.DarkGrey
 import com.example.inrussian.ui.theme.LightBlue
 import com.example.inrussian.ui.theme.Orange
-import com.example.inrussian.ui.theme.reallyLightGrey
 import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.app_language
 import inrussian.composeapp.generated.resources.app_n_language
@@ -59,12 +57,14 @@ import inrussian.composeapp.generated.resources.checkmark_circle
 import inrussian.composeapp.generated.resources.language
 import inrussian.composeapp.generated.resources.profile
 import inrussian.composeapp.generated.resources.tell_about_u
+import nekit.corporation.shift_app.ui.theme.LocalExtraColors
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun LanguageChooseUi(component: LanguageComponent) {
     val state by component.state.subscribeAsState()
+    val currentColors = LocalExtraColors.current
     val languages = listOf(
         "RUSSIAN" to "Русский",
         "ENGLISH" to "English",
@@ -79,12 +79,13 @@ fun LanguageChooseUi(component: LanguageComponent) {
     Box {
         Column(
             Modifier
-                .background(reallyLightGrey)
+                .background(currentColors.secondaryBackground)
                 .padding(horizontal = 22.dp)
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(top = 64.dp)
                     .offset(x = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -93,7 +94,8 @@ fun LanguageChooseUi(component: LanguageComponent) {
             Text(
                 stringResource(Res.string.app_n_language),
                 fontSize = 40.sp,
-                fontWeight = FontWeight.W600
+                fontWeight = FontWeight.W600,
+                color = currentColors.fontCaptive
             )
             Column(
                 Modifier.weight(0.8f),
@@ -111,7 +113,7 @@ fun LanguageChooseUi(component: LanguageComponent) {
                 Text(
                     stringResource(Res.string.tell_about_u),
                     fontSize = 20.sp,
-                    color = DarkGrey.copy(alpha = 0.8f),
+                    color = currentColors.fontCaptive,
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.W600,
                     lineHeight = 30.sp
@@ -130,21 +132,23 @@ fun LanguageChooseUi(component: LanguageComponent) {
                     .fillMaxWidth()
                     .padding(bottom = 74.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(White)
+                    .background(currentColors.componentBackground)
                     .padding(horizontal = 16.dp)
                     .padding(vertical = 8.dp)
             ) {
                 Text(
                     stringResource(Res.string.app_language),
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.W400
+                    fontWeight = FontWeight.W400,
+                    color = currentColors.fontCaptive
                 )
                 Spacer(Modifier.weight(1f))
                 Text(
                     languages.firstOrNull { it.first == state.selectedLanguage }?.second
                         ?: state.selectedLanguage,
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.W400
+                    fontWeight = FontWeight.W400,
+                    color = currentColors.fontCaptive
                 )
                 IconButton({ component.openMenu() }) {
                     Icon(
@@ -170,17 +174,19 @@ fun LanguageChooseUi(component: LanguageComponent) {
                         .align(Alignment.Center)
                         .widthIn(min = 220.dp, max = 320.dp)
                         .shadow(8.dp, RoundedCornerShape(20.dp))
-                        .background(White, RoundedCornerShape(20.dp))
+                        .background(currentColors.componentBackground, RoundedCornerShape(20.dp))
                 ) {
                     Text(
                         text = "Выберите язык",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.W600,
+                        color = currentColors.fontCaptive,
                         modifier = Modifier
                             .align(Alignment.CenterHorizontally)
                             .padding(top = 28.dp, bottom = 12.dp)
+
                     )
-                    HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
+                    HorizontalDivider(Modifier, DividerDefaults.Thickness, currentColors.stroke)
                     LazyColumn(
                         modifier = Modifier
                             .heightIn(max = 340.dp)
@@ -204,7 +210,7 @@ fun LanguageChooseUi(component: LanguageComponent) {
                                         lang.second,
                                         fontSize = 20.sp,
                                         fontWeight = FontWeight.W500,
-                                        color = if (state.selectedLanguage == lang.first) Orange else Color.Gray,
+                                        color = if (state.selectedLanguage == lang.first) Orange else currentColors.fontCaptive,
                                         modifier = Modifier.weight(1f)
                                     )
                                     if (state.selectedLanguage == lang.first) {
@@ -221,7 +227,7 @@ fun LanguageChooseUi(component: LanguageComponent) {
                                 HorizontalDivider(
                                     modifier = Modifier.padding(start = 16.dp, end = 16.dp),
                                     thickness = DividerDefaults.Thickness,
-                                    color = DividerDefaults.color
+                                    color = currentColors.stroke
                                 )
                             }
                         }
@@ -245,22 +251,23 @@ fun LanguageChooseUi(component: LanguageComponent) {
                         .align(Alignment.Center)
                         .widthIn(min = 220.dp, max = 320.dp)
                         .shadow(8.dp, RoundedCornerShape(20.dp), clip = false)
-                        .background(White, RoundedCornerShape(20.dp))
+                        .background(currentColors.componentBackground, RoundedCornerShape(20.dp))
                         .padding(horizontal = 18.dp, vertical = 16.dp)
                 ) {
                     Text(
                         "Политика конфиденциальности",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        color = currentColors.fontCaptive
                     )
                     Spacer(Modifier.height(18.dp))
                     Text(
                         "Ваши персональные данные используются только с целью предоставления функциональности приложения и не передаются третьим лицам. Честно-честно. PS: не забыть заменить эти данные на реальную политику конфиденциальности.",
                         fontSize = 15.sp,
-                        color = DarkGrey.copy(alpha = 0.9f),
+                        color = currentColors.fontInactive,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
                     )
                     Spacer(Modifier.height(12.dp))
                     Button(
@@ -285,11 +292,12 @@ fun PermissionRow(
     onClick: (Boolean) -> Unit,
     onShowPrivacy: () -> Unit
 ) {
+    val currentColors = LocalExtraColors.current
     Row(
         Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(White)
+            .background(currentColors.componentBackground)
             .clickable { onClick(!isSelected) }
             .padding(horizontal = 16.dp)
             .padding(top = 16.dp, bottom = 10.dp),
@@ -315,7 +323,7 @@ fun PermissionRow(
             Text(
                 "на обработку персональных данных",
                 fontSize = 15.sp,
-                color = DarkGrey.copy(alpha = 0.8f)
+                color = currentColors.footnote
             )
         }
         Checkbox(
@@ -326,7 +334,7 @@ fun PermissionRow(
                 checkedBoxColor = LightBlue,
                 checkedCheckmarkColor = White,
                 checkedBorderColor = LightBlue,
-                uncheckedBoxColor = White,
+                uncheckedBoxColor = currentColors.componentBackground,
                 uncheckedCheckmarkColor = LightBlue,
                 uncheckedBorderColor = LightBlue,
             )

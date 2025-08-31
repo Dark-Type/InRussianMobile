@@ -340,7 +340,7 @@ struct EditProfileView: View {
                         options: [
                             "Русский", "Английский", "Китайский", "Узбекский", "Таджикский", "Казахский"
                         ],
-                        selected: Set((working.languages as? [String]) ?? []),
+                        selected: Set((working.languages as [String])),
                         allowsMultiple: true,
                         accent: AppColors.Palette.accent.color,
                         onSelect: { lang in component.selectLanguage(language: lang) },

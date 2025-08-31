@@ -8,6 +8,7 @@ import Shared
 import SwiftUI
 
 struct PersonalDataComponentView: View {
+    @StateObject private var keyboard = KeyboardObserver()
     let component: PersonalDataComponent
 
     @ObservedObject private var observedState: ObservableValue<PersonalDataComponentState>
@@ -34,28 +35,34 @@ struct PersonalDataComponentView: View {
         ZStack {
             Color(.secondarySystemBackground).ignoresSafeArea()
 
-            VStack(spacing: 24) {
-                Image(systemName: "person.crop.circle")
-                    .resizable()
-                    .foregroundColor(AppColors.Palette.accent.color)
-                    .frame(width: 120, height: 120)
-                    .padding(.top, 64)
-                Spacer()
+            ScrollView {
+                VStack(spacing: 24) {
+                    Image(systemName: "person.crop.circle")
+                        .resizable()
+                        .foregroundColor(AppColors.Palette.accent.color)
+                        .frame(width: 120, height: 120)
+                        .padding(.top, 64)
 
-                PersonalDataFields(
-                    state: state,
-                    component: component,
-                    showGenderPicker: $showGenderPicker,
-                    showDatePicker: $showDatePicker,
-                    formattedBirthDate: formattedBirthDate(state.birthDate)
-                )
-                .background(AppColors.Palette.componentBackground.color)
-                .cornerRadius(12)
-                .padding(.horizontal, 20)
-                .padding(.vertical, 8)
+                    PersonalDataFields(
+                        state: state,
+                        component: component,
+                        showGenderPicker: $showGenderPicker,
+                        showDatePicker: $showDatePicker,
+                        formattedBirthDate: formattedBirthDate(state.birthDate)
+                    )
+                    .background(AppColors.Palette.componentBackground.color)
+                    .cornerRadius(12)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 8)
+                }
+                .padding(.horizontal, 0)
+                .padding(.bottom, 36)
             }
-            .padding(.horizontal, 0)
-            .padding(.bottom, 36)
+            .scrollDismissesKeyboard(.interactively)
+            .safeAreaInset(edge: .bottom) {
+                Color.clear.frame(height: keyboard.visibleHeight)
+            }
+            .animation(.easeOut(duration: 0.25), value: keyboard.visibleHeight)
 
             if showGenderPicker {
                 GenderPickerOverlay(
@@ -169,15 +176,6 @@ private struct PersonalDataFields: View {
                 keyboardType: .phonePad
             )
             Divider().padding(.horizontal, 8)
-
-            CustomAsteriskTextField(
-                placeholder: "Email",
-                text: Binding(
-                    get: { state.email },
-                    set: { component.changeEmail(email: $0) }
-                ),
-                keyboardType: .emailAddress
-            ).padding(.bottom, 10)
         }
     }
 }

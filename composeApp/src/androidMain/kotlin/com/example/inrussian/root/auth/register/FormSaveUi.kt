@@ -1,5 +1,6 @@
 package com.example.inrussian.root.auth.register
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -23,12 +24,14 @@ import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.checkmark_circle
 import inrussian.composeapp.generated.resources.`continue`
 import inrussian.composeapp.generated.resources.success_save_date
+import nekit.corporation.shift_app.ui.theme.LocalExtraColors
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun FormSaveUi(component: ConfirmationComponent) {
-    Column(Modifier.padding(horizontal = 28.dp)) {
+    val currentColors = LocalExtraColors.current
+    Column(Modifier.background(currentColors.secondaryBackground).padding(horizontal = 28.dp)) {
         Column(
             Modifier
                 .weight(1f)
@@ -42,7 +45,8 @@ fun FormSaveUi(component: ConfirmationComponent) {
                 fontSize = 20.sp,
                 fontWeight = FontWeight.W600,
                 modifier = Modifier.padding(horizontal = 50.dp, vertical = 60.dp),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                color = currentColors.fontCaptive
             )
         }
         CommonButton(stringResource(Res.string.`continue`), true, component::onConfirm)

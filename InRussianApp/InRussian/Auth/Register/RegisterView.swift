@@ -54,7 +54,7 @@ struct RegisterView: View {
                         .disabled(state.loading)
 
                         if let emailError = state.emailError {
-                            Text(emailError)
+                            Text(emailError.localized)
                                 .font(.caption)
                                 .foregroundColor(.red)
                                 .padding(.leading, 16)
@@ -78,7 +78,7 @@ struct RegisterView: View {
                         .disabled(state.loading)
 
                         if let passwordError = state.passwordError {
-                            Text(passwordError)
+                            Text(passwordError.localized)
                                 .font(.caption)
                                 .foregroundColor(.red)
                                 .padding(.leading, 16)
@@ -106,7 +106,7 @@ struct RegisterView: View {
                         .disabled(state.loading)
 
                         if let confirmPasswordError = state.confirmPasswordError {
-                            Text(confirmPasswordError)
+                            Text(confirmPasswordError.localized)
                                 .font(.caption)
                                 .foregroundColor(.red)
                                 .padding(.leading, 16)

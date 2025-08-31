@@ -11,7 +11,7 @@ import Combine
 
 
 final class KeyboardObserver: ObservableObject {
-    @Published var height: CGFloat = 0
+    @Published private(set) var visibleHeight: CGFloat = 0
     @Published var isChanging: Bool = false
 
     private var tokens: [NSObjectProtocol] = []
@@ -42,25 +42,40 @@ final class KeyboardObserver: ObservableObject {
         tokens.removeAll()
     }
 
+    private func keyWindow() -> UIWindow? {
+        // Prefer the active scene's key window
+        return UIApplication.shared
+            .connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap { $0.windows }
+            .first { $0.isKeyWindow }
+    }
+
     private func handle(note: Notification, forceHide: Bool = false) {
         guard
             let userInfo = note.userInfo,
             let duration = (userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue
         else { return }
 
-        let targetHeight: CGFloat
+        let screenBounds = UIScreen.main.bounds
+        let bottomInset = keyWindow()?.safeAreaInsets.bottom ?? 0
+
+        let overlap: CGFloat
         if forceHide {
-            targetHeight = 0
+            overlap = 0
         } else if let endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            let screen = UIScreen.main.bounds
-            targetHeight = max(0, screen.maxY - endFrame.minY)
+            // How much of the screen bottom is covered by the keyboard
+            overlap = max(0, screenBounds.maxY - endFrame.minY)
         } else {
-            targetHeight = 0
+            overlap = 0
         }
+
+        // Subtract the bottom safe-area to avoid a "double gap" above the keyboard.
+        let targetVisible = max(0, overlap - bottomInset)
 
         isChanging = true
         withAnimation(.easeOut(duration: max(0.1, duration))) {
-            self.height = targetHeight.isFinite ? targetHeight : 0
+            self.visibleHeight = targetVisible.isFinite ? targetVisible : 0
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + duration + 0.02) {
             self.isChanging = false

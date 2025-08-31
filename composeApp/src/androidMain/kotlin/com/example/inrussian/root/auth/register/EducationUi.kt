@@ -31,7 +31,6 @@ import com.example.inrussian.components.onboarding.education.EducationComponent
 import com.example.inrussian.ui.theme.BackButton
 import com.example.inrussian.ui.theme.ContinueButton
 import com.example.inrussian.ui.theme.Orange
-import com.example.inrussian.ui.theme.reallyLightGrey
 import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.activity_type
 import inrussian.composeapp.generated.resources.can_write_rus_speech
@@ -42,20 +41,23 @@ import inrussian.composeapp.generated.resources.understand_rus_language
 import inrussian.composeapp.generated.resources.understand_rus_speech
 import inrussian.composeapp.generated.resources.understand_rus_text
 import inrussian.composeapp.generated.resources.which_language
+import nekit.corporation.shift_app.ui.theme.LocalExtraColors
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun EducationUi(component: EducationComponent) {
     val state by component.state.subscribeAsState()
+    val currentColors = LocalExtraColors.current
     Column(
         Modifier
-            .background(reallyLightGrey)
+            .background(currentColors.secondaryBackground)
             .padding(horizontal = 22.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(top = 64.dp)
                 .offset(x = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -63,7 +65,10 @@ fun EducationUi(component: EducationComponent) {
             ContinueButton(state.continueEnable, component::onNext)
         }
         Text(
-            stringResource(Res.string.education), fontSize = 40.sp, fontWeight = FontWeight.W600
+            stringResource(Res.string.education),
+            fontSize = 40.sp,
+            fontWeight = FontWeight.W600,
+            color = currentColors.fontCaptive
         )
         Box(
             Modifier
@@ -86,11 +91,11 @@ fun EducationUi(component: EducationComponent) {
                 .fillMaxWidth()
                 .padding(bottom = 50.dp)
                 .clip(RoundedCornerShape(12.dp))
-                .background(White)
+                .background(currentColors.componentBackground)
         ) {
             ClipsContainer(
                 isOpen = state.isOpenLanguages,
-                variants = listOf(
+                variants =  listOf(
                     "Русский",
                     "Английский",
                     "Китайский",
@@ -273,44 +278,44 @@ fun EducationUi(component: EducationComponent) {
                 placeholder = stringResource(Res.string.which_language)
             )
 
-            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp), color = currentColors.stroke)
             TextWithToggle(
                 stringResource(Res.string.understand_rus_speech),
                 state.speaksRussian,
                 { component.changeSpeaksRussian(it) }
             )
-            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp), color = currentColors.stroke)
             TextWithToggle(
                 stringResource(Res.string.understand_rus_language),
                 state.understandsRussian,
                 { component.changeUnderstandsRussian(it) }
             )
-            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp), color = currentColors.stroke)
             TextWithToggle(
                 stringResource(Res.string.understand_rus_text),
                 state.readsRussian,
                 { component.changeReadsRussian(it) }
             )
-            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp), color = currentColors.stroke)
             TextWithToggle(
                 stringResource(Res.string.can_write_rus_speech),
                 state.writesRussian,
                 { component.changeWritesRussian(it) }
             )
-            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp), color = currentColors.stroke)
             InputFormField(
                 state.kindOfActivity,
                 component::changeActivity,
                 stringResource(Res.string.activity_type),
                 Modifier
             )
-            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp), color = currentColors.stroke)
             InputFormField(
                 state.education,
                 component::changeEducation,
                 stringResource(Res.string.education)
             )
-            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp), color = currentColors.stroke)
             InputFormField(
                 state.purposeOfRegistration,
                 component::changePurpose,
@@ -325,29 +330,33 @@ fun EducationUi(component: EducationComponent) {
 fun TextWithToggle(
     text: String, isActive: Boolean, onClick: (Boolean) -> Unit, isRequired: Boolean = true
 ) {
+    val currentColors = LocalExtraColors.current
     Row(
         Modifier.padding(start = 16.dp, end = 8.dp), verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(buildAnnotatedString {
-            append(text)
-            if (isRequired) withStyle(style = SpanStyle(color = Orange)) {
-                append("*")
-            }
-        }, fontSize = 16.sp)
+        Text(
+            buildAnnotatedString {
+                append(text)
+                if (isRequired) withStyle(style = SpanStyle(color = Orange)) {
+                    append("*")
+                }
+            },
+            fontSize = 16.sp,
+            color = currentColors.fontCaptive
+        )
         Spacer(Modifier.weight(1f))
         Checkbox(
             isActive, onClick, colors = CheckboxDefaults.colors().copy(
                 checkedBoxColor = Orange,
                 checkedCheckmarkColor = White,
                 checkedBorderColor = Orange,
-                uncheckedBoxColor = White,
+                uncheckedBoxColor = currentColors.componentBackground,
                 uncheckedCheckmarkColor = Orange,
                 uncheckedBorderColor = Orange,
             )
         )
     }
 }
-
 //class EducationUi : EducationComponent {
 //    override val state = MutableValue(
 //        EducationComponent.State(languages = mutableListOf("Ural", "Oleg"), isOpenLanguages = true)

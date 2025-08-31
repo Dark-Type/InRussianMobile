@@ -1,6 +1,7 @@
 package com.example.inrussian.root.auth.login
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,7 +23,6 @@ import com.example.inrussian.components.auth.login.LoginComponent
 import com.example.inrussian.ui.theme.BackButton
 import com.example.inrussian.ui.theme.CommonButton
 import com.example.inrussian.ui.theme.CommonTextField
-import com.example.inrussian.ui.theme.DarkGrey
 import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.cancel
 import inrussian.composeapp.generated.resources.email
@@ -35,15 +35,16 @@ import inrussian.composeapp.generated.resources.sign_in
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
-import dev.icerock.moko.resources.desc.Resource
+import nekit.corporation.shift_app.ui.theme.LocalExtraColors
 
 @Composable
 fun LoginUi(component: LoginComponent) {
     val state by component.state.subscribeAsState()
     val context = LocalContext.current
-    Column(modifier = Modifier.padding(16.dp)) {
-        Row {
-            BackButton(enable = false, onClick = component::onBackClicked)
+    val currentColors = LocalExtraColors.current
+    Column(modifier = Modifier.background(currentColors.baseBackground).padding(16.dp)) {
+        Row(modifier = Modifier.padding(top = 32.dp)) {
+            BackButton(enable = true, onClick = component::onBackClicked)
         }
         Box(
             modifier = Modifier
@@ -61,7 +62,7 @@ fun LoginUi(component: LoginComponent) {
             value = state.email,
             onValueChange = { component.onEmailChange(it) },
             label = stringResource(Res.string.email),
-            error =state.emailError?.getString(context),
+            error = state.emailError?.getString(context),
             icon = if (state.email.isBlank()) null else vectorResource(
                 Res.drawable.cancel
             ),
@@ -71,7 +72,7 @@ fun LoginUi(component: LoginComponent) {
             value = state.password,
             onValueChange = component::onPasswordChange,
             label = stringResource(Res.string.password),
-            error =  state.passwordError?.getString(context),
+            error = state.passwordError?.getString(context),
             icon = if (state.password.isBlank()) null else if (state.showPassword) vectorResource(
                 Res.drawable.eye_show
             ) else vectorResource(
@@ -90,7 +91,7 @@ fun LoginUi(component: LoginComponent) {
         TextButton(
             onClick = { component.onForgotPasswordClicked() }, modifier = Modifier.fillMaxWidth()
         ) {
-            Text(stringResource(Res.string.forgot_password), color = DarkGrey.copy(alpha = 0.4f))
+            Text(stringResource(Res.string.forgot_password), color = currentColors.footnote)
         }
         Spacer(modifier = Modifier.height(40.dp))
 

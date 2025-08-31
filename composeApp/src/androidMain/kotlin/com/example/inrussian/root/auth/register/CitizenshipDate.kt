@@ -1,6 +1,7 @@
 package com.example.inrussian.root.auth.register
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -24,8 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
@@ -38,7 +37,6 @@ import com.example.inrussian.ui.theme.BackButton
 import com.example.inrussian.ui.theme.ContinueButton
 import com.example.inrussian.ui.theme.DarkGrey
 import com.example.inrussian.ui.theme.Orange
-import com.example.inrussian.ui.theme.reallyLightGrey
 import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.checkmark_circle
 import inrussian.composeapp.generated.resources.citizenship
@@ -51,6 +49,7 @@ import inrussian.composeapp.generated.resources.residence_city
 import inrussian.composeapp.generated.resources.residence_country
 import inrussian.composeapp.generated.resources.study_country
 import inrussian.composeapp.generated.resources.time_of_stay
+import nekit.corporation.shift_app.ui.theme.LocalExtraColors
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -494,18 +493,19 @@ private val timeOptionsRu = listOf(
 @Composable
 fun CitizenshipDate(component: CitizenshipComponent) {
     val state by component.state.subscribeAsState()
-
+    val currentColors = LocalExtraColors.current
     val isResidenceOpen = remember { mutableStateOf(false) }
     val isStudyCountryOpen = remember { mutableStateOf(false) }
 
     Column(
         Modifier
-            .background(reallyLightGrey)
+            .background(currentColors.secondaryBackground)
             .padding(horizontal = 22.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(top = 64.dp)
                 .offset(x = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -516,7 +516,8 @@ fun CitizenshipDate(component: CitizenshipComponent) {
         Text(
             stringResource(Res.string.citizenship_data),
             fontSize = 40.sp,
-            fontWeight = FontWeight.W600
+            fontWeight = FontWeight.W600,
+            color = currentColors.fontCaptive
         )
 
         Box(
@@ -540,7 +541,7 @@ fun CitizenshipDate(component: CitizenshipComponent) {
                 .fillMaxWidth()
                 .padding(bottom = 50.dp)
                 .clip(RoundedCornerShape(12.dp))
-                .background(White)
+                .background(currentColors.componentBackground)
         ) {
             // Гражданства — мультиселект (список стран)
             ClipsContainer(
@@ -552,7 +553,7 @@ fun CitizenshipDate(component: CitizenshipComponent) {
                 onAddClick = component::selectCountry,
                 placeholder = stringResource(Res.string.citizenship)
             )
-            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp), color = currentColors.stroke)
 
             // Национальность — сингл-селект (список национальностей)
             SingleSelectRow(
@@ -564,7 +565,7 @@ fun CitizenshipDate(component: CitizenshipComponent) {
                 onSelect = component::selectNationality,
                 onClear = { component.selectNationality("") }
             )
-            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp), color = currentColors.stroke)
 
             // Страна проживания — сингл-селект (список стран)
             SingleSelectRow(
@@ -576,7 +577,7 @@ fun CitizenshipDate(component: CitizenshipComponent) {
                 onSelect = { choice -> component.countryLiveChange(choice) },
                 onClear = { component.countryLiveChange("") }
             )
-            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp), color = currentColors.stroke)
 
             // Город проживания — текстовое поле
             InputFormField(
@@ -584,7 +585,7 @@ fun CitizenshipDate(component: CitizenshipComponent) {
                 component::cityLiveChange,
                 stringResource(Res.string.residence_city)
             )
-            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp), color = currentColors.stroke)
 
             // Страна во время обучения — сингл-селект (список стран)
             SingleSelectRow(
@@ -596,7 +597,7 @@ fun CitizenshipDate(component: CitizenshipComponent) {
                 onSelect = { choice -> component.studyCountyChange(choice) },
                 onClear = { component.studyCountyChange("") }
             )
-            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp), color = currentColors.stroke)
 
             SingleSelectRow(
                 isOpen = state.isTimeOpen,
@@ -613,11 +614,15 @@ fun CitizenshipDate(component: CitizenshipComponent) {
 
 @Composable
 fun CommonClips(onClick: (String) -> Unit, text: String) {
+    val currentColors = LocalExtraColors.current
     Box(Modifier.padding(end = 16.dp, bottom = 4.dp)) {
         Text(
-            text, modifier = Modifier
+            text,
+            color = currentColors.fontInactive,
+            modifier = Modifier
                 .clip(RoundedCornerShape(18.dp))
                 .background(DarkGrey.copy(0.1f))
+                .border(width = 1.dp, color = currentColors.stroke, shape = RoundedCornerShape(18.dp))
                 .padding(horizontal = 9.dp, vertical = 3.dp)
                 .align(Alignment.Center)
         )
@@ -628,7 +633,11 @@ fun CommonClips(onClick: (String) -> Unit, text: String) {
                 .size(14.dp)
                 .offset(7.dp, (-7).dp)
         ) {
-            Icon(vectorResource(Res.drawable.delete), contentDescription = "")
+            Icon(
+                vectorResource(Res.drawable.delete),
+                contentDescription = "",
+                tint = currentColors.stroke
+            )
         }
     }
 }
@@ -644,26 +653,34 @@ fun ClipsContainer(
     onAddClick: (String) -> Unit,
     placeholder: String
 ) {
+    val currentColors = LocalExtraColors.current
+
     Box(Modifier.fillMaxWidth()) {
         FlowRow(Modifier.padding(start = 16.dp, end = 12.dp, top = 12.dp, bottom = 8.dp)) {
             active.forEach { text ->
                 CommonClips(onClick, text)
             }
-            if (active.isEmpty()) Text(placeholder)
+            if (active.isEmpty()) {
+                Text(placeholder, color = currentColors.fontCaptive)
+            }
         }
 
         IconButton(
             onClick = { onChangeExpanded(!isOpen) },
             modifier = Modifier.align(Alignment.TopEnd)
         ) {
-            Icon(vectorResource(Res.drawable.down_arrow), contentDescription = null)
+            Icon(
+                vectorResource(Res.drawable.down_arrow),
+                contentDescription = null,
+                tint = currentColors.stroke
+            )
         }
 
         DropdownMenu(
             expanded = isOpen,
             onDismissRequest = { onChangeExpanded(false) },
             offset = DpOffset(x = 220.dp, y = 0.dp),
-            containerColor = White
+            containerColor = currentColors.componentBackground
         ) {
             variants.forEach { option ->
                 DropdownMenuItem(
@@ -689,6 +706,8 @@ private fun SingleSelectRow(
     onSelect: (String) -> Unit,
     onClear: () -> Unit
 ) {
+    val currentColors = LocalExtraColors.current
+
     Box(
         Modifier
             .fillMaxWidth()
@@ -703,18 +722,22 @@ private fun SingleSelectRow(
             val isEmpty = value.isEmpty()
             Text(
                 if (isEmpty) placeholder else value,
-                color = if (isEmpty) DarkGrey.copy(alpha = 0.6f) else Color.Black,
+                color = if (isEmpty) currentColors.fontInactive else currentColors.fontCaptive,
                 modifier = Modifier.weight(1f)
             )
 
             if (!isEmpty) {
                 IconButton(onClick = onClear) {
-                    Icon(vectorResource(Res.drawable.delete), contentDescription = "")
+                    Icon(vectorResource(Res.drawable.delete), contentDescription = "", tint = currentColors.fontCaptive)
                 }
             }
 
             IconButton(onClick = { onChangeExpanded(!isOpen) }, Modifier.size(32.dp)) {
-                Icon(vectorResource(Res.drawable.down_arrow), contentDescription = null)
+                Icon(
+                    vectorResource(Res.drawable.down_arrow),
+                    contentDescription = null,
+                    tint = currentColors.stroke
+                )
             }
         }
 
@@ -722,7 +745,7 @@ private fun SingleSelectRow(
             expanded = isOpen,
             onDismissRequest = { onChangeExpanded(false) },
             offset = DpOffset(x = 220.dp, y = 0.dp),
-            containerColor = White
+            containerColor = currentColors.componentBackground
         ) {
             options.forEach { option ->
                 DropdownMenuItem(
@@ -732,7 +755,8 @@ private fun SingleSelectRow(
                             Icon(
                                 vectorResource(Res.drawable.checkmark_circle),
                                 contentDescription = null,
-                                tint = Orange
+                                tint = Orange,
+                                modifier = Modifier.size(18.dp)
                             )
                         }
                     },

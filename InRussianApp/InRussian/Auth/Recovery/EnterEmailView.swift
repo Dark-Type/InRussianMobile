@@ -109,7 +109,7 @@ struct EnterEmailView: View {
             }
         } message: {
             if let error = component.state.value.emailError {
-                Text(error)
+                Text(error.localized)
             }
         }
     }

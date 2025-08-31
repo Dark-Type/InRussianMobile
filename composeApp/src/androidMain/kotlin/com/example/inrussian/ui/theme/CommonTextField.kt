@@ -8,11 +8,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import nekit.corporation.shift_app.ui.theme.LocalExtraColors
 
 @Composable
 fun CommonTextField(
@@ -25,25 +29,35 @@ fun CommonTextField(
     placeholder: String = "",
     error: String? = null,
 ) {
+    val extraColors = LocalExtraColors.current
+
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(label) },
+        label = { Text(label, color = extraColors.fontCaptive) },
         modifier = Modifier.fillMaxWidth().imePadding(),
         shape = RoundedCornerShape(10.dp),
         visualTransformation = visualTransformation ?: VisualTransformation.None,
         trailingIcon = if (icon != null) (@Composable {
             IconButton(onIconClick) {
                 Icon(
-                    icon, "", Modifier
-                        .size(24.dp)
+                    icon, "", Modifier.size(24.dp)
                 )
             }
-        }) else null, placeholder = { Text(placeholder) },
+        }) else null,
+        placeholder = { Text(placeholder, color = extraColors.fontCaptive) },
         supportingText = {
-            if (error != null) Text(
-                error
-            )
-        }
+            if (error != null) Text(error, color = extraColors.fontCaptive)
+        },
+        colors = TextFieldDefaults.colors(
+            focusedIndicatorColor = extraColors.stroke,
+            unfocusedIndicatorColor = extraColors.stroke,
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            focusedLabelColor = extraColors.stroke,
+            unfocusedLabelColor = extraColors.stroke,
+            cursorColor = extraColors.stroke
+        ),
+        textStyle = TextStyle(color = extraColors.fontCaptive)
     )
 }

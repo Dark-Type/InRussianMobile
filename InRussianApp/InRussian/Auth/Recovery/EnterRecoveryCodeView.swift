@@ -59,7 +59,7 @@ struct EnterRecoveryCodeView: View {
                 .disabled(component.state.value.loading)
 
                 if let error = component.state.value.emailError {
-                    Text(error)
+                    Text(error.localized)
                         .font(.caption)
                         .foregroundColor(.red)
                         .padding(.bottom, 16)

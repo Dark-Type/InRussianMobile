@@ -46,12 +46,10 @@ import com.example.inrussian.components.onboarding.personalData.PersonalDataComp
 import com.example.inrussian.ui.theme.BackButton
 import com.example.inrussian.ui.theme.ContinueButton
 import com.example.inrussian.ui.theme.Orange
-import com.example.inrussian.ui.theme.reallyLightGrey
 import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.calendar
 import inrussian.composeapp.generated.resources.dob
 import inrussian.composeapp.generated.resources.down_arrow
-import inrussian.composeapp.generated.resources.email
 import inrussian.composeapp.generated.resources.first_name
 import inrussian.composeapp.generated.resources.gender
 import inrussian.composeapp.generated.resources.personal_data
@@ -59,6 +57,8 @@ import inrussian.composeapp.generated.resources.phone
 import inrussian.composeapp.generated.resources.profile
 import inrussian.composeapp.generated.resources.second_name
 import inrussian.composeapp.generated.resources.third_name
+import nekit.corporation.shift_app.ui.theme.InRussianTheme
+import nekit.corporation.shift_app.ui.theme.LocalExtraColors
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import java.util.Calendar
@@ -67,16 +67,18 @@ import java.util.Date
 @Composable
 fun PersonaDataUi(component: PersonalDataComponent) {
     val state by component.state.subscribeAsState()
-    Box() {
+    val currentColors = LocalExtraColors.current
+    Box {
 
         Column(
             Modifier
-                .background(reallyLightGrey)
+                .background(currentColors.secondaryBackground)
                 .padding(horizontal = 22.dp)
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(top = 64.dp)
                     .offset(x = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -86,7 +88,8 @@ fun PersonaDataUi(component: PersonalDataComponent) {
             Text(
                 stringResource(Res.string.personal_data),
                 fontSize = 40.sp,
-                fontWeight = FontWeight.W600
+                fontWeight = FontWeight.W600,
+                color = currentColors.fontCaptive
             )
             Box(
                 Modifier
@@ -109,7 +112,7 @@ fun PersonaDataUi(component: PersonalDataComponent) {
                     .fillMaxWidth()
                     .padding(bottom = 72.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(White)
+                    .background(currentColors.componentBackground)
             ) {
                 InputFormField(
                     state.surname,
@@ -117,7 +120,10 @@ fun PersonaDataUi(component: PersonalDataComponent) {
                     stringResource(Res.string.second_name),
                     isRequired = true
                 )
-                HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+                HorizontalDivider(
+                    Modifier.padding(horizontal = 16.dp),
+                    color = currentColors.stroke
+                )
                 InputFormField(
                     state.name,
                     component::changeName,
@@ -125,13 +131,19 @@ fun PersonaDataUi(component: PersonalDataComponent) {
                     isRequired = true
                 )
 
-                HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+                HorizontalDivider(
+                    Modifier.padding(horizontal = 16.dp),
+                    color = currentColors.stroke
+                )
                 InputFormField(
                     state.patronymic,
                     component::changeThirdName,
                     stringResource(Res.string.third_name)
                 )
-                HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+                HorizontalDivider(
+                    Modifier.padding(horizontal = 16.dp),
+                    color = currentColors.stroke
+                )
                 var expanded by remember { mutableStateOf(state.isGenderOpen) }
 
                 Row(
@@ -148,7 +160,11 @@ fun PersonaDataUi(component: PersonalDataComponent) {
 
                     Box {
                         IconButton(onClick = { expanded = true }) {
-                            Icon(vectorResource(Res.drawable.down_arrow), "")
+                            Icon(
+                                imageVector = vectorResource(Res.drawable.down_arrow),
+                                contentDescription = "",
+                                tint = currentColors.stroke
+                            )
                         }
                         DropdownMenu(
                             expanded = expanded,
@@ -156,27 +172,35 @@ fun PersonaDataUi(component: PersonalDataComponent) {
                             modifier = Modifier
                                 .shadow(6.dp, RoundedCornerShape(10.dp), clip = true)
                                 .clip(RoundedCornerShape(10.dp))
-                                .background(White)
+                                .background(currentColors.componentBackground) // фон меню
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Мужской") },
+                                text = { Text("Мужской", color = currentColors.fontCaptive) },
                                 onClick = {
                                     component.changeGender("Мужской")
                                     expanded = false
-                                }
+                                },
+                                modifier = Modifier.background(currentColors.componentBackground) // фон пункта
                             )
-                            HorizontalDivider(modifier = Modifier.padding(horizontal = 5.dp))
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 5.dp),
+                                color = currentColors.stroke
+                            )
                             DropdownMenuItem(
-                                text = { Text("Женский") },
+                                text = { Text("Женский", color = currentColors.fontCaptive) },
                                 onClick = {
                                     component.changeGender("Женский")
                                     expanded = false
-                                }
+                                },
+                                modifier = Modifier.background(currentColors.componentBackground) // фон пункта
                             )
                         }
                     }
                 }
-                HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+                HorizontalDivider(
+                    Modifier.padding(horizontal = 16.dp),
+                    color = currentColors.stroke
+                )
                 InputFormField(
                     state.birthDate,
                     {},
@@ -187,7 +211,10 @@ fun PersonaDataUi(component: PersonalDataComponent) {
                     true,
                     isRequired = true
                 )
-                HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+                HorizontalDivider(
+                    Modifier.padding(horizontal = 16.dp),
+                    color = currentColors.stroke
+                )
                 InputFormField(
                     state.phoneNumber, component::changePhone, stringResource(Res.string.phone),
                     isRequired = true
@@ -211,6 +238,7 @@ fun InputFormField(
     onlyRead: Boolean = false,
     isRequired: Boolean = false
 ) {
+    val currentColors = LocalExtraColors.current
     OutlinedTextField(
         value,
         onTextChange,
@@ -222,7 +250,7 @@ fun InputFormField(
                 if (isRequired) withStyle(style = SpanStyle(color = Orange)) {
                     append("*")
                 }
-            })
+            }, color = currentColors.inactive)
         },
         trailingIcon = if (icon == null) null else {
             @Composable() {
@@ -277,11 +305,13 @@ fun DataPickerSimple(showDataPicker: Boolean, onSelect: (String) -> Unit) {
 }
 
 
-class   PersonalDataUi() : PersonalDataComponent {
+class PersonalDataUi() : PersonalDataComponent {
     @Preview(showBackground = true, showSystemUi = true)
     @Composable
     fun Preview() {
-        PersonaDataUi(this)
+        InRussianTheme {
+            PersonaDataUi(this)
+        }
     }
 
     override fun onNext() {

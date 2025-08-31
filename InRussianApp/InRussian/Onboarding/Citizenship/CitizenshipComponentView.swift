@@ -195,7 +195,10 @@ struct CitizenshipComponentView: View {
                         .listRowBackground(AppColors.Palette.componentBackground.color)
 
                         CustomAsteriskTextField(placeholder: "Город проживания", text: $cityOfResidence)
+                            .textFieldStyle(.plain)
                             .listRowBackground(AppColors.Palette.componentBackground.color)
+
+                        
                         PickerLikeRow(
                             label: countryDuringEducationLabel,
                             icon: "chevron.down",
@@ -204,6 +207,7 @@ struct CitizenshipComponentView: View {
                         ) {
                             withAnimation { showCountryDuringEducationPicker = true }
                         }
+                        .listRowBackground(AppColors.Palette.componentBackground.color)
                     }
                 }
                 .scrollContentBackground(.hidden)
@@ -369,8 +373,10 @@ struct CitizenshipChipField: View {
                 HStack {
                     placeholder
                     Spacer()
+                    // Make the inactive chevron occupy the same trailing footprint as the active one
                     Image(systemName: "chevron.down")
                         .foregroundColor(Color(.systemBlue))
+                        .frame(width: 36, height: 36, alignment: .center)
                 }
                 .frame(minHeight: 44)
                 .contentShape(Rectangle())
@@ -398,15 +404,8 @@ struct CitizenshipChipField: View {
                         Image(systemName: "chevron.down")
                             .font(.system(size: 16, weight: .semibold))
                             .foregroundColor(accent)
-                            .padding(10)
-                            .background(
-                                Circle()
-                                    .fill(backgroundColor.opacity(0.9))
-                                    .overlay(
-                                        Circle()
-                                            .stroke(accent.opacity(0.4), lineWidth: 1)
-                                    )
-                            )
+                            .frame(width: 36, height: 36, alignment: .center)
+                            
                     }
                     .buttonStyle(.plain)
                 }
@@ -466,43 +465,17 @@ struct OptionListModal: View {
         VStack(spacing: 0) {
             Text(title)
                 .font(.headline)
-                .padding(.top, 24)
-                .padding(.bottom, 12)
+                .padding(.top, 12)
+                .padding(.bottom, 8)
 
-            ScrollView {
-                LazyVStack(spacing: 0) {
-                    ForEach(options, id: \.self) { option in
-                        let isSelected = selected.contains(option)
-                        Button {
-                            if allowsMultiple {
-                                if isSelected {
-                                    onRemove(option)
-                                } else {
-                                    onSelect(option)
-                                }
-                            } else {
-                                onSelect(option)
-                            }
-                        } label: {
-                            HStack {
-                                Text(option)
-                                    .foregroundColor(.primary)
-                                Spacer()
-                                if isSelected {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundColor(accent)
-                                }
-                            }
-                            .padding(.vertical, 14)
-                            .padding(.horizontal, 24)
-                        }
-                        .buttonStyle(.plain)
-                        .contentShape(Rectangle())
-
-                        if option != options.last {
-                            Divider()
-                                .padding(.leading, 24)
-                        }
+            Group {
+                if #available(iOS 16.0, *) {
+                    ScrollView {
+                        optionsList
+                    }
+                } else {
+                    ScrollView {
+                        optionsList
                     }
                 }
             }
@@ -541,6 +514,41 @@ struct OptionListModal: View {
         .padding(.horizontal, 32)
         .transition(.scale)
         .zIndex(3)
+    }
+
+    
+    private var optionsList: some View {
+        LazyVStack(spacing: 0) {
+            ForEach(options, id: \.self) { option in
+                let isSelected = selected.contains(option)
+                Button {
+                    if allowsMultiple {
+                        if isSelected { onRemove(option) } else { onSelect(option) }
+                    } else {
+                        onSelect(option)
+                    }
+                } label: {
+                    HStack {
+                        Text(option)
+                            .foregroundColor(.primary)
+                        Spacer()
+                        if isSelected {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(accent)
+                        }
+                    }
+                    .padding(.vertical, 14)
+                    .padding(.horizontal, 24)
+                }
+                .buttonStyle(.plain)
+                .contentShape(Rectangle())
+
+                if option != options.last {
+                    Divider()
+                        .padding(.leading, 24)
+                }
+            }
+        }
     }
 }
 

@@ -2,6 +2,7 @@ package com.example.inrussian.root.auth.recovery.email
 
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -27,14 +28,16 @@ import inrussian.composeapp.generated.resources.email
 import inrussian.composeapp.generated.resources.password_recovery
 import inrussian.composeapp.generated.resources.send_code
 import inrussian.composeapp.generated.resources.write_email
+import nekit.corporation.shift_app.ui.theme.LocalExtraColors
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun EnterEmailUi(component: EnterEmailComponent) {
     val state by component.state.subscribeAsState()
+    val currentColors = LocalExtraColors.current
 
-    Column(modifier = Modifier.padding(horizontal = 28.dp)) {
+    Column(modifier = Modifier.background(currentColors.baseBackground).padding(horizontal = 28.dp)) {
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -54,13 +57,15 @@ fun EnterEmailUi(component: EnterEmailComponent) {
                 fontSize = 26.sp,
                 fontWeight = FontWeight.W600,
                 modifier = Modifier.padding(top = 30.dp),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                color = currentColors.fontCaptive
             )
         }
         Text(
             stringResource(Res.string.write_email), fontSize = 16.sp,
             fontWeight = FontWeight.W600,
             modifier = Modifier.padding(top = 30.dp),
+            color =  currentColors.footnote
         )
         CommonTextField(
             value = state.email,
