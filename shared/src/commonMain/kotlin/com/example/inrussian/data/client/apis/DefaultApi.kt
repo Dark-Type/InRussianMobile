@@ -16,7 +16,11 @@
 package com.example.inrussian.data.client.apis
 
 import com.example.inrussian.data.client.infrastructure.ApiClient
-import org.openapitools.client.models.AdminCreatedResponse
+import com.example.inrussian.data.client.infrastructure.HttpResponse
+import com.example.inrussian.data.client.infrastructure.RequestConfig
+import com.example.inrussian.data.client.infrastructure.RequestMethod
+import com.example.inrussian.data.client.infrastructure.map
+import com.example.inrussian.data.client.infrastructure.wrap
 import org.openapitools.client.models.Badge
 import org.openapitools.client.models.CountStats
 import org.openapitools.client.models.Course
@@ -37,7 +41,6 @@ import org.openapitools.client.models.LoginResponse
 import org.openapitools.client.models.MediaFileMeta
 import org.openapitools.client.models.MessageResponse
 import org.openapitools.client.models.OverallCourseStatisticsResponse
-import org.openapitools.client.models.OverallStatisticsResponse
 import org.openapitools.client.models.RefreshTokenRequest
 import org.openapitools.client.models.Report
 import org.openapitools.client.models.Section
@@ -69,7 +72,6 @@ import org.openapitools.client.models.UserProfileResponse
 import org.openapitools.client.models.UserTaskProgressItem
 import org.openapitools.client.models.UserTaskQueueItem
 
-import org.openapitools.client.infrastructure.*
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngine
@@ -747,7 +749,10 @@ open class DefaultApi : ApiClient {
 
         val localVariableConfig = RequestConfig<Any?>(
             RequestMethod.GET,
-            "/content/stats/course/{courseId}/tasks-count".replace("{" + "courseId" + "}", "$courseId"),
+            "/content/stats/course/{courseId}/tasks-count".replace(
+                "{" + "courseId" + "}",
+                "$courseId"
+            ),
             query = localVariableQuery,
             headers = localVariableHeaders,
             requiresAuthentication = false,
@@ -812,7 +817,10 @@ open class DefaultApi : ApiClient {
 
         val localVariableConfig = RequestConfig<Any?>(
             RequestMethod.GET,
-            "/content/stats/section/{sectionId}/tasks-count".replace("{" + "sectionId" + "}", "$sectionId"),
+            "/content/stats/section/{sectionId}/tasks-count".replace(
+                "{" + "sectionId" + "}",
+                "$sectionId"
+            ),
             query = localVariableQuery,
             headers = localVariableHeaders,
             requiresAuthentication = false,
@@ -1046,7 +1054,10 @@ open class DefaultApi : ApiClient {
 
         val localVariableConfig = RequestConfig<Any?>(
             RequestMethod.DELETE,
-            "/content/tasks/{taskId}/content/{contentId}".replace("{" + "contentId" + "}", "$contentId").replace("{" + "taskId" + "}", "$taskId"),
+            "/content/tasks/{taskId}/content/{contentId}".replace(
+                "{" + "contentId" + "}",
+                "$contentId"
+            ).replace("{" + "taskId" + "}", "$taskId"),
             query = localVariableQuery,
             headers = localVariableHeaders,
             requiresAuthentication = false,
@@ -1080,7 +1091,10 @@ open class DefaultApi : ApiClient {
 
         val localVariableConfig = RequestConfig<Any?>(
             RequestMethod.GET,
-            "/content/tasks/{taskId}/content/{contentId}".replace("{" + "contentId" + "}", "$contentId").replace("{" + "taskId" + "}", "$taskId"),
+            "/content/tasks/{taskId}/content/{contentId}".replace(
+                "{" + "contentId" + "}",
+                "$contentId"
+            ).replace("{" + "taskId" + "}", "$taskId"),
             query = localVariableQuery,
             headers = localVariableHeaders,
             requiresAuthentication = false,
@@ -1114,7 +1128,10 @@ open class DefaultApi : ApiClient {
 
         val localVariableConfig = RequestConfig<Any?>(
             RequestMethod.PUT,
-            "/content/tasks/{taskId}/content/{contentId}".replace("{" + "contentId" + "}", "$contentId").replace("{" + "taskId" + "}", "$taskId"),
+            "/content/tasks/{taskId}/content/{contentId}".replace(
+                "{" + "contentId" + "}",
+                "$contentId"
+            ).replace("{" + "taskId" + "}", "$taskId"),
             query = localVariableQuery,
             headers = localVariableHeaders,
             requiresAuthentication = false,
@@ -1249,7 +1266,10 @@ open class DefaultApi : ApiClient {
 
         val localVariableConfig = RequestConfig<Any?>(
             RequestMethod.DELETE,
-            "/content/tasks/{taskId}/options/{optionId}".replace("{" + "optionId" + "}", "$optionId").replace("{" + "taskId" + "}", "$taskId"),
+            "/content/tasks/{taskId}/options/{optionId}".replace(
+                "{" + "optionId" + "}",
+                "$optionId"
+            ).replace("{" + "taskId" + "}", "$taskId"),
             query = localVariableQuery,
             headers = localVariableHeaders,
             requiresAuthentication = false,
@@ -1283,7 +1303,10 @@ open class DefaultApi : ApiClient {
 
         val localVariableConfig = RequestConfig<Any?>(
             RequestMethod.GET,
-            "/content/tasks/{taskId}/options/{optionId}".replace("{" + "optionId" + "}", "$optionId").replace("{" + "taskId" + "}", "$taskId"),
+            "/content/tasks/{taskId}/options/{optionId}".replace(
+                "{" + "optionId" + "}",
+                "$optionId"
+            ).replace("{" + "taskId" + "}", "$taskId"),
             query = localVariableQuery,
             headers = localVariableHeaders,
             requiresAuthentication = false,
@@ -1317,7 +1340,10 @@ open class DefaultApi : ApiClient {
 
         val localVariableConfig = RequestConfig<Any?>(
             RequestMethod.PUT,
-            "/content/tasks/{taskId}/options/{optionId}".replace("{" + "optionId" + "}", "$optionId").replace("{" + "taskId" + "}", "$taskId"),
+            "/content/tasks/{taskId}/options/{optionId}".replace(
+                "{" + "optionId" + "}",
+                "$optionId"
+            ).replace("{" + "taskId" + "}", "$taskId"),
             query = localVariableQuery,
             headers = localVariableHeaders,
             requiresAuthentication = false,
@@ -1638,7 +1664,10 @@ open class DefaultApi : ApiClient {
 
         val localVariableConfig = RequestConfig<Any?>(
             RequestMethod.GET,
-            "/expert/statistics/course/{courseId}/average-progress".replace("{" + "courseId" + "}", "$courseId"),
+            "/expert/statistics/course/{courseId}/average-progress".replace(
+                "{" + "courseId" + "}",
+                "$courseId"
+            ),
             query = localVariableQuery,
             headers = localVariableHeaders,
             requiresAuthentication = false,
@@ -1671,7 +1700,10 @@ open class DefaultApi : ApiClient {
 
         val localVariableConfig = RequestConfig<Any?>(
             RequestMethod.GET,
-            "/expert/statistics/course/{courseId}/average-time".replace("{" + "courseId" + "}", "$courseId"),
+            "/expert/statistics/course/{courseId}/average-time".replace(
+                "{" + "courseId" + "}",
+                "$courseId"
+            ),
             query = localVariableQuery,
             headers = localVariableHeaders,
             requiresAuthentication = false,
@@ -1704,7 +1736,10 @@ open class DefaultApi : ApiClient {
 
         val localVariableConfig = RequestConfig<Any?>(
             RequestMethod.GET,
-            "/expert/statistics/course/{courseId}/students-count".replace("{" + "courseId" + "}", "$courseId"),
+            "/expert/statistics/course/{courseId}/students-count".replace(
+                "{" + "courseId" + "}",
+                "$courseId"
+            ),
             query = localVariableQuery,
             headers = localVariableHeaders,
             requiresAuthentication = false,

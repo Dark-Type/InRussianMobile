@@ -6,12 +6,14 @@ import com.arkivanov.mvikotlin.core.store.SimpleBootstrapper
 import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
+import com.example.inrussian.components.main.profile.UserProfile
 import com.example.inrussian.domain.Validator
 import com.example.inrussian.models.ErrorType
 import com.example.inrussian.models.RegisterError
 import com.example.inrussian.models.models.RegisterModel
 import com.example.inrussian.models.models.SystemLanguage
 import com.example.inrussian.repository.auth.AuthRepository
+import com.example.inrussian.repository.main.user.UserRepository
 import com.example.inrussian.stores.auth.register.RegisterStore.Action
 import com.example.inrussian.stores.auth.register.RegisterStore.Intent
 import com.example.inrussian.stores.auth.register.RegisterStore.Label
@@ -40,6 +42,7 @@ class RegisterStoreFactory(
     private val errorDecoder: ErrorDecoder,
     private val validator: Validator,
     private val authRepository: AuthRepository,
+    private val userRepository: UserRepository,
 ) {
     fun create(): RegisterStore =
         object : RegisterStore, Store<Intent, State, Label> by storeFactory.create(
@@ -85,7 +88,6 @@ class RegisterStoreFactory(
                         try {
                             val state = state()
                             try {
-                                Logger.d { "validate1" }
                                 dispatch(Loading)
                                 validator.validateEmail(state.email)
                                 validator.validatePassword(state.password)
@@ -93,7 +95,6 @@ class RegisterStoreFactory(
                                     state.password,
                                     state.confirmPassword
                                 )
-                                Logger.d { "validate2" }
                                 authRepository.register(
                                     RegisterModel(
                                         email = state.email,

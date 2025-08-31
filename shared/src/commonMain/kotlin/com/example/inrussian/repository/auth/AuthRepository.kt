@@ -7,6 +7,12 @@ import com.example.inrussian.models.models.RegisterModel
 import com.example.inrussian.repository.toAuthResponseModel
 import com.example.inrussian.repository.toLoginRequest
 import com.example.inrussian.repository.toRegisterModel
+import com.example.inrussian.utils.ErrorDecoder
+import com.example.inrussian.utils.errorHandle
+import io.ktor.utils.io.InternalAPI
+import kotlinx.serialization.json.Json
+
+private val json = Json { ignoreUnknownKeys = true }
 
 interface AuthRepository {
     suspend fun login(login: LoginModel): AuthResponseModel
@@ -17,14 +23,17 @@ interface AuthRepository {
     suspend fun updatePassword(email: String, password: String)
 }
 
-class AuthRepositoryImpl(private val api: DefaultApi) : AuthRepository {
+class AuthRepositoryImpl(private val api: DefaultApi, private val errorDecoder: ErrorDecoder) :
+    AuthRepository {
 
+    @OptIn(InternalAPI::class)
     override suspend fun login(login: LoginModel): AuthResponseModel =
-        api.authLoginPost(login.toLoginRequest()).body().toAuthResponseModel()
-
+        api.authLoginPost(login.toLoginRequest()).errorHandle().toAuthResponseModel()
 
     override suspend fun register(registerModel: RegisterModel): AuthResponseModel =
-        api.authStudentRegisterPost(registerModel.toRegisterModel()).body().toAuthResponseModel()
+        api.authStudentRegisterPost(registerModel.toRegisterModel()).errorHandle()
+            .toAuthResponseModel()
+
 
     override suspend fun sendMail(email: String) {
 
@@ -42,3 +51,8 @@ class AuthRepositoryImpl(private val api: DefaultApi) : AuthRepository {
     }
 
 }
+
+class ApiException(
+    message: String, val statusCode: Int?, cause: Throwable? = null
+) : Exception(message, cause)
+

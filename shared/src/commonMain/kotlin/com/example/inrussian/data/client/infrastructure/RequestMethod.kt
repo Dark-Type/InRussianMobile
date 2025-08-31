@@ -1,4 +1,4 @@
-package org.openapitools.client.infrastructure
+package com.example.inrussian.data.client.infrastructure
 
 /**
  * Provides enumerated HTTP verbs

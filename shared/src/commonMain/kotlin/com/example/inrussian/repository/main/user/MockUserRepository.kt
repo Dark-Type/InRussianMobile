@@ -47,8 +47,8 @@ class MockUserRepository(
         )
     )
 
-    override val userFlow: Flow<User> = mutableUser
-    override val userProfileFlow: Flow<UserProfile> = mutableProfile
+    val userFlow: Flow<User> = mutableUser
+    val userProfileFlow: Flow<UserProfile> = mutableProfile
 
 
     @OptIn(ExperimentalTime::class)

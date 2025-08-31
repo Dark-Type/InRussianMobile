@@ -1,7 +1,7 @@
 package com.example.inrussian.repository.main.home
 
 
-import com.example.inrussian.components.main.home.Course
+import com.example.inrussian.components.main.home.CourseModel
 import com.example.inrussian.components.main.home.CourseSection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -11,6 +11,7 @@ import kotlin.random.Random
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
+/*
 class MockHomeRepository(
     private val scope: CoroutineScope
 ) : HomeRepository {
@@ -19,8 +20,8 @@ class MockHomeRepository(
     private val nowIso: String
         get() = Clock.System.now().toString()
 
-    private val allCourses: List<Course> = listOf(
-        Course(
+    private val allCourses: List<CourseModel> = listOf(
+        CourseModel(
             id = "c1",
             name = "KMP Быстрый старт",
             posterId = null,
@@ -32,7 +33,7 @@ class MockHomeRepository(
             createdAt = nowIso,
             updatedAt = nowIso
         ),
-        Course(
+        CourseModel(
             id = "c2",
             name = "Compose Multiplatform Глубже",
             posterId = null,
@@ -44,7 +45,7 @@ class MockHomeRepository(
             createdAt = nowIso,
             updatedAt = nowIso
         ),
-        Course(
+        CourseModel(
             id = "c3",
             name = "Coroutines Практика",
             posterId = null,
@@ -56,7 +57,7 @@ class MockHomeRepository(
             createdAt = nowIso,
             updatedAt = nowIso
         ),
-        Course(
+        CourseModel(
             id = "c4",
             name = "Архитектура KMP",
             posterId = null,
@@ -68,7 +69,7 @@ class MockHomeRepository(
             createdAt = nowIso,
             updatedAt = nowIso
         ),
-        Course(
+        CourseModel(
             id = "c5",
             name = "Тестирование KMP",
             posterId = null,
@@ -96,29 +97,29 @@ class MockHomeRepository(
         simulateProgress()
     }
 
-    override val recommendedCourses: Flow<List<Course>> = recommendedFlow
+    val recommendedCourses: Flow<List<CourseModel>> = recommendedFlow
 
-    override val enrolledCourseIds: Flow<Set<String>> = enrolledIdsFlow
+    val enrolledCourseIds: Flow<Set<String>> = enrolledIdsFlow
 
-    override fun enroll(courseId: String) {
+    override suspend fun enroll(courseId: String) {
         enrolledIdsFlow.value =
             if (courseId in enrolledIdsFlow.value) enrolledIdsFlow.value
             else enrolledIdsFlow.value + courseId
     }
 
-    override fun unenroll(courseId: String) {
+    override suspend fun unenroll(courseId: String) {
         enrolledIdsFlow.value =
             if (courseId in enrolledIdsFlow.value) enrolledIdsFlow.value - courseId
             else enrolledIdsFlow.value
     }
 
-    override fun courseById(courseId: String): Flow<Course?> =
+    override suspend fun courseById(courseId: String): Flow<CourseModel?> =
         recommendedFlow.map { list -> list.firstOrNull { it.id == courseId } }
 
-    override fun courseSections(courseId: String): Flow<List<CourseSection>> =
+    override suspend fun courseSections(courseId: String): Flow<List<CourseSection>> =
         sectionsFlows[courseId] ?: MutableStateFlow(emptyList())
 
-    override fun courseProgressPercent(courseId: String): Flow<Int> =
+    override suspend fun courseProgressPercent(courseId: String): Flow<Int> =
         courseSections(courseId).map { sections ->
             val totalLessons = sections.sumOf { it.totalLessons }
             val completed = sections.sumOf { it.completedLessons }
@@ -143,4 +144,4 @@ class MockHomeRepository(
         scope.launch(Dispatchers.Default) {
         }
     }
-}
+}*/
