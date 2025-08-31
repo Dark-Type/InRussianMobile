@@ -46,6 +46,7 @@ object ErrorDecoder {
             OtherErrors -> SharedRes.strings.my_string
             InvalidPhone -> SharedRes.strings.invalid_phone
             EmailExist -> SharedRes.strings.invalid_email
+            ErrorType.InvalidRefreshToken -> TODO()
         }
     }
 }

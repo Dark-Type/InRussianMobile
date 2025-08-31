@@ -99,7 +99,7 @@ class RegisterStoreFactory(
                                 validator.validateConfirmPassword(
                                     state.password, state.confirmPassword
                                 )
-                                authRepository.register(
+                                val token = authRepository.register(
                                     RegisterModel(
                                         email = state.email,
                                         password = state.password,
@@ -107,6 +107,9 @@ class RegisterStoreFactory(
                                         systemLanguage = SystemLanguage.valueOf(state.languageState!!.selectedLanguage)
                                     )
                                 )
+                                authRepository.setToken(token.accessToken)
+                                authRepository.saveRefreshToken(token.refreshToken)
+
                                 userRepository.createProfile(
                                     UserProfile(
                                         surname = state.personalDataState.surname,

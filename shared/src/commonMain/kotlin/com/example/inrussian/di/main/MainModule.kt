@@ -9,12 +9,12 @@ import com.example.inrussian.repository.main.settings.SettingsRepositoryImpl
 import com.example.inrussian.repository.main.train.TrainRepository
 import com.example.inrussian.repository.main.train.TrainRepositoryImpl
 import com.example.inrussian.repository.main.user.MockUserRepository
-import org.koin.dsl.module
 import com.example.inrussian.repository.main.user.UserRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.koin.core.qualifier.named
+import org.koin.dsl.module
 
 val QAppScope = named("AppScope")
 val QAboutText = named("AboutText")
@@ -34,7 +34,7 @@ val mainModule = module {
         TrainRepositoryImpl(get())
     }
     single<HomeRepository> {
-        HomeRepositoryImpl(get())
+        HomeRepositoryImpl(get(), get(), get())
     }
     single(QAboutText) {
         """

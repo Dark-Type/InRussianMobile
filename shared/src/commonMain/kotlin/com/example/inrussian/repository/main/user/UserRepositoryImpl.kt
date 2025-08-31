@@ -4,17 +4,24 @@ import com.example.inrussian.components.main.profile.Gender
 import com.example.inrussian.components.main.profile.PeriodSpent
 import com.example.inrussian.components.main.profile.UserProfile
 import com.example.inrussian.data.client.apis.DefaultApi
+import com.example.inrussian.platformInterfaces.UserConfigurationStorage
+import com.example.inrussian.repository.auth.AuthRepository
 import com.example.inrussian.utils.errorHandle
 import org.openapitools.client.models.CreateUserProfileRequest
 import org.openapitools.client.models.UpdateUserProfileRequest
 
-class UserRepositoryImpl(private val api: DefaultApi) : UserRepository {
+class UserRepositoryImpl(
+    private val api: DefaultApi, private val userConfigurationStorage: UserConfigurationStorage,
+    private val authRepository: AuthRepository,
+) : UserRepository {
     override suspend fun updateProfile(profile: UserProfile) {
-        api.profilesUserIdPut(profile.userId, profile.toUpdateUserProfileRequest()).errorHandle()
+        api.profilesUserIdPut(profile.userId, profile.toUpdateUserProfileRequest())
+            .errorHandle(userConfigurationStorage,  authRepository)
     }
 
     override suspend fun createProfile(profile: UserProfile) {
-        api.profilesUserPost(profile.toCreateUserProfileRequest()).errorHandle()
+        api.profilesUserPost(profile.toCreateUserProfileRequest())
+            .errorHandle(userConfigurationStorage,  authRepository)
     }
 }
 

@@ -3,36 +3,42 @@ package com.example.inrussian.repository.main.home
 import com.example.inrussian.components.main.home.CourseModel
 import com.example.inrussian.components.main.home.CourseSection
 import com.example.inrussian.data.client.apis.DefaultApi
+import com.example.inrussian.platformInterfaces.UserConfigurationStorage
+import com.example.inrussian.repository.auth.AuthRepository
 import com.example.inrussian.utils.errorHandle
 import org.openapitools.client.models.Course
 import org.openapitools.client.models.SectionProgressItem
 
-class HomeRepositoryImpl(private val api: DefaultApi) : HomeRepository {
+class HomeRepositoryImpl(
+    private val api: DefaultApi,
+    private val userConfigurationStorage: UserConfigurationStorage,
+    private val authRepository: AuthRepository,
+) : HomeRepository {
     override suspend fun enroll(courseId: String) {
-        api.studentCoursesCourseIdEnrollPost(courseId).errorHandle()
+        api.studentCoursesCourseIdEnrollPost(courseId).errorHandle(userConfigurationStorage ,authRepository)
     }
 
     override suspend fun unenroll(courseId: String) {
-        api.studentCoursesCourseIdEnrollDelete(courseId).errorHandle()
+        api.studentCoursesCourseIdEnrollDelete(courseId).errorHandle(userConfigurationStorage ,authRepository)
     }
 
     override suspend fun getMyCourses(): List<CourseModel> =
         api.studentEnrollmentsGet().errorHandle()
-            .map { api.contentCoursesCourseIdGet(it.courseId).errorHandle().toDomain() }
+            .map { api.contentCoursesCourseIdGet(it.courseId).errorHandle(userConfigurationStorage ,authRepository).toDomain() }
 
 
     override suspend fun getRecommendedCourses(): List<CourseModel> =
-        api.studentCoursesGet().errorHandle().map { it.toDomain() }
+        api.studentCoursesGet().errorHandle(userConfigurationStorage ,authRepository).map { it.toDomain() }
 
 
     override suspend fun courseById(courseId: String): CourseModel? =
-        api.contentCoursesCourseIdGet(courseId).errorHandle().toDomain()
+        api.contentCoursesCourseIdGet(courseId).errorHandle(userConfigurationStorage ,authRepository).toDomain()
 
     override suspend fun courseSections(courseId: String): List<CourseSection> =
         api.contentSectionsByCourseCourseIdGet(courseId)
-            .errorHandle()
+            .errorHandle(userConfigurationStorage ,authRepository)
             .map {
-                api.studentSectionsSectionIdProgressGet(it.courseId).errorHandle()
+                api.studentSectionsSectionIdProgressGet(it.courseId).errorHandle(userConfigurationStorage ,authRepository)
                     .toCourseSection(it.name)
             }
 

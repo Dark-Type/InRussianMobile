@@ -48,8 +48,9 @@ class LoginStoreFactory(
                                         email = state.email,
                                         password = state.password
                                     )
-                                ).refreshToken
-                                repository.saveRefreshToken(token)
+                                )
+                                repository.setToken(token.accessToken)
+                                repository.saveRefreshToken(token.refreshToken)
 
                                 publish(LoginStore.Label.SubmittedSuccessfully)
 
