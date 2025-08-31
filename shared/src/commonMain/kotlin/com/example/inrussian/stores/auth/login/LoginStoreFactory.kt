@@ -43,14 +43,23 @@ class LoginStoreFactory(
                         try {
                             try {
                                 dispatch(LoginStore.Msg.Loading)
+                                Logger.i {
+                                    LoginModel(
+                                        email = state.email,
+                                        password = state.password
+                                    ).toString()
+                                }
                                 val token = repository.login(
                                     LoginModel(
                                         email = state.email,
                                         password = state.password
                                     )
                                 )
+                                Logger.d { "token got" }
                                 repository.setToken(token.accessToken)
+                                Logger.d { "token saved" }
                                 repository.saveRefreshToken(token.refreshToken)
+                                Logger.d { "refresh token saved" }
 
                                 publish(LoginStore.Label.SubmittedSuccessfully)
 

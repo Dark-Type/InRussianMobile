@@ -5,6 +5,7 @@ import com.example.inrussian.data.client.auth.Authentication
 import com.example.inrussian.data.client.auth.HttpBasicAuth
 import com.example.inrussian.data.client.auth.HttpBearerAuth
 import com.example.inrussian.data.client.auth.OAuth
+import com.example.inrussian.models.ErrorType
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngine
@@ -22,11 +23,13 @@ import io.ktor.http.content.PartData
 import io.ktor.http.contentType
 import kotlin.Unit
 import kotlinx.serialization.json.Json
+import kotlin.concurrent.Volatile
 
 open class ApiClient(
         private val baseUrl: String
 ) {
-
+    @Volatile
+    private var bearerToken: String? = null
     private lateinit var client: HttpClient
 
     constructor(
@@ -123,9 +126,13 @@ open class ApiClient(
      * @param bearerToken The bearer token.
      */
     fun setBearerToken(bearerToken: String) {
+        // если в authentications есть HttpBearerAuth — пользуемся им (обычное поведение)
         val auth = authentications?.values?.firstOrNull { it is HttpBearerAuth } as HttpBearerAuth?
-                ?: throw Exception("No Bearer authentication configured")
-        auth.bearerToken = bearerToken
+        if (auth != null) {
+            auth.bearerToken = bearerToken
+        } else {
+            this.bearerToken = bearerToken
+        }
     }
 
     protected suspend fun <T: Any?> multipartFormRequest(requestConfig: RequestConfig<T>, body: List<PartData>?, authNames: List<String>): HttpResponse {
@@ -137,8 +144,38 @@ open class ApiClient(
     }
 
     protected suspend fun <T: Any?> jsonRequest(requestConfig: RequestConfig<T>, body: Any? = null, authNames: List<String>): HttpResponse = request(requestConfig, body, authNames)
-
     protected suspend fun <T: Any?> request(requestConfig: RequestConfig<T>, body: Any? = null, authNames: List<String>): HttpResponse {
+        requestConfig.updateForAuth<T>(authNames)
+        val headers = requestConfig.headers.toMutableMap()
+
+        // fallback: if Authorization header not explicitly set and local bearerToken present -> add it
+        if (headers[HttpHeaders.Authorization].isNullOrBlank() && bearerToken != null) {
+            headers[HttpHeaders.Authorization] = "Bearer ${bearerToken!!}"
+        }
+
+        return client.request {
+            this.url {
+                this.takeFrom(URLBuilder(baseUrl))
+                appendPath(requestConfig.path.trimStart('/').split('/'))
+                requestConfig.query.forEach { query -> query.value.forEach { value -> parameter(query.key, value) } }
+            }
+            this.method = requestConfig.method.httpMethod
+
+            headers.filter { header -> !UNSAFE_HEADERS.contains(header.key) }.forEach { header ->
+                this.header(header.key, header.value)
+            }
+
+            if (requestConfig.method in listOf(RequestMethod.PUT, RequestMethod.POST, RequestMethod.PATCH)) {
+                val contentType = (requestConfig.headers[HttpHeaders.ContentType]?.let { ContentType.parse(it) }
+                    ?: ContentType.Application.Json)
+                this.contentType(contentType)
+                this.setBody(body)
+            }
+        }
+    }
+    // ...
+
+    /*protected suspend fun <T: Any?> request(requestConfig: RequestConfig<T>, body: Any? = null, authNames: List<String>): HttpResponse {
         requestConfig.updateForAuth<T>(authNames)
         val headers = requestConfig.headers
 
@@ -161,7 +198,7 @@ open class ApiClient(
                 this.setBody(body)
             }
         }
-    }
+    }*/
 
     private fun <T: Any?> RequestConfig<T>.updateForAuth(authNames: List<String>) {
         for (authName in authNames) {

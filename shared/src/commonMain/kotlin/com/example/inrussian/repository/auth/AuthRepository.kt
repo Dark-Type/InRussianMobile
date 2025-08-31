@@ -1,6 +1,8 @@
 package com.example.inrussian.repository.auth
 
+import co.touchlab.kermit.Logger
 import com.example.inrussian.data.client.apis.DefaultApi
+import com.example.inrussian.models.ErrorType
 import com.example.inrussian.models.models.AuthResponseModel
 import com.example.inrussian.models.models.LoginModel
 import com.example.inrussian.models.models.RegisterModel
@@ -59,9 +61,16 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun setToken(token: String) {
+        Logger.d { "start" }
         userConfigurationStorage.saveToken(token)
-        api.setAccessToken(token)
-        api.setBearerToken(token)
+        Logger.d { "saveToken" }
+        try {
+            api.setBearerToken(token)
+
+        } catch (e: Throwable) {
+            Logger.e { e.message.toString() }
+        }
+        Logger.d { "setBearerToken" }
     }
 
 

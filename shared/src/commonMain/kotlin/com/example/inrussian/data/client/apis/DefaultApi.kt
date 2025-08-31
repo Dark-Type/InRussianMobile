@@ -21,6 +21,20 @@ import com.example.inrussian.data.client.infrastructure.RequestConfig
 import com.example.inrussian.data.client.infrastructure.RequestMethod
 import com.example.inrussian.data.client.infrastructure.map
 import com.example.inrussian.data.client.infrastructure.wrap
+import com.example.inrussian.data.client.models.PasswordResetRequest
+import com.example.inrussian.data.client.models.PasswordResetResponse
+import com.example.inrussian.data.client.models.RecoveryCheckRequest
+import com.example.inrussian.data.client.models.RecoveryCheckResponse
+import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
+import io.ktor.client.engine.HttpClientEngine
+import io.ktor.client.utils.EmptyContent
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.serializer
 import org.openapitools.client.models.Badge
 import org.openapitools.client.models.CountStats
 import org.openapitools.client.models.Course
@@ -72,26 +86,23 @@ import org.openapitools.client.models.UserProfileResponse
 import org.openapitools.client.models.UserTaskProgressItem
 import org.openapitools.client.models.UserTaskQueueItem
 
-import io.ktor.client.HttpClient
-import io.ktor.client.HttpClientConfig
-import io.ktor.client.engine.HttpClientEngine
-import io.ktor.client.utils.EmptyContent
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.*
-import kotlinx.serialization.encoding.*
-
 open class DefaultApi : ApiClient {
     constructor(
         baseUrl: String = BASE_URL,
         httpClientEngine: HttpClientEngine? = null,
         httpClientConfig: ((HttpClientConfig<*>) -> Unit)? = null,
         jsonSerializer: Json = JSON_DEFAULT
-    ) : super(baseUrl = baseUrl, httpClientEngine = httpClientEngine, httpClientConfig = httpClientConfig, jsonBlock = jsonSerializer)
+    ) : super(
+        baseUrl = baseUrl,
+        httpClientEngine = httpClientEngine,
+        httpClientConfig = httpClientConfig,
+        jsonBlock = jsonSerializer
+    )
 
     constructor(
         baseUrl: String,
         httpClient: HttpClient
-    ): super(baseUrl = baseUrl, httpClient = httpClient)
+    ) : super(baseUrl = baseUrl, httpClient = httpClient)
 
 
     @Suppress("UNCHECKED_CAST")
@@ -220,6 +231,74 @@ open class DefaultApi : ApiClient {
         ).wrap()
     }
 
+    open suspend fun recoveryReset(passwordResetRequest: PasswordResetRequest): HttpResponse<PasswordResetResponse> {
+        val localVariableAuthNames = listOf<String>()
+
+        val localVariableBody = passwordResetRequest
+
+        val localVariableQuery = mutableMapOf<String, List<String>>()
+        val localVariableHeaders = mutableMapOf<String, String>()
+
+        val localVariableConfig = RequestConfig<Any?>(
+            RequestMethod.POST,
+            "/password/recovery/reset",
+            query = localVariableQuery,
+            headers = localVariableHeaders,
+            requiresAuthentication = false,
+        )
+
+        return jsonRequest(
+            localVariableConfig,
+            localVariableBody,
+            localVariableAuthNames
+        ).wrap()
+    }
+
+    open suspend fun recoveryCheck(recoveryCheckRequest: RecoveryCheckRequest): HttpResponse<RecoveryCheckResponse> {
+        val localVariableAuthNames = listOf<String>()
+
+        val localVariableBody = recoveryCheckRequest
+
+        val localVariableQuery = mutableMapOf<String, List<String>>()
+        val localVariableHeaders = mutableMapOf<String, String>()
+
+        val localVariableConfig = RequestConfig<Any?>(
+            RequestMethod.POST,
+            "/password/recovery/check",
+            query = localVariableQuery,
+            headers = localVariableHeaders,
+            requiresAuthentication = false,
+        )
+
+        return jsonRequest(
+            localVariableConfig,
+            localVariableBody,
+            localVariableAuthNames
+        ).wrap()
+    }
+
+    open suspend fun recoveryRequest(email: String): HttpResponse<Pair<String, Boolean>> {
+        val localVariableAuthNames = listOf<String>()
+
+        val localVariableBody = email
+
+        val localVariableQuery = mutableMapOf<String, List<String>>()
+        val localVariableHeaders = mutableMapOf<String, String>()
+
+        val localVariableConfig = RequestConfig<Any?>(
+            RequestMethod.POST,
+            "/password/recovery/request",
+            query = localVariableQuery,
+            headers = localVariableHeaders,
+            requiresAuthentication = false,
+        )
+
+        return jsonRequest(
+            localVariableConfig,
+            localVariableBody,
+            localVariableAuthNames
+        ).wrap()
+    }
 
 
     open suspend fun authStaffRegisterPost(staffRegisterRequest: StaffRegisterRequest): HttpResponse<LoginResponse> {
@@ -272,11 +351,10 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
-     * @param courseId 
+     *
+     *
+     * @param courseId
      * @return kotlin.String
      */
     @Suppress("UNCHECKED_CAST")
@@ -307,9 +385,9 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param courseId 
+     *
+     *
+     * @param courseId
      * @return Course
      */
     @Suppress("UNCHECKED_CAST")
@@ -340,14 +418,17 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param courseId 
-     * @param updateCourseRequest 
+     *
+     *
+     * @param courseId
+     * @param updateCourseRequest
      * @return Course
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun contentCoursesCourseIdPut(courseId: String, updateCourseRequest: UpdateCourseRequest): HttpResponse<Course> {
+    open suspend fun contentCoursesCourseIdPut(
+        courseId: String,
+        updateCourseRequest: UpdateCourseRequest
+    ): HttpResponse<Course> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -372,10 +453,9 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
+     *
+     *
      * @return kotlin.collections.List<Course>
      */
     @Suppress("UNCHECKED_CAST")
@@ -408,16 +488,25 @@ open class DefaultApi : ApiClient {
     private class ContentCoursesGetResponse(val value: List<Course>) {
         companion object : KSerializer<ContentCoursesGetResponse> {
             private val serializer: KSerializer<List<Course>> = serializer<List<Course>>()
-            override val descriptor = DefaultApi.ContentCoursesGetResponse.Companion.serializer.descriptor
-            override fun serialize(encoder: Encoder, value: ContentCoursesGetResponse) = DefaultApi.ContentCoursesGetResponse.Companion.serializer.serialize(encoder, value.value)
-            override fun deserialize(decoder: Decoder) = ContentCoursesGetResponse(DefaultApi.ContentCoursesGetResponse.Companion.serializer.deserialize(decoder))
+            override val descriptor =
+                DefaultApi.ContentCoursesGetResponse.Companion.serializer.descriptor
+
+            override fun serialize(encoder: Encoder, value: ContentCoursesGetResponse) =
+                DefaultApi.ContentCoursesGetResponse.Companion.serializer.serialize(
+                    encoder,
+                    value.value
+                )
+
+            override fun deserialize(decoder: Decoder) = ContentCoursesGetResponse(
+                DefaultApi.ContentCoursesGetResponse.Companion.serializer.deserialize(decoder)
+            )
         }
     }
 
     /**
-     * 
-     * 
-     * @param createCourseRequest 
+     *
+     *
+     * @param createCourseRequest
      * @return Course
      */
     @Suppress("UNCHECKED_CAST")
@@ -446,10 +535,9 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
+     *
+     *
      * @return kotlin.collections.List<Report>
      */
     @Suppress("UNCHECKED_CAST")
@@ -482,16 +570,25 @@ open class DefaultApi : ApiClient {
     private class ContentReportsGetResponse(val value: List<Report>) {
         companion object : KSerializer<ContentReportsGetResponse> {
             private val serializer: KSerializer<List<Report>> = serializer<List<Report>>()
-            override val descriptor = DefaultApi.ContentReportsGetResponse.Companion.serializer.descriptor
-            override fun serialize(encoder: Encoder, value: ContentReportsGetResponse) = DefaultApi.ContentReportsGetResponse.Companion.serializer.serialize(encoder, value.value)
-            override fun deserialize(decoder: Decoder) = ContentReportsGetResponse(DefaultApi.ContentReportsGetResponse.Companion.serializer.deserialize(decoder))
+            override val descriptor =
+                DefaultApi.ContentReportsGetResponse.Companion.serializer.descriptor
+
+            override fun serialize(encoder: Encoder, value: ContentReportsGetResponse) =
+                DefaultApi.ContentReportsGetResponse.Companion.serializer.serialize(
+                    encoder,
+                    value.value
+                )
+
+            override fun deserialize(decoder: Decoder) = ContentReportsGetResponse(
+                DefaultApi.ContentReportsGetResponse.Companion.serializer.deserialize(decoder)
+            )
         }
     }
 
     /**
-     * 
-     * 
-     * @param createReportRequest 
+     *
+     *
+     * @param createReportRequest
      * @return Report
      */
     @Suppress("UNCHECKED_CAST")
@@ -520,11 +617,10 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
-     * @param reportId 
+     *
+     *
+     * @param reportId
      * @return Report
      */
     @Suppress("UNCHECKED_CAST")
@@ -555,9 +651,9 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param courseId 
+     *
+     *
+     * @param courseId
      * @return kotlin.collections.List<Section>
      */
     @Suppress("UNCHECKED_CAST")
@@ -590,17 +686,30 @@ open class DefaultApi : ApiClient {
     private class ContentSectionsByCourseCourseIdGetResponse(val value: List<Section>) {
         companion object : KSerializer<ContentSectionsByCourseCourseIdGetResponse> {
             private val serializer: KSerializer<List<Section>> = serializer<List<Section>>()
-            override val descriptor = DefaultApi.ContentSectionsByCourseCourseIdGetResponse.Companion.serializer.descriptor
-            override fun serialize(encoder: Encoder, value: ContentSectionsByCourseCourseIdGetResponse) = DefaultApi.ContentSectionsByCourseCourseIdGetResponse.Companion.serializer.serialize(encoder, value.value)
+            override val descriptor =
+                DefaultApi.ContentSectionsByCourseCourseIdGetResponse.Companion.serializer.descriptor
+
+            override fun serialize(
+                encoder: Encoder,
+                value: ContentSectionsByCourseCourseIdGetResponse
+            ) =
+                DefaultApi.ContentSectionsByCourseCourseIdGetResponse.Companion.serializer.serialize(
+                    encoder,
+                    value.value
+                )
+
             override fun deserialize(decoder: Decoder) = ContentSectionsByCourseCourseIdGetResponse(
-                DefaultApi.ContentSectionsByCourseCourseIdGetResponse.Companion.serializer.deserialize(decoder))
+                DefaultApi.ContentSectionsByCourseCourseIdGetResponse.Companion.serializer.deserialize(
+                    decoder
+                )
+            )
         }
     }
 
     /**
-     * 
-     * 
-     * @param createSectionRequest 
+     *
+     *
+     * @param createSectionRequest
      * @return Section
      */
     @Suppress("UNCHECKED_CAST")
@@ -629,11 +738,10 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
-     * @param sectionId 
+     *
+     *
+     * @param sectionId
      * @return kotlin.String
      */
     @Suppress("UNCHECKED_CAST")
@@ -664,9 +772,9 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param sectionId 
+     *
+     *
+     * @param sectionId
      * @return Section
      */
     @Suppress("UNCHECKED_CAST")
@@ -697,14 +805,17 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param sectionId 
-     * @param updateSectionRequest 
+     *
+     *
+     * @param sectionId
+     * @param updateSectionRequest
      * @return Section
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun contentSectionsSectionIdPut(sectionId: String, updateSectionRequest: UpdateSectionRequest): HttpResponse<Section> {
+    open suspend fun contentSectionsSectionIdPut(
+        sectionId: String,
+        updateSectionRequest: UpdateSectionRequest
+    ): HttpResponse<Section> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -729,11 +840,10 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
-     * @param courseId 
+     *
+     *
+     * @param courseId
      * @return kotlin.String
      */
     @Suppress("UNCHECKED_CAST")
@@ -767,8 +877,8 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
+     *
+     *
      * @return CountStats
      */
     @Suppress("UNCHECKED_CAST")
@@ -799,9 +909,9 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param sectionId 
+     *
+     *
+     * @param sectionId
      * @return kotlin.String
      */
     @Suppress("UNCHECKED_CAST")
@@ -835,9 +945,9 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param themeId 
+     *
+     *
+     * @param themeId
      * @return kotlin.String
      */
     @Suppress("UNCHECKED_CAST")
@@ -868,9 +978,9 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param createTaskRequest 
+     *
+     *
+     * @param createTaskRequest
      * @return TaskWithDetails
      */
     @Suppress("UNCHECKED_CAST")
@@ -899,11 +1009,10 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
-     * @param taskId 
+     *
+     *
+     * @param taskId
      * @return kotlin.String
      */
     @Suppress("UNCHECKED_CAST")
@@ -934,9 +1043,9 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param taskId 
+     *
+     *
+     * @param taskId
      * @return TaskAnswerItem
      */
     @Suppress("UNCHECKED_CAST")
@@ -967,14 +1076,17 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param taskId 
-     * @param createTaskAnswerRequest 
+     *
+     *
+     * @param taskId
+     * @param createTaskAnswerRequest
      * @return TaskAnswerItem
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun contentTasksTaskIdAnswerPost(taskId: String, createTaskAnswerRequest: CreateTaskAnswerRequest): HttpResponse<TaskAnswerItem> {
+    open suspend fun contentTasksTaskIdAnswerPost(
+        taskId: String,
+        createTaskAnswerRequest: CreateTaskAnswerRequest
+    ): HttpResponse<TaskAnswerItem> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -999,16 +1111,18 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
-     * @param taskId 
-     * @param updateTaskAnswerRequest 
+     *
+     *
+     * @param taskId
+     * @param updateTaskAnswerRequest
      * @return TaskAnswerItem
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun contentTasksTaskIdAnswerPut(taskId: String, updateTaskAnswerRequest: UpdateTaskAnswerRequest): HttpResponse<TaskAnswerItem> {
+    open suspend fun contentTasksTaskIdAnswerPut(
+        taskId: String,
+        updateTaskAnswerRequest: UpdateTaskAnswerRequest
+    ): HttpResponse<TaskAnswerItem> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -1033,16 +1147,18 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
-     * @param contentId 
-     * @param taskId 
+     *
+     *
+     * @param contentId
+     * @param taskId
      * @return kotlin.String
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun contentTasksTaskIdContentContentIdDelete(contentId: String, taskId: String): HttpResponse<String> {
+    open suspend fun contentTasksTaskIdContentContentIdDelete(
+        contentId: String,
+        taskId: String
+    ): HttpResponse<String> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -1072,14 +1188,17 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param contentId 
-     * @param taskId 
+     *
+     *
+     * @param contentId
+     * @param taskId
      * @return TaskContentItem
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun contentTasksTaskIdContentContentIdGet(contentId: String, taskId: String): HttpResponse<TaskContentItem> {
+    open suspend fun contentTasksTaskIdContentContentIdGet(
+        contentId: String,
+        taskId: String
+    ): HttpResponse<TaskContentItem> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -1109,15 +1228,19 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param contentId 
-     * @param taskId 
-     * @param updateTaskContentRequest 
+     *
+     *
+     * @param contentId
+     * @param taskId
+     * @param updateTaskContentRequest
      * @return TaskContentItem
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun contentTasksTaskIdContentContentIdPut(contentId: String, taskId: String, updateTaskContentRequest: UpdateTaskContentRequest): HttpResponse<TaskContentItem> {
+    open suspend fun contentTasksTaskIdContentContentIdPut(
+        contentId: String,
+        taskId: String,
+        updateTaskContentRequest: UpdateTaskContentRequest
+    ): HttpResponse<TaskContentItem> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -1145,16 +1268,18 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
-     * @param taskId 
-     * @param createTaskContentRequest 
+     *
+     *
+     * @param taskId
+     * @param createTaskContentRequest
      * @return TaskContentItem
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun contentTasksTaskIdContentPost(taskId: String, createTaskContentRequest: CreateTaskContentRequest): HttpResponse<TaskContentItem> {
+    open suspend fun contentTasksTaskIdContentPost(
+        taskId: String,
+        createTaskContentRequest: CreateTaskContentRequest
+    ): HttpResponse<TaskContentItem> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -1179,11 +1304,10 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
-     * @param taskId 
+     *
+     *
+     * @param taskId
      * @return kotlin.String
      */
     @Suppress("UNCHECKED_CAST")
@@ -1214,9 +1338,9 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
+     *
      * TODO(\&quot;fix authenticate for &#x60;content-jwt&#x60;\&quot;)
-     * @param taskId 
+     * @param taskId
      * @return TaskWithDetails
      */
     @Suppress("UNCHECKED_CAST")
@@ -1247,14 +1371,17 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param optionId 
-     * @param taskId 
+     *
+     *
+     * @param optionId
+     * @param taskId
      * @return kotlin.String
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun contentTasksTaskIdOptionsOptionIdDelete(optionId: String, taskId: String): HttpResponse<String> {
+    open suspend fun contentTasksTaskIdOptionsOptionIdDelete(
+        optionId: String,
+        taskId: String
+    ): HttpResponse<String> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -1284,14 +1411,17 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param optionId 
-     * @param taskId 
+     *
+     *
+     * @param optionId
+     * @param taskId
      * @return TaskAnswerOptionItem
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun contentTasksTaskIdOptionsOptionIdGet(optionId: String, taskId: String): HttpResponse<TaskAnswerOptionItem> {
+    open suspend fun contentTasksTaskIdOptionsOptionIdGet(
+        optionId: String,
+        taskId: String
+    ): HttpResponse<TaskAnswerOptionItem> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -1321,15 +1451,19 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param optionId 
-     * @param taskId 
-     * @param updateTaskAnswerOptionRequest 
+     *
+     *
+     * @param optionId
+     * @param taskId
+     * @param updateTaskAnswerOptionRequest
      * @return TaskAnswerOptionItem
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun contentTasksTaskIdOptionsOptionIdPut(optionId: String, taskId: String, updateTaskAnswerOptionRequest: UpdateTaskAnswerOptionRequest): HttpResponse<TaskAnswerOptionItem> {
+    open suspend fun contentTasksTaskIdOptionsOptionIdPut(
+        optionId: String,
+        taskId: String,
+        updateTaskAnswerOptionRequest: UpdateTaskAnswerOptionRequest
+    ): HttpResponse<TaskAnswerOptionItem> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -1357,16 +1491,18 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
-     * @param taskId 
-     * @param createTaskAnswerOptionRequest 
+     *
+     *
+     * @param taskId
+     * @param createTaskAnswerOptionRequest
      * @return TaskAnswerOptionItem
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun contentTasksTaskIdOptionsPost(taskId: String, createTaskAnswerOptionRequest: CreateTaskAnswerOptionRequest): HttpResponse<TaskAnswerOptionItem> {
+    open suspend fun contentTasksTaskIdOptionsPost(
+        taskId: String,
+        createTaskAnswerOptionRequest: CreateTaskAnswerOptionRequest
+    ): HttpResponse<TaskAnswerOptionItem> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -1391,16 +1527,18 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
-     * @param taskId 
-     * @param updateTaskRequest 
+     *
+     *
+     * @param taskId
+     * @param updateTaskRequest
      * @return TaskWithDetails
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun contentTasksTaskIdPut(taskId: String, updateTaskRequest: UpdateTaskRequest): HttpResponse<TaskWithDetails> {
+    open suspend fun contentTasksTaskIdPut(
+        taskId: String,
+        updateTaskRequest: UpdateTaskRequest
+    ): HttpResponse<TaskWithDetails> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -1425,11 +1563,10 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
-     * @param sectionId 
+     *
+     *
+     * @param sectionId
      * @return kotlin.collections.List<Theme>
      */
     @Suppress("UNCHECKED_CAST")
@@ -1462,17 +1599,30 @@ open class DefaultApi : ApiClient {
     private class ContentThemesBySectionSectionIdGetResponse(val value: List<Theme>) {
         companion object : KSerializer<ContentThemesBySectionSectionIdGetResponse> {
             private val serializer: KSerializer<List<Theme>> = serializer<List<Theme>>()
-            override val descriptor = DefaultApi.ContentThemesBySectionSectionIdGetResponse.Companion.serializer.descriptor
-            override fun serialize(encoder: Encoder, value: ContentThemesBySectionSectionIdGetResponse) = DefaultApi.ContentThemesBySectionSectionIdGetResponse.Companion.serializer.serialize(encoder, value.value)
+            override val descriptor =
+                DefaultApi.ContentThemesBySectionSectionIdGetResponse.Companion.serializer.descriptor
+
+            override fun serialize(
+                encoder: Encoder,
+                value: ContentThemesBySectionSectionIdGetResponse
+            ) =
+                DefaultApi.ContentThemesBySectionSectionIdGetResponse.Companion.serializer.serialize(
+                    encoder,
+                    value.value
+                )
+
             override fun deserialize(decoder: Decoder) = ContentThemesBySectionSectionIdGetResponse(
-                DefaultApi.ContentThemesBySectionSectionIdGetResponse.Companion.serializer.deserialize(decoder))
+                DefaultApi.ContentThemesBySectionSectionIdGetResponse.Companion.serializer.deserialize(
+                    decoder
+                )
+            )
         }
     }
 
     /**
-     * 
-     * 
-     * @param createThemeRequest 
+     *
+     *
+     * @param createThemeRequest
      * @return Theme
      */
     @Suppress("UNCHECKED_CAST")
@@ -1501,11 +1651,10 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
-     * @param themeId 
+     *
+     *
+     * @param themeId
      * @return kotlin.String
      */
     @Suppress("UNCHECKED_CAST")
@@ -1536,9 +1685,9 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param themeId 
+     *
+     *
+     * @param themeId
      * @return Theme
      */
     @Suppress("UNCHECKED_CAST")
@@ -1569,14 +1718,17 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param themeId 
-     * @param updateThemeRequest 
+     *
+     *
+     * @param themeId
+     * @param updateThemeRequest
      * @return Theme
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun contentThemesThemeIdPut(themeId: String, updateThemeRequest: UpdateThemeRequest): HttpResponse<Theme> {
+    open suspend fun contentThemesThemeIdPut(
+        themeId: String,
+        updateThemeRequest: UpdateThemeRequest
+    ): HttpResponse<Theme> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -1601,11 +1753,10 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
-     * @param themeId 
+     *
+     *
+     * @param themeId
      * @return kotlin.collections.List<TaskWithDetails>
      */
     @Suppress("UNCHECKED_CAST")
@@ -1637,18 +1788,29 @@ open class DefaultApi : ApiClient {
     @Serializable(ContentThemesThemeIdTasksGetResponse.Companion::class)
     private class ContentThemesThemeIdTasksGetResponse(val value: List<TaskWithDetails>) {
         companion object : KSerializer<ContentThemesThemeIdTasksGetResponse> {
-            private val serializer: KSerializer<List<TaskWithDetails>> = serializer<List<TaskWithDetails>>()
-            override val descriptor = DefaultApi.ContentThemesThemeIdTasksGetResponse.Companion.serializer.descriptor
-            override fun serialize(encoder: Encoder, value: ContentThemesThemeIdTasksGetResponse) = DefaultApi.ContentThemesThemeIdTasksGetResponse.Companion.serializer.serialize(encoder, value.value)
+            private val serializer: KSerializer<List<TaskWithDetails>> =
+                serializer<List<TaskWithDetails>>()
+            override val descriptor =
+                DefaultApi.ContentThemesThemeIdTasksGetResponse.Companion.serializer.descriptor
+
+            override fun serialize(encoder: Encoder, value: ContentThemesThemeIdTasksGetResponse) =
+                DefaultApi.ContentThemesThemeIdTasksGetResponse.Companion.serializer.serialize(
+                    encoder,
+                    value.value
+                )
+
             override fun deserialize(decoder: Decoder) = ContentThemesThemeIdTasksGetResponse(
-                DefaultApi.ContentThemesThemeIdTasksGetResponse.Companion.serializer.deserialize(decoder))
+                DefaultApi.ContentThemesThemeIdTasksGetResponse.Companion.serializer.deserialize(
+                    decoder
+                )
+            )
         }
     }
 
     /**
-     * 
-     * 
-     * @param courseId 
+     *
+     *
+     * @param courseId
      * @return kotlin.String
      */
     @Suppress("UNCHECKED_CAST")
@@ -1682,9 +1844,9 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param courseId 
+     *
+     *
+     * @param courseId
      * @return kotlin.String
      */
     @Suppress("UNCHECKED_CAST")
@@ -1718,9 +1880,9 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param courseId 
+     *
+     *
+     * @param courseId
      * @return kotlin.String
      */
     @Suppress("UNCHECKED_CAST")
@@ -1754,8 +1916,8 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
+     *
+     *
      * @return kotlin.String
      */
     @Suppress("UNCHECKED_CAST")
@@ -1786,8 +1948,8 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
+     *
+     *
      * @return kotlin.String
      */
     @Suppress("UNCHECKED_CAST")
@@ -1818,8 +1980,8 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
+     *
+     *
      * @return kotlin.String
      */
     @Suppress("UNCHECKED_CAST")
@@ -1850,14 +2012,17 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
+     *
+     *
      * @param createdFrom  (optional)
      * @param createdTo  (optional)
      * @return kotlin.String
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun expertStudentsCountGet(createdFrom: String? = null, createdTo: String? = null): HttpResponse<String> {
+    open suspend fun expertStudentsCountGet(
+        createdFrom: String? = null,
+        createdTo: String? = null
+    ): HttpResponse<String> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -1886,8 +2051,8 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
+     *
+     *
      * @param page  (optional)
      * @param size  (optional)
      * @param sortBy  (optional)
@@ -1897,7 +2062,14 @@ open class DefaultApi : ApiClient {
      * @return kotlin.collections.List<User>
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun expertStudentsGet(page: Int? = null, size: Int? = null, sortBy: String? = null, sortOrder: String? = null, createdFrom: String? = null, createdTo: String? = null): HttpResponse<List<User>> {
+    open suspend fun expertStudentsGet(
+        page: Int? = null,
+        size: Int? = null,
+        sortBy: String? = null,
+        sortOrder: String? = null,
+        createdFrom: String? = null,
+        createdTo: String? = null
+    ): HttpResponse<List<User>> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -1932,21 +2104,33 @@ open class DefaultApi : ApiClient {
     private class ExpertStudentsGetResponse(val value: List<User>) {
         companion object : KSerializer<ExpertStudentsGetResponse> {
             private val serializer: KSerializer<List<User>> = serializer<List<User>>()
-            override val descriptor = DefaultApi.ExpertStudentsGetResponse.Companion.serializer.descriptor
-            override fun serialize(encoder: Encoder, value: ExpertStudentsGetResponse) = DefaultApi.ExpertStudentsGetResponse.Companion.serializer.serialize(encoder, value.value)
-            override fun deserialize(decoder: Decoder) = ExpertStudentsGetResponse(DefaultApi.ExpertStudentsGetResponse.Companion.serializer.deserialize(decoder))
+            override val descriptor =
+                DefaultApi.ExpertStudentsGetResponse.Companion.serializer.descriptor
+
+            override fun serialize(encoder: Encoder, value: ExpertStudentsGetResponse) =
+                DefaultApi.ExpertStudentsGetResponse.Companion.serializer.serialize(
+                    encoder,
+                    value.value
+                )
+
+            override fun deserialize(decoder: Decoder) = ExpertStudentsGetResponse(
+                DefaultApi.ExpertStudentsGetResponse.Companion.serializer.deserialize(decoder)
+            )
         }
     }
 
     /**
-     * 
-     * 
-     * @param mediaId 
+     *
+     *
+     * @param mediaId
      * @param userId  (optional)
      * @return kotlin.String
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun mediaMediaIdDelete(mediaId: String, userId: String? = null): HttpResponse<String> {
+    open suspend fun mediaMediaIdDelete(
+        mediaId: String,
+        userId: String? = null
+    ): HttpResponse<String> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -1974,9 +2158,9 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param mediaId 
+     *
+     *
+     * @param mediaId
      * @return kotlin.String
      */
     @Suppress("UNCHECKED_CAST")
@@ -2007,14 +2191,17 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param mediaId 
+     *
+     *
+     * @param mediaId
      * @param userId  (optional)
      * @return MediaFileMeta
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun mediaMediaIdPut(mediaId: String, userId: String? = null): HttpResponse<MediaFileMeta> {
+    open suspend fun mediaMediaIdPut(
+        mediaId: String,
+        userId: String? = null
+    ): HttpResponse<MediaFileMeta> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -2042,8 +2229,8 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
+     *
+     *
      * @param userId  (optional)
      * @return MediaFileMeta
      */
@@ -2076,9 +2263,9 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param userId 
+     *
+     *
+     * @param userId
      * @return kotlin.String
      */
     @Suppress("UNCHECKED_CAST")
@@ -2109,8 +2296,8 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
+     *
+     *
      * @return StaffProfileResponse
      */
     @Suppress("UNCHECKED_CAST")
@@ -2141,9 +2328,9 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param id 
+     *
+     *
+     * @param id
      * @return StaffProfileResponse
      */
     @Suppress("UNCHECKED_CAST")
@@ -2174,14 +2361,17 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param id 
-     * @param updateStaffProfileRequest 
+     *
+     *
+     * @param id
+     * @param updateStaffProfileRequest
      * @return StaffProfileResponse
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun profilesStaffIdPut(id: String, updateStaffProfileRequest: UpdateStaffProfileRequest): HttpResponse<StaffProfileResponse> {
+    open suspend fun profilesStaffIdPut(
+        id: String,
+        updateStaffProfileRequest: UpdateStaffProfileRequest
+    ): HttpResponse<StaffProfileResponse> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -2206,16 +2396,18 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
-     * @param createStaffProfileRequest 
+     *
+     *
+     * @param createStaffProfileRequest
      * @param targetUserId  (optional)
      * @return StaffProfileResponse
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun profilesStaffPost(createStaffProfileRequest: CreateStaffProfileRequest, targetUserId: String? = null): HttpResponse<StaffProfileResponse> {
+    open suspend fun profilesStaffPost(
+        createStaffProfileRequest: CreateStaffProfileRequest,
+        targetUserId: String? = null
+    ): HttpResponse<StaffProfileResponse> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -2241,11 +2433,10 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
-     * @param updateStaffProfileRequest 
+     *
+     *
+     * @param updateStaffProfileRequest
      * @return StaffProfileResponse
      */
     @Suppress("UNCHECKED_CAST")
@@ -2274,16 +2465,18 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
-     * @param updateUserRequest 
+     *
+     *
+     * @param updateUserRequest
      * @param targetUserId  (optional)
      * @return kotlin.String
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun profilesUserBasePut(updateUserRequest: UpdateUserRequest, targetUserId: String? = null): HttpResponse<String> {
+    open suspend fun profilesUserBasePut(
+        updateUserRequest: UpdateUserRequest,
+        targetUserId: String? = null
+    ): HttpResponse<String> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -2309,10 +2502,9 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
+     *
+     *
      * @return UserProfileResponse
      */
     @Suppress("UNCHECKED_CAST")
@@ -2343,9 +2535,9 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param id 
+     *
+     *
+     * @param id
      * @return UserProfileResponse
      */
     @Suppress("UNCHECKED_CAST")
@@ -2376,14 +2568,17 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param id 
-     * @param updateUserProfileRequest 
+     *
+     *
+     * @param id
+     * @param updateUserProfileRequest
      * @return UserProfileResponse
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun profilesUserIdPut(id: String, updateUserProfileRequest: UpdateUserProfileRequest): HttpResponse<UserProfileResponse> {
+    open suspend fun profilesUserIdPut(
+        id: String,
+        updateUserProfileRequest: UpdateUserProfileRequest
+    ): HttpResponse<UserProfileResponse> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -2408,10 +2603,9 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
+     *
+     *
      * @param targetUserId  (optional)
      * @return kotlin.String
      */
@@ -2444,14 +2638,17 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param userLanguageSkillRequest 
+     *
+     *
+     * @param userLanguageSkillRequest
      * @param targetUserId  (optional)
      * @return kotlin.String
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun profilesUserLanguageSkillsPost(userLanguageSkillRequest: UserLanguageSkillRequest, targetUserId: String? = null): HttpResponse<String> {
+    open suspend fun profilesUserLanguageSkillsPost(
+        userLanguageSkillRequest: UserLanguageSkillRequest,
+        targetUserId: String? = null
+    ): HttpResponse<String> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -2477,16 +2674,18 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
-     * @param skillId 
+     *
+     *
+     * @param skillId
      * @param targetUserId  (optional)
      * @return kotlin.String
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun profilesUserLanguageSkillsSkillIdDelete(skillId: String, targetUserId: String? = null): HttpResponse<String> {
+    open suspend fun profilesUserLanguageSkillsSkillIdDelete(
+        skillId: String,
+        targetUserId: String? = null
+    ): HttpResponse<String> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -2514,15 +2713,19 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param skillId 
-     * @param userLanguageSkillRequest 
+     *
+     *
+     * @param skillId
+     * @param userLanguageSkillRequest
      * @param targetUserId  (optional)
      * @return kotlin.String
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun profilesUserLanguageSkillsSkillIdPut(skillId: String, userLanguageSkillRequest: UserLanguageSkillRequest, targetUserId: String? = null): HttpResponse<String> {
+    open suspend fun profilesUserLanguageSkillsSkillIdPut(
+        skillId: String,
+        userLanguageSkillRequest: UserLanguageSkillRequest,
+        targetUserId: String? = null
+    ): HttpResponse<String> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -2548,16 +2751,18 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
-     * @param createUserProfileRequest 
+     *
+     *
+     * @param createUserProfileRequest
      * @param targetUserId  (optional)
      * @return UserProfileResponse
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun profilesUserPost(createUserProfileRequest: CreateUserProfileRequest, targetUserId: String? = null): HttpResponse<UserProfileResponse> {
+    open suspend fun profilesUserPost(
+        createUserProfileRequest: CreateUserProfileRequest,
+        targetUserId: String? = null
+    ): HttpResponse<UserProfileResponse> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -2583,11 +2788,10 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
-     * @param updateUserProfileRequest 
+     *
+     *
+     * @param updateUserProfileRequest
      * @return UserProfileResponse
      */
     @Suppress("UNCHECKED_CAST")
@@ -2616,10 +2820,9 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
+     *
+     *
      * @return kotlin.collections.List<Badge>
      */
     @Suppress("UNCHECKED_CAST")
@@ -2652,16 +2855,25 @@ open class DefaultApi : ApiClient {
     private class StudentBadgesGetResponse(val value: List<Badge>) {
         companion object : KSerializer<StudentBadgesGetResponse> {
             private val serializer: KSerializer<List<Badge>> = serializer<List<Badge>>()
-            override val descriptor = DefaultApi.StudentBadgesGetResponse.Companion.serializer.descriptor
-            override fun serialize(encoder: Encoder, value: StudentBadgesGetResponse) = DefaultApi.StudentBadgesGetResponse.Companion.serializer.serialize(encoder, value.value)
-            override fun deserialize(decoder: Decoder) = StudentBadgesGetResponse(DefaultApi.StudentBadgesGetResponse.Companion.serializer.deserialize(decoder))
+            override val descriptor =
+                DefaultApi.StudentBadgesGetResponse.Companion.serializer.descriptor
+
+            override fun serialize(encoder: Encoder, value: StudentBadgesGetResponse) =
+                DefaultApi.StudentBadgesGetResponse.Companion.serializer.serialize(
+                    encoder,
+                    value.value
+                )
+
+            override fun deserialize(decoder: Decoder) = StudentBadgesGetResponse(
+                DefaultApi.StudentBadgesGetResponse.Companion.serializer.deserialize(decoder)
+            )
         }
     }
 
     /**
-     * 
-     * 
-     * @param body 
+     *
+     *
+     * @param body
      * @return kotlin.Boolean
      */
     @Suppress("UNCHECKED_CAST")
@@ -2690,11 +2902,10 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
-     * @param courseId 
+     *
+     *
+     * @param courseId
      * @return kotlin.Boolean
      */
     @Suppress("UNCHECKED_CAST")
@@ -2725,9 +2936,9 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param courseId 
+     *
+     *
+     * @param courseId
      * @return kotlin.Boolean
      */
     @Suppress("UNCHECKED_CAST")
@@ -2758,9 +2969,9 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param courseId 
+     *
+     *
+     * @param courseId
      * @return CourseProgressItem
      */
     @Suppress("UNCHECKED_CAST")
@@ -2791,8 +3002,8 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
+     *
+     *
      * @return kotlin.collections.List<Course>
      */
     @Suppress("UNCHECKED_CAST")
@@ -2825,15 +3036,24 @@ open class DefaultApi : ApiClient {
     private class StudentCoursesGetResponse(val value: List<Course>) {
         companion object : KSerializer<StudentCoursesGetResponse> {
             private val serializer: KSerializer<List<Course>> = serializer<List<Course>>()
-            override val descriptor = DefaultApi.StudentCoursesGetResponse.Companion.serializer.descriptor
-            override fun serialize(encoder: Encoder, value: StudentCoursesGetResponse) = DefaultApi.StudentCoursesGetResponse.Companion.serializer.serialize(encoder, value.value)
-            override fun deserialize(decoder: Decoder) = StudentCoursesGetResponse(DefaultApi.StudentCoursesGetResponse.Companion.serializer.deserialize(decoder))
+            override val descriptor =
+                DefaultApi.StudentCoursesGetResponse.Companion.serializer.descriptor
+
+            override fun serialize(encoder: Encoder, value: StudentCoursesGetResponse) =
+                DefaultApi.StudentCoursesGetResponse.Companion.serializer.serialize(
+                    encoder,
+                    value.value
+                )
+
+            override fun deserialize(decoder: Decoder) = StudentCoursesGetResponse(
+                DefaultApi.StudentCoursesGetResponse.Companion.serializer.deserialize(decoder)
+            )
         }
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @return kotlin.collections.List<UserCourseEnrollmentItem>
      */
     @Suppress("UNCHECKED_CAST")
@@ -2865,17 +3085,27 @@ open class DefaultApi : ApiClient {
     @Serializable(StudentEnrollmentsGetResponse.Companion::class)
     private class StudentEnrollmentsGetResponse(val value: List<UserCourseEnrollmentItem>) {
         companion object : KSerializer<StudentEnrollmentsGetResponse> {
-            private val serializer: KSerializer<List<UserCourseEnrollmentItem>> = serializer<List<UserCourseEnrollmentItem>>()
-            override val descriptor = DefaultApi.StudentEnrollmentsGetResponse.Companion.serializer.descriptor
-            override fun serialize(encoder: Encoder, value: StudentEnrollmentsGetResponse) = DefaultApi.StudentEnrollmentsGetResponse.Companion.serializer.serialize(encoder, value.value)
-            override fun deserialize(decoder: Decoder) = StudentEnrollmentsGetResponse(DefaultApi.StudentEnrollmentsGetResponse.Companion.serializer.deserialize(decoder))
+            private val serializer: KSerializer<List<UserCourseEnrollmentItem>> =
+                serializer<List<UserCourseEnrollmentItem>>()
+            override val descriptor =
+                DefaultApi.StudentEnrollmentsGetResponse.Companion.serializer.descriptor
+
+            override fun serialize(encoder: Encoder, value: StudentEnrollmentsGetResponse) =
+                DefaultApi.StudentEnrollmentsGetResponse.Companion.serializer.serialize(
+                    encoder,
+                    value.value
+                )
+
+            override fun deserialize(decoder: Decoder) = StudentEnrollmentsGetResponse(
+                DefaultApi.StudentEnrollmentsGetResponse.Companion.serializer.deserialize(decoder)
+            )
         }
     }
 
     /**
-     * 
-     * 
-     * @param sectionId 
+     *
+     *
+     * @param sectionId
      * @return SectionProgressItem
      */
     @Suppress("UNCHECKED_CAST")
@@ -2906,8 +3136,8 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
+     *
+     *
      * @return kotlin.collections.List<UserTaskQueueItem>
      */
     @Suppress("UNCHECKED_CAST")
@@ -2939,16 +3169,26 @@ open class DefaultApi : ApiClient {
     @Serializable(StudentTaskQueueGetResponse.Companion::class)
     private class StudentTaskQueueGetResponse(val value: List<UserTaskQueueItem>) {
         companion object : KSerializer<StudentTaskQueueGetResponse> {
-            private val serializer: KSerializer<List<UserTaskQueueItem>> = serializer<List<UserTaskQueueItem>>()
-            override val descriptor = DefaultApi.StudentTaskQueueGetResponse.Companion.serializer.descriptor
-            override fun serialize(encoder: Encoder, value: StudentTaskQueueGetResponse) = DefaultApi.StudentTaskQueueGetResponse.Companion.serializer.serialize(encoder, value.value)
-            override fun deserialize(decoder: Decoder) = StudentTaskQueueGetResponse(DefaultApi.StudentTaskQueueGetResponse.Companion.serializer.deserialize(decoder))
+            private val serializer: KSerializer<List<UserTaskQueueItem>> =
+                serializer<List<UserTaskQueueItem>>()
+            override val descriptor =
+                DefaultApi.StudentTaskQueueGetResponse.Companion.serializer.descriptor
+
+            override fun serialize(encoder: Encoder, value: StudentTaskQueueGetResponse) =
+                DefaultApi.StudentTaskQueueGetResponse.Companion.serializer.serialize(
+                    encoder,
+                    value.value
+                )
+
+            override fun deserialize(decoder: Decoder) = StudentTaskQueueGetResponse(
+                DefaultApi.StudentTaskQueueGetResponse.Companion.serializer.deserialize(decoder)
+            )
         }
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @return UserTaskQueueItem
      */
     @Suppress("UNCHECKED_CAST")
@@ -2979,9 +3219,9 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param createTaskQueueRequest 
+     *
+     *
+     * @param createTaskQueueRequest
      * @return UserTaskQueueItem
      */
     @Suppress("UNCHECKED_CAST")
@@ -3010,11 +3250,10 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
-     * @param queueId 
+     *
+     *
+     * @param queueId
      * @return kotlin.Boolean
      */
     @Suppress("UNCHECKED_CAST")
@@ -3045,14 +3284,17 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param queueId 
-     * @param body 
+     *
+     *
+     * @param queueId
+     * @param body
      * @return kotlin.Boolean
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun studentTaskQueueQueueIdPositionPatch(queueId: String, body: String): HttpResponse<Boolean> {
+    open suspend fun studentTaskQueueQueueIdPositionPatch(
+        queueId: String,
+        body: String
+    ): HttpResponse<Boolean> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -3077,11 +3319,10 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
-     * @param taskId 
+     *
+     *
+     * @param taskId
      * @return TaskAnswerItem
      */
     @Suppress("UNCHECKED_CAST")
@@ -3112,14 +3353,17 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param taskId 
-     * @param body 
+     *
+     *
+     * @param taskId
+     * @param body
      * @return UserTaskProgressItem
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun studentTasksTaskIdCompletePost(taskId: String, body: String): HttpResponse<UserTaskProgressItem> {
+    open suspend fun studentTasksTaskIdCompletePost(
+        taskId: String,
+        body: String
+    ): HttpResponse<UserTaskProgressItem> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -3144,11 +3388,10 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
-     * @param taskId 
+     *
+     *
+     * @param taskId
      * @return UserTaskProgressItem
      */
     @Suppress("UNCHECKED_CAST")
@@ -3179,14 +3422,17 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param taskId 
-     * @param updateTaskProgressRequest 
+     *
+     *
+     * @param taskId
+     * @param updateTaskProgressRequest
      * @return UserTaskProgressItem
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun studentTasksTaskIdProgressPatch(taskId: String, updateTaskProgressRequest: UpdateTaskProgressRequest): HttpResponse<UserTaskProgressItem> {
+    open suspend fun studentTasksTaskIdProgressPatch(
+        taskId: String,
+        updateTaskProgressRequest: UpdateTaskProgressRequest
+    ): HttpResponse<UserTaskProgressItem> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -3211,11 +3457,10 @@ open class DefaultApi : ApiClient {
     }
 
 
-
     /**
-     * 
-     * 
-     * @param taskId 
+     *
+     *
+     * @param taskId
      * @return UserTaskProgressItem
      */
     @Suppress("UNCHECKED_CAST")
@@ -3246,9 +3491,9 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param taskId 
+     *
+     *
+     * @param taskId
      * @return TaskWithDetails
      */
     @Suppress("UNCHECKED_CAST")
@@ -3279,14 +3524,17 @@ open class DefaultApi : ApiClient {
 
 
     /**
-     * 
-     * 
-     * @param taskId 
-     * @param body 
+     *
+     *
+     * @param taskId
+     * @param body
      * @return Report
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun studentTasksTaskIdReportPost(taskId: String, body: String): HttpResponse<Report> {
+    open suspend fun studentTasksTaskIdReportPost(
+        taskId: String,
+        body: String
+    ): HttpResponse<Report> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -3309,7 +3557,6 @@ open class DefaultApi : ApiClient {
             localVariableAuthNames
         ).wrap()
     }
-
 
 
 }
