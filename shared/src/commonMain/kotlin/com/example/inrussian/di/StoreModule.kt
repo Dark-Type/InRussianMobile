@@ -46,6 +46,6 @@ val storeModule = module {
     }
 
     factory<RegisterStore> {
-        RegisterStoreFactory(get(), get(), get(),get()).create()
+        RegisterStoreFactory(get(), get(), get(),get(),get()).create()
     }
 }

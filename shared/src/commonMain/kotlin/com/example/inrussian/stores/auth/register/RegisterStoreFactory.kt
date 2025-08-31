@@ -6,6 +6,8 @@ import com.arkivanov.mvikotlin.core.store.SimpleBootstrapper
 import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
+import com.example.inrussian.components.main.profile.Gender
+import com.example.inrussian.components.main.profile.PeriodSpent
 import com.example.inrussian.components.main.profile.UserProfile
 import com.example.inrussian.domain.Validator
 import com.example.inrussian.models.ErrorType
@@ -36,6 +38,8 @@ import com.example.inrussian.stores.auth.register.RegisterStore.Msg.UpdatePerson
 import com.example.inrussian.stores.auth.register.RegisterStore.State
 import com.example.inrussian.utils.ErrorDecoder
 import kotlinx.coroutines.launch
+import kotlin.time.Clock.System.now
+import kotlin.time.ExperimentalTime
 
 class RegisterStoreFactory(
     private val storeFactory: StoreFactory,
@@ -60,6 +64,7 @@ class RegisterStoreFactory(
         override fun executeAction(action: Action) {
         }
 
+        @OptIn(ExperimentalTime::class)
         override fun executeIntent(intent: Intent) {
             scope.launch {
                 when (intent) {
@@ -92,8 +97,7 @@ class RegisterStoreFactory(
                                 validator.validateEmail(state.email)
                                 validator.validatePassword(state.password)
                                 validator.validateConfirmPassword(
-                                    state.password,
-                                    state.confirmPassword
+                                    state.password, state.confirmPassword
                                 )
                                 authRepository.register(
                                     RegisterModel(
@@ -103,7 +107,32 @@ class RegisterStoreFactory(
                                         systemLanguage = SystemLanguage.valueOf(state.languageState!!.selectedLanguage)
                                     )
                                 )
-
+                                userRepository.createProfile(
+                                    UserProfile(
+                                        surname = state.personalDataState.surname,
+                                        name = state.personalDataState.name,
+                                        patronymic = state.personalDataState.patronymic,
+                                        gender = Gender.valueOf(state.personalDataState.gender),
+                                        dob = state.personalDataState.birthDate,
+                                        dor = now().toString(),
+                                        citizenship = state.citizenshipState?.citizenship,
+                                        nationality = state.citizenshipState?.nationality,
+                                        countryOfResidence = state.citizenshipState?.countryOfResidence,
+                                        cityOfResidence = state.citizenshipState?.cityOfResidence,
+                                        countryDuringEducation = state.citizenshipState?.countryDuringEducation,
+                                        periodSpent = PeriodSpent.valueOf(
+                                            state.citizenshipState?.timeSpentInRussia ?: ""
+                                        ),
+                                        kindOfActivity = state.educationState?.kindOfActivity,
+                                        education = state.educationState?.education,
+                                        purposeOfRegister = state.educationState?.purposeOfRegistration,
+                                        languages = state.educationState?.languages ?: listOf(),
+                                        language = com.example.inrussian.components.main.profile.SystemLanguage.valueOf(
+                                            state.languageState.selectedLanguage
+                                        ),
+                                        email = state.email
+                                    )
+                                )
                                 publish(Label.SubmittedSuccessfully)
 
                             } catch (e: ErrorType) {

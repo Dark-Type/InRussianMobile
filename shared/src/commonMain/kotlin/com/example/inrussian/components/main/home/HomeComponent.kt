@@ -122,7 +122,7 @@ class DefaultCoursesListComponent(
 
     init {
         scope.launch {
-            combine(
+           /* combine(
                 repository.recommendedCourses,
                 repository.enrolledCourseIds
             ) { recommended, enrolledIds ->
@@ -133,7 +133,7 @@ class DefaultCoursesListComponent(
                     enrolled = enrolledCourses,
                     isLoading = false
                 )
-            }.collect { newState -> _state.value = newState }
+            }.collect { newState -> _state.value = newState }*/
         }
     }
 
@@ -183,7 +183,7 @@ class DefaultCourseDetailsComponent(
 
     init {
         scope.launch {
-            combine(
+            /*combine(
                 repository.courseById(courseId),
                 repository.enrolledCourseIds.map { it.contains(courseId) },
                 repository.courseSections(courseId),
@@ -196,14 +196,14 @@ class DefaultCourseDetailsComponent(
                     progressPercent = progress,
                     isLoading = course == null
                 )
-            }.collect { newState -> _state.value = newState }
+            }.collect { newState -> _state.value = newState }*/
         }
     }
 
     override fun toggleEnroll() {
         val current = _state.value
         val c = current.course ?: return
-        if (current.isEnrolled) repository.unenroll(c.id) else repository.enroll(c.id)
+       // if (current.isEnrolled) repository.unenroll(c.id) else repository.enroll(c.id)
     }
 
     override fun onBack() = onOutput(CourseDetailsOutput.NavigateBack)

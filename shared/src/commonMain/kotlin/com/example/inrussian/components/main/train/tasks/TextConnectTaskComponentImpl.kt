@@ -46,7 +46,6 @@ class TextConnectTaskComponentImpl(
         TODO("Not yet implemented")
     }
 
-    // ------- POSITIONING (called from Compose, with platform-agnostic RectF/PointF) -------
     override fun onLeftPositioned(leftId: String, rect: RectF) {
         val anchor = rect.center()
         _state.update { s ->

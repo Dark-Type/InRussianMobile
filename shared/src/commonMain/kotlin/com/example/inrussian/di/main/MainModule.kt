@@ -3,9 +3,9 @@ package com.example.inrussian.di.main
 import com.example.inrussian.repository.main.BadgeRepository
 import com.example.inrussian.repository.main.MockBadgeRepository
 import com.example.inrussian.repository.main.home.HomeRepository
-import com.example.inrussian.repository.main.home.MockHomeRepository
-import com.example.inrussian.repository.main.settings.InMemorySettingsRepository
+import com.example.inrussian.repository.main.home.HomeRepositoryImpl
 import com.example.inrussian.repository.main.settings.SettingsRepository
+import com.example.inrussian.repository.main.settings.SettingsRepositoryImpl
 import com.example.inrussian.repository.main.train.MockTrainRepository
 import com.example.inrussian.repository.main.train.TrainRepository
 import com.example.inrussian.repository.main.user.MockUserRepository
@@ -27,14 +27,14 @@ val mainModule = module {
 
     single<UserRepository> { MockUserRepository(scope = get(QAppScope)) }
     single<BadgeRepository> { MockBadgeRepository(scope = get(QAppScope)) }
-    single<SettingsRepository> { InMemorySettingsRepository(scope = get(QAppScope)) }
+    single<SettingsRepository> { SettingsRepositoryImpl() }
 
     single<TrainRepository> {
         val appScope: CoroutineScope = get(named("AppScope"))
         MockTrainRepository(scope = appScope)
     }
     single<HomeRepository> {
-        MockHomeRepository(scope = get(QAppScope))
+        HomeRepositoryImpl(get())
     }
     single(QAboutText) {
         """

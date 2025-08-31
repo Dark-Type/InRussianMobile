@@ -171,7 +171,7 @@ class DefaultProfileMainComponent(
 
     init {
         scope.launch {
-            combine(
+           /* combine(
                 userRepository.userFlow,
                 userRepository.userProfileFlow,
                 settingsRepository.notificationsEnabled,
@@ -189,7 +189,7 @@ class DefaultProfileMainComponent(
                     notificationsEnabled = notifications,
                     theme = theme
                 )
-            }
+            }*/
         }
     }
 
@@ -305,13 +305,13 @@ class DefaultEditProfileComponent(
 
     init {
         scope.launch {
-            val profile = userRepository.userProfileFlow.first()
+           /* val profile = userRepository.userProfileFlow.first()
             _state.value = EditProfileState(
                 isLoading = false,
                 original = profile,
                 workingCopy = profile,
                 canSave = false
-            )
+            )*/
         }
     }
 

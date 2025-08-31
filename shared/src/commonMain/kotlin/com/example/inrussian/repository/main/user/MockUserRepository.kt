@@ -61,6 +61,10 @@ class MockUserRepository(
         mutableUser.value = mutableUser.value.copy(updatedAt = Clock.System.now().toString())
     }
 
+    override suspend fun createProfile(profile: UserProfile) {
+        TODO("Not yet implemented")
+    }
+
     init {
         scope.launch {
             userFlow.collect {
