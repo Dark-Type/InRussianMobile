@@ -51,44 +51,34 @@ class TrainStoreFactory(
                     is Intent.ContinueClick -> {
                         val st = state()
 
-                        // Добавляем задачу в очередь, если ответ неправильный
                         val willAddToRejected = !intent.isPass
                         if (willAddToRejected) {
                             dispatch(UpdateCounter)
                             st.showedTask?.let { dispatch(AddTaskInQueue(it)) }
                         }
 
-                        // Определяем, нужно ли переходить к следующей задаче
                         val shouldMoveToNext = if (st.isStartRepeat) {
-                            // В режиме повтора всегда переходим к следующей задаче в очереди
                             true
                         } else {
-                            // В основном режиме переходим к следующей, если это не последняя задача
                             (st.currentTaskIndex + 1) < (st.tasks?.size ?: 0)
                         }
 
                         if (shouldMoveToNext) {
                             if (st.isStartRepeat) {
-                                // В режиме повтора берем следующую задачу из очереди
                                 if (st.rejectedTask.size()!=0) {
                                     dispatch(Msg.UpdateTaskFromQueue)
                                 } else {
-                                    // Если очередь пуста, завершаем повтор
                                     dispatch(Msg.StartRepeat(false))
                                     dispatch(Msg.UpdateTask(null))
                                 }
                             } else {
-                                // В основном режиме переходим к следующей задаче
                                 dispatch(UpdateIndexAndTask)
                             }
                         } else {
-                            // Это последняя задача в основном режиме
                             if (st.rejectedTask.size()!=0) {
-                                // Если есть задачи в очереди, начинаем повтор
                                 dispatch(Msg.StartRepeat(true))
                                 dispatch(Msg.UpdateTaskFromQueue)
                             } else {
-                                // Если очереди нет, завершаем
                                 dispatch(Msg.UpdateTask(null))
                             }
                         }

@@ -113,6 +113,7 @@ fun TextConnect(
                             left = r.left,
                             right = r.right,
                             isRightHovered = r.right?.let { state.hoveredRightId == it.id } == true,
+                            isWrong = r.left?.let { state.invalidLeftIds.contains(it.id) } == true,
                             onLeftPositioned = { leftId, coords ->
                                 component.onLeftPositioned(leftId, coords.rectInRootToRectF())
                             },
@@ -201,6 +202,7 @@ private fun UnmatchedRow(
     left: Piece?,
     right: Piece?,
     isRightHovered: Boolean,
+    isWrong: Boolean,
     onLeftPositioned: (leftId: String, coords: LayoutCoordinates) -> Unit,
     onRightPositioned: (rightId: String, coords: LayoutCoordinates) -> Unit,
     onLeftDragStart: (leftId: String) -> Unit,
@@ -259,11 +261,13 @@ private fun UnmatchedRow(
 
         val rightBorder = when {
             right == null ->com.example.inrussian.root.main.train.task.Colors.EmptyBorder
+            isWrong -> Red
             isRightHovered ->com.example.inrussian.root.main.train.task.Colors.Accent
             else ->com.example.inrussian.root.main.train.task.Colors.Outline
         }
         val rightBg = when {
             right == null ->com.example.inrussian.root.main.train.task.Colors.EmptyBg
+            isWrong -> Red
             isRightHovered ->com.example.inrussian.root.main.train.task.Colors.HoverBg
             else ->com.example.inrussian.root.main.train.task.Colors.Surface
         }
@@ -361,40 +365,6 @@ private fun PairRow(
     }
 }
 
-/* ---------------- UI bits ---------------- */
-
-@Composable
-private fun TopBar(onReset: () -> Unit) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .background(com.example.inrussian.root.main.train.task.Colors.TopBar)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        TextTitle("Single vertical stack: rows show Left | Right; drag Left onto Right to fuse")
-        Spacer(Modifier.weight(1f))
-        SimpleButton("Reset", onClick = onReset)
-    }
-}
-
-@Composable
-private fun TextTitle(text: String, color: Color =com.example.inrussian.root.main.train.task.Colors.TextPrimary) {
-    BasicText(
-        text = text, style = TextStyle(
-            color = color, fontSize = 16.sp, fontWeight = FontWeight.SemiBold
-        )
-    )
-}
-
-@Composable
-private fun TextBody(text: String, color: Color =com.example.inrussian.root.main.train.task.Colors.TextPrimary) {
-    BasicText(
-        text = text, style = TextStyle(
-            color = color, fontSize = 16.sp
-        )
-    )
-}
 
 @Composable
 private fun TextSmall(text: String, color: Color = com.example.inrussian.root.main.train.task.Colors.TextSecondary) {
@@ -405,29 +375,6 @@ private fun TextSmall(text: String, color: Color = com.example.inrussian.root.ma
     )
 }
 
-@Composable
-private fun SimpleButton(text: String, onClick: () -> Unit) {
-    val shape = RoundedCornerShape(8.dp)
-    Box(
-        modifier = Modifier
-            .background(com.example.inrussian.root.main.train.task.Colors.Primary, shape)
-            .border(1.dp,com.example.inrussian.root.main.train.task.Colors.Primary.copy(alpha = 0.9f), shape)
-            .padding(horizontal = 12.dp, vertical = 8.dp)
-            .pointerInput(Unit) {
-                detectDragGestures(
-                    onDragStart = { onClick() },
-                    onDrag = { _, _ -> },
-                    onDragEnd = {},
-                    onDragCancel = {})
-            }, contentAlignment = Alignment.Center
-    ) {
-        BasicText(
-            text = text, style = TextStyle(color = Color.White, fontSize = 13.sp)
-        )
-    }
-}
-
-fun Offset.toPointF(): PointF = PointF(x, y)
 fun Rect.toRectF(): RectF = RectF(left, top, right, bottom)
 
 // reuse user's LayoutCoordinates.rectInRoot() that returns androidx.compose.ui.geometry.Rect
@@ -465,10 +412,3 @@ private object Colors {
 
 /* ---------------- Geometry helpers ---------------- */
 
-private fun LayoutCoordinates.rectInRoot(): Rect {
-    val pos = positionInRoot()
-    val size: IntSize = this.size
-    return Rect(
-        left = pos.x, top = pos.y, right = pos.x + size.width, bottom = pos.y + size.height
-    )
-}

@@ -43,7 +43,34 @@ class TextConnectTaskComponentImpl(
     }
 
     override fun onContinueClick() {
-        TODO("Not yet implemented")
+        val s = _state.value
+        if (!s.validated) {
+            val rightById = s.rightPieces.associateBy { it.id }
+            val invalids = mutableSetOf<String>()
+
+            for (left in s.leftPieces) {
+                val rid = s.matches[left.id]
+                if (rid == null) {
+                    invalids.add(left.id)
+                } else {
+                    val right = rightById[rid]
+                    val isMatchCorrect = right != null && right.key == left.label
+                    if (!isMatchCorrect) invalids.add(left.id)
+                }
+            }
+
+            _state.update { prev -> prev.copy(validated = true, invalidLeftIds = invalids) }
+
+            val hasErrors = invalids.isNotEmpty()
+            inChecking(hasErrors)
+            onButtonEnable(!hasErrors)
+
+            if (!hasErrors) {
+                onContinueClicked(true)
+            }
+        } else {
+            onContinueClicked(true)
+        }
     }
 
     override fun onLeftPositioned(leftId: String, rect: RectF) {
@@ -72,7 +99,6 @@ class TextConnectTaskComponentImpl(
         }
     }
 
-    // ------- DRAG LIFECYCLE -------
     override fun startDrag(fromPair: Boolean, leftId: String) {
         _state.update { s ->
             val source =
@@ -94,7 +120,6 @@ class TextConnectTaskComponentImpl(
         }
     }
 
-    // overloaded convenience when caller only has leftId and delta
     override fun dragBy(leftId: String, delta: PointF) {
         _state.update { s ->
             val start = s.dragPos ?: s.leftAnchors[leftId]
@@ -127,7 +152,6 @@ class TextConnectTaskComponentImpl(
         }
     }
 
-    // ------- internal helpers -------
     private fun applyDrop() {
         val current = _state.value
         val src = current.dragSource ?: return
@@ -140,7 +164,7 @@ class TextConnectTaskComponentImpl(
                 newMatches.remove(prevLeft)
             }
             newMatches[src.leftId] = rid
-            s.copy(matches = newMatches)
+            s.copy(matches = newMatches, validated = false, invalidLeftIds = emptySet())
         }
     }
 

@@ -25,7 +25,7 @@ data class ThemeMeta(
 )
 
 @Serializable
-data class Section(
+data class SectionModel(
     val id: String,
     val courseId: String,
     val title: String,
@@ -161,12 +161,12 @@ data class TrainCoursesState(
 
 data class CourseWithSections(
     val course: ShortCourse,
-    val sections: List<Section>
+    val sections: List<SectionModel>
 )
 
 data class SectionDetailState(
     val isLoading: Boolean = true,
-    val section: Section? = null,
+    val section: SectionModel? = null,
     val selectedOption: TasksOption? = null,
     val showCompletionDialog: Boolean = false
 )

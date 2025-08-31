@@ -6,8 +6,8 @@ import com.example.inrussian.repository.main.home.HomeRepository
 import com.example.inrussian.repository.main.home.HomeRepositoryImpl
 import com.example.inrussian.repository.main.settings.SettingsRepository
 import com.example.inrussian.repository.main.settings.SettingsRepositoryImpl
-import com.example.inrussian.repository.main.train.MockTrainRepository
 import com.example.inrussian.repository.main.train.TrainRepository
+import com.example.inrussian.repository.main.train.TrainRepositoryImpl
 import com.example.inrussian.repository.main.user.MockUserRepository
 import org.koin.dsl.module
 import com.example.inrussian.repository.main.user.UserRepository
@@ -31,7 +31,7 @@ val mainModule = module {
 
     single<TrainRepository> {
         val appScope: CoroutineScope = get(named("AppScope"))
-        MockTrainRepository(scope = appScope)
+        TrainRepositoryImpl(get())
     }
     single<HomeRepository> {
         HomeRepositoryImpl(get())

@@ -12,10 +12,12 @@ import com.example.inrussian.di.CourseDetailsComponentFactory
 import com.example.inrussian.navigation.configurations.HomeConfiguration
 import com.example.inrussian.repository.main.home.HomeRepository
 import com.example.inrussian.utils.componentCoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlin.coroutines.cancellation.CancellationException
 
 sealed interface HomeOutput {
     data object NavigateBack : HomeOutput
@@ -122,18 +124,27 @@ class DefaultCoursesListComponent(
 
     init {
         scope.launch {
-           /* combine(
-                repository.recommendedCourses,
-                repository.enrolledCourseIds
-            ) { recommended, enrolledIds ->
-                val enrolledCourses = recommended.filter { it.id in enrolledIds }
-                val recommendedOnly = recommended.filter { it.id !in enrolledIds }
-                CoursesListState(
+            try {
+                val recommendedDeferred =
+                    async(Dispatchers.IO) { repository.getRecommendedCourses() }
+                val enrolledIdsDeferred = async(Dispatchers.IO) { repository.getMyCourses() }
+
+                val recommended = recommendedDeferred.await()
+                val enrolledIds = enrolledIdsDeferred.await()
+
+                val enrolledCourses = recommended.filter { it in enrolledIds }
+                val recommendedOnly = recommended.filter { it !in enrolledIds }
+
+                _state.value = CoursesListState(
                     recommended = recommendedOnly,
                     enrolled = enrolledCourses,
                     isLoading = false
                 )
-            }.collect { newState -> _state.value = newState }*/
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                _state.value = _state.value.copy(isLoading = false)
+            }
         }
     }
 
@@ -183,27 +194,42 @@ class DefaultCourseDetailsComponent(
 
     init {
         scope.launch {
-            /*combine(
-                repository.courseById(courseId),
-                repository.enrolledCourseIds.map { it.contains(courseId) },
-                repository.courseSections(courseId),
-                repository.courseProgressPercent(courseId)
-            ) { course, isEnrolled, sections, progress ->
-                CourseDetailsState(
+            try {
+                val courseDeferred = async(Dispatchers.IO) { repository.courseById(courseId) }
+                val myCoursesDeferred = async(Dispatchers.IO) { repository.getMyCourses() }
+                val sectionsDeferred = async(Dispatchers.IO) { repository.courseSections(courseId) }
+                val progressDeferred =
+                    async(Dispatchers.IO) { repository.courseProgressPercent(courseId) }
+
+                val course = courseDeferred.await()
+                val myCourses = myCoursesDeferred.await()
+                val isEnrolled = myCourses.any { it.id == courseId }
+                val sections = sectionsDeferred.await()
+                val progress = progressDeferred.await()
+
+                val newState = CourseDetailsState(
                     course = course,
                     isEnrolled = isEnrolled,
                     sections = sections,
                     progressPercent = progress,
                     isLoading = course == null
                 )
-            }.collect { newState -> _state.value = newState }*/
+
+                _state.value = newState
+            } catch (ce: CancellationException) {
+                throw ce
+            } catch (e: Exception) {
+                _state.value = _state.value.copy(isLoading = false)
+            }
         }
     }
 
     override fun toggleEnroll() {
         val current = _state.value
         val c = current.course ?: return
-       // if (current.isEnrolled) repository.unenroll(c.id) else repository.enroll(c.id)
+        scope.launch {
+            if (current.isEnrolled) repository.unenroll(c.id) else repository.enroll(c.id)
+        }
     }
 
     override fun onBack() = onOutput(CourseDetailsOutput.NavigateBack)

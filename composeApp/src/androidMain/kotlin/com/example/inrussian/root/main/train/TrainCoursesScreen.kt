@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.value.MutableValue
 import com.example.inrussian.components.main.train.CourseWithSections
-import com.example.inrussian.components.main.train.Section
+import com.example.inrussian.components.main.train.SectionModel
 import com.example.inrussian.components.main.train.ShortCourse
 import com.example.inrussian.components.main.train.ThemeMeta
 import com.example.inrussian.components.main.train.TrainCoursesListComponent
@@ -132,8 +132,8 @@ fun TrainCoursesScreen(component: TrainCoursesListComponent) {
 
 @Composable
 fun TrainCardItem(
-    courseSection: Section,
-    onClick: (Section) -> Unit,
+    courseSection: SectionModel,
+    onClick: (SectionModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -184,7 +184,7 @@ class TrainCoursesScreen : TrainCoursesListComponent {
                 CourseWithSections(
                     course = ShortCourse(id = "", title = "Курс на патент", 85f),
                     sections = listOf(
-                        Section(
+                        SectionModel(
                             id = "",
                             courseId = "",
                             title = "Транспорт",
@@ -193,7 +193,7 @@ class TrainCoursesScreen : TrainCoursesListComponent {
                             completedTheory = 1,
                             completedPractice = 1,
                             themes = listOf(ThemeMeta(id = "", 3, 4, 5))
-                        ), Section(
+                        ), SectionModel(
                             id = "",
                             courseId = "",
                             title = "Транспорт",
@@ -203,7 +203,7 @@ class TrainCoursesScreen : TrainCoursesListComponent {
                             completedPractice = 10,
                             themes = listOf(ThemeMeta(id = "", 3, 4, 5))
                         ),
-                        Section(
+                        SectionModel(
                             id = "",
                             courseId = "",
                             title = "Инструкция",
@@ -212,7 +212,7 @@ class TrainCoursesScreen : TrainCoursesListComponent {
                             completedTheory = 5,
                             completedPractice = 10,
                             themes = listOf(ThemeMeta(id = "", 3, 4, 5))
-                        ), Section(
+                        ), SectionModel(
                             id = "",
                             courseId = "",
                             title = "",
@@ -221,7 +221,7 @@ class TrainCoursesScreen : TrainCoursesListComponent {
                             completedTheory = 5,
                             completedPractice = 10,
                             themes = listOf(ThemeMeta(id = "", 3, 4, 5))
-                        ), Section(
+                        ), SectionModel(
                             id = "",
                             courseId = "",
                             title = "",

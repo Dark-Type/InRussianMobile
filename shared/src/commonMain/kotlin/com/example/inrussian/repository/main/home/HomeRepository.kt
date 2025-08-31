@@ -7,6 +7,9 @@ interface HomeRepository {
     suspend fun enroll(courseId: String)
     suspend fun unenroll(courseId: String)
 
+    suspend fun getMyCourses(): List<CourseModel>
+    suspend fun getRecommendedCourses(): List<CourseModel>
+
     suspend fun courseById(courseId: String): CourseModel?
     suspend fun courseSections(courseId: String): List<CourseSection>
     suspend fun courseProgressPercent(courseId: String): Int

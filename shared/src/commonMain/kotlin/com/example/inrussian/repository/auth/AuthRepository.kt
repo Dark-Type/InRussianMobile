@@ -10,9 +10,7 @@ import com.example.inrussian.repository.toRegisterModel
 import com.example.inrussian.utils.ErrorDecoder
 import com.example.inrussian.utils.errorHandle
 import io.ktor.utils.io.InternalAPI
-import kotlinx.serialization.json.Json
 
-private val json = Json { ignoreUnknownKeys = true }
 
 interface AuthRepository {
     suspend fun login(login: LoginModel): AuthResponseModel

@@ -31,7 +31,9 @@ interface TextConnectTaskComponent {
 
         val rightRects: Map<String, RectF> = emptyMap(),
         val leftAnchors: Map<String, PointF> = emptyMap(),
-        val pairLeftAnchors: Map<String, PointF> = emptyMap()
+        val pairLeftAnchors: Map<String, PointF> = emptyMap(),
+        val validated: Boolean = false,
+        val invalidLeftIds: Set<String> = emptySet()
     ) {
         val rows: List<RowModel>
             get() {

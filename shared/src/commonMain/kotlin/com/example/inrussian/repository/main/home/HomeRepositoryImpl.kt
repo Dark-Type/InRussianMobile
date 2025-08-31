@@ -16,6 +16,15 @@ class HomeRepositoryImpl(private val api: DefaultApi) : HomeRepository {
         api.studentCoursesCourseIdEnrollDelete(courseId).errorHandle()
     }
 
+    override suspend fun getMyCourses(): List<CourseModel> =
+        api.studentEnrollmentsGet().errorHandle()
+            .map { api.contentCoursesCourseIdGet(it.courseId).errorHandle().toDomain() }
+
+
+    override suspend fun getRecommendedCourses(): List<CourseModel> =
+        api.studentCoursesGet().errorHandle().map { it.toDomain() }
+
+
     override suspend fun courseById(courseId: String): CourseModel? =
         api.contentCoursesCourseIdGet(courseId).errorHandle().toDomain()
 

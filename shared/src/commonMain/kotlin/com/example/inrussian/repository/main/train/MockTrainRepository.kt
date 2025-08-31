@@ -3,7 +3,7 @@ package com.example.inrussian.repository.main.train
 import com.example.inrussian.components.main.train.AnswerType
 import com.example.inrussian.components.main.train.ContentType
 import com.example.inrussian.components.main.train.PRACTICE_TASK_TYPES
-import com.example.inrussian.components.main.train.Section
+import com.example.inrussian.components.main.train.SectionModel
 import com.example.inrussian.components.main.train.ShortCourse
 import com.example.inrussian.components.main.train.THEORY_TASK_TYPES
 import com.example.inrussian.components.main.train.Task
@@ -27,6 +27,7 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonArray
 import kotlin.random.Random
 import kotlin.uuid.ExperimentalUuidApi
+/*
 
 class MockTrainRepository(
     private val scope: CoroutineScope, private val userId: String = "u_1"
@@ -76,28 +77,40 @@ class MockTrainRepository(
     )
     private val json = Json
 
-    /* Courses */
+    */
+/* Courses *//*
+
     private val courses = listOf(
         ShortCourse("kc1", "KMP Practice"), ShortCourse("kc2", "Compose Practice")
     )
 
-    /* Sections per course */
+    */
+/* Sections per course *//*
+
     private val sectionsState = MutableStateFlow(
         courses.associate { c -> c.id to generateSections(c.id) })
 
-    /* Tasks per section */
+    */
+/* Tasks per section *//*
+
     private val tasksPerSection = mutableMapOf<String, MutableStateFlow<List<Task>>>()
 
-    /* Modular assets */
+    */
+/* Modular assets *//*
+
     private val contentsPerTask = mutableMapOf<String, MutableStateFlow<List<TaskContentItem>>>()
     private val optionsPerTask =
         mutableMapOf<String, MutableStateFlow<List<TaskAnswerOptionItem>>>()
     private val answerPerTask = mutableMapOf<String, MutableStateFlow<TaskAnswerItem?>>()
 
-    /* Queue per section */
+    */
+/* Queue per section *//*
+
     private val queuePerSection = mutableMapOf<String, MutableStateFlow<List<UserTaskQueueItem>>>()
 
-    /* Completed tasks */
+    */
+/* Completed tasks *//*
+
     private val completedTasks = mutableMapOf<String, MutableSet<String>>()
 
     init {
@@ -113,14 +126,13 @@ class MockTrainRepository(
         }
     }
 
-    /* ---------------- Interface Impl ---------------- */
 
     override fun userCourses(): Flow<List<ShortCourse>> = flowOf(courses)
 
-    override fun sectionsForCourse(courseId: String): Flow<List<Section>> =
+    override fun sectionsForCourse(courseId: String): Flow<List<SectionModel>> =
         sectionsState.map { it[courseId] ?: emptyList() }
 
-    override fun section(sectionId: String): Flow<Section?> =
+    override fun section(sectionId: String): Flow<SectionModel?> =
         sectionsState.map { it.values.flatten().firstOrNull { s -> s.id == sectionId } }
 
     override fun tasksForSection(sectionId: String): Flow<List<Task>> =
@@ -205,9 +217,11 @@ class MockTrainRepository(
         tasks
 
 
-    /* ---------------- Generation ---------------- */
+    */
+/* ---------------- Generation ---------------- *//*
 
-    private fun generateSections(courseId: String): List<Section> = (1..3).map { idx ->
+
+    private fun generateSections(courseId: String): List<SectionModel> = (1..3).map { idx ->
         val themes = (1..Random.nextInt(2, 4)).map { tIdx ->
             ThemeMeta(
                 id = "th_${courseId}_$idx$tIdx",
@@ -218,7 +232,7 @@ class MockTrainRepository(
         }
         val totalTheory = themes.sumOf { it.theoryCount }
         val totalPractice = themes.sumOf { it.practiceCount }
-        Section(
+        SectionModel(
             id = "sec_${courseId}_$idx",
             courseId = courseId,
             title = "Section $idx of ${courseId.uppercase()}",
@@ -237,7 +251,7 @@ class MockTrainRepository(
         val answers: Map<String, TaskAnswerItem?>
     )
 
-    private fun generateTasksAndAssets(section: Section): Generated {
+    private fun generateTasksAndAssets(section: SectionModel): Generated {
         val tasks = mutableListOf<Task>()
         val contentsMap = mutableMapOf<String, List<TaskContentItem>>()
         val optionsMap = mutableMapOf<String, List<TaskAnswerOptionItem>>()
@@ -470,7 +484,9 @@ class MockTrainRepository(
         )
     }
 
-    /* ---------------- Retry & Progress ---------------- */
+    */
+/* ---------------- Retry & Progress ---------------- *//*
+
 
     override suspend fun scheduleReinforcement(
         sectionId: String, taskId: String, offsetRange: IntRange
@@ -543,8 +559,10 @@ class MockTrainRepository(
         }
     }
 
-    /* ---------------- Utilities ---------------- */
+    */
+/* ---------------- Utilities ---------------- *//*
+
 
     private fun List<UserTaskQueueItem>.reindex(): List<UserTaskQueueItem> =
         mapIndexed { idx, it -> it.copy(queuePosition = idx) }
-}
+}*/

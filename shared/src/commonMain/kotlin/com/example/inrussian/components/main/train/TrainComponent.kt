@@ -2,8 +2,8 @@ package com.example.inrussian.components.main.train
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
-import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.StackNavigation
+import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.pushNew
 import com.arkivanov.decompose.value.MutableValue
@@ -14,28 +14,19 @@ import com.example.inrussian.repository.main.train.TrainRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonPrimitive
 
 sealed interface TrainOutput {
     data object NavigateBack : TrainOutput
 }
+
 sealed interface SectionDetailOutput {
     data object NavigateBack : SectionDetailOutput
 }
+
 sealed interface TasksOutput {
     data object NavigateBack : TasksOutput
     data object CompletedSection : TasksOutput
@@ -55,8 +46,10 @@ interface TrainComponent {
 
     @Serializable
     sealed interface Config {
-        @Serializable data object Courses : Config
-        @Serializable data class SectionDetail(val sectionId: String) : Config
+        @Serializable
+        data object Courses : Config
+        @Serializable
+        data class SectionDetail(val sectionId: String) : Config
     }
 }
 
@@ -101,6 +94,7 @@ class DefaultTrainComponent(
                         ::onSectionSelected
                     )
                 )
+
             is TrainComponent.Config.SectionDetail ->
                 TrainComponent.Child.SectionDetailChild(
                     sectionDetailComponentFactory(
@@ -134,7 +128,8 @@ class DefaultTrainCoursesListComponent(
     override val state: Value<TrainCoursesState> = _state
 
     init {
-        scope.launch {
+        TODO()
+        /*scope.launch {
             repository.userCourses()
                 .flatMapLatest { courses ->
                     if (courses.isEmpty()) flowOf(emptyList())
@@ -149,12 +144,13 @@ class DefaultTrainCoursesListComponent(
                 .collect { list ->
                     _state.value = TrainCoursesState(isLoading = false, courses = list)
                 }
-        }
+        }*/
     }
 
     override fun onSectionClick(sectionId: String) = onSectionSelected(sectionId)
 
-    override fun refresh() { /* no-op for mock */ }
+    override fun refresh() { /* no-op for mock */
+    }
 
     fun dispose() = scope.cancel()
 }
@@ -206,12 +202,12 @@ class DefaultSectionDetailComponent(
 
     init {
         scope.launch {
-            repository.section(sectionId).collectLatest { section ->
-                _state.value = _state.value.copy(
-                    isLoading = section == null,
-                    section = section
-                )
-            }
+            val section = repository.section(sectionId)
+            _state.value = _state.value.copy(
+                isLoading = section == null,
+                section = section
+            )
+
         }
     }
 
@@ -290,6 +286,7 @@ interface TasksComponent {
     fun markCurrentAs(correct: Boolean)
     fun onBack()
 }
+/*
 
 class DefaultTasksComponent(
     componentContext: ComponentContext,
@@ -454,7 +451,9 @@ class DefaultTasksComponent(
 
     override fun onBack() = onOutput(TasksOutput.NavigateBack)
 
-    /* ------------ Observers ------------ */
+    */
+/* ------------ Observers ------------ *//*
+
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun observeQueue() {
@@ -528,7 +527,7 @@ class DefaultTasksComponent(
             repository.tasksForSection(sectionId)
                 .flatMapLatest { tasks ->
                     if (tasks.isEmpty()) {
-                        flowOf(Triple(emptyList<FullTask>(), sectionId, null as Section?))
+                        flowOf(Triple(emptyList<FullTask>(), sectionId, null as SectionModel?))
                     } else {
                         combine(
                             combine(tasks.map { task ->
@@ -574,7 +573,9 @@ class DefaultTasksComponent(
         }
     }
 
-    /* ------------ Evaluation ------------ */
+    */
+/* ------------ Evaluation ------------ *//*
+
 
     private fun evaluate(full: FullTask, answer: TaskAnswerItem): Boolean =
         when (answer.answerType) {
@@ -640,4 +641,4 @@ class DefaultTasksComponent(
 
     private fun normalize(s: String) =
         s.lowercase().replace("\\s+".toRegex(), " ").trim()
-}
+}*/

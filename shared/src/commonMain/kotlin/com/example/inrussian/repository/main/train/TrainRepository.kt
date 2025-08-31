@@ -1,6 +1,6 @@
 package com.example.inrussian.repository.main.train
 
-import com.example.inrussian.components.main.train.Section
+import com.example.inrussian.components.main.train.SectionModel
 import com.example.inrussian.components.main.train.ShortCourse
 import com.example.inrussian.components.main.train.Task
 import com.example.inrussian.components.main.train.TaskAnswerItem
@@ -12,16 +12,16 @@ import com.example.inrussian.models.models.FullTaskMode
 import kotlinx.coroutines.flow.Flow
 
 interface TrainRepository {
-    fun userCourses(): Flow<List<ShortCourse>>
-    fun sectionsForCourse(courseId: String): Flow<List<Section>>
-    fun section(sectionId: String): Flow<Section?>
-    fun tasksForSection(sectionId: String): Flow<List<Task>>
+    suspend fun userCourses(): List<ShortCourse>
+    suspend fun sectionsForCourse(courseId: String): List<SectionModel>
+    suspend fun section(sectionId: String): SectionModel?
+    suspend fun tasksForSection(sectionId: String): List<Task>
 
-    fun contentItemsForTask(taskId: String): Flow<List<TaskContentItem>>
-    fun answerOptionsForTask(taskId: String): Flow<List<TaskAnswerOptionItem>>
-    fun answerForTask(taskId: String): Flow<TaskAnswerItem?>
+    suspend fun contentItemsForTask(taskId: String): List<TaskContentItem>
+    suspend fun answerOptionsForTask(taskId: String): List<TaskAnswerOptionItem>
+    suspend fun answerForTask(taskId: String): TaskAnswerItem?
 
-    fun userQueue(sectionId: String): Flow<List<UserTaskQueueItem>>
+    suspend fun userQueue(sectionId: String): List<UserTaskQueueItem>
 
     suspend fun ensureQueuePopulated(sectionId: String, minSize: Int)
     suspend fun consumeCurrentQueueTask(sectionId: String, correct: Boolean)

@@ -30,7 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.value.MutableValue
-import com.example.inrussian.components.main.train.Section
+import com.example.inrussian.components.main.train.SectionModel
 import com.example.inrussian.components.main.train.SectionDetailComponent
 import com.example.inrussian.components.main.train.SectionDetailState
 import com.example.inrussian.components.main.train.TasksOption
@@ -58,7 +58,7 @@ import org.jetbrains.compose.resources.vectorResource
 fun SectionDetailsScreen(
     component: SectionDetailComponent, state: SectionDetailState
 ) {
-    val section: Section? = state.section
+    val section: SectionModel? = state.section
     if (state.isLoading || section == null) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
@@ -190,7 +190,7 @@ class SectionDetailsScreen : SectionDetailComponent {
         get() = ""
     override val state = MutableValue(
         SectionDetailState(
-            isLoading = false, section = Section(
+            isLoading = false, section = SectionModel(
                 id = "",
                 courseId = "",
                 title = "Транспорт",
