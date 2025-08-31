@@ -6,6 +6,7 @@ class UserConfigurationStorageImpl(private val context: Context) : UserConfigura
     private val prefs = context.getSharedPreferences("config_storage", Context.MODE_PRIVATE)
     private val key = "last_configuration"
     private val tokenKey = "user_token"
+    private val refreshTokenKey = "refresh_token"
 
     override fun save(configuration: Configuration) {
         prefs.edit().putString(key, configuration::class.simpleName).apply()
@@ -30,6 +31,18 @@ class UserConfigurationStorageImpl(private val context: Context) : UserConfigura
 
     override fun deleteToken() {
         prefs.edit().remove(tokenKey).apply()
+    }
+
+    override fun saveRefreshToken(token: String) {
+        prefs.edit().putString(refreshTokenKey, token).apply()
+    }
+
+    override fun getRefreshToken(): String? {
+        return prefs.getString(refreshTokenKey, null)
+    }
+
+    override fun deleteRefreshToken() {
+        prefs.edit().remove(refreshTokenKey).apply()
     }
 }
 

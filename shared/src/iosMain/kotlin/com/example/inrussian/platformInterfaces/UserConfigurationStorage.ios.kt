@@ -9,6 +9,7 @@ class UserConfigurationStorageImpl(
 
     private val key = "last_configuration"
     private val tokenKey = "user_token"
+    private val refreshTokenKey = "refresh_token"
 
     override fun save(configuration: Configuration) {
         val value = when (configuration) {
@@ -40,4 +41,17 @@ class UserConfigurationStorageImpl(
     override fun deleteToken() {
         defaults.removeObjectForKey(tokenKey)
     }
+
+    override fun saveRefreshToken(token: String) {
+        defaults.setObject(token, forKey = refreshTokenKey)
+    }
+
+    override fun getRefreshToken(): String? {
+        return defaults.stringForKey(refreshTokenKey)
+    }
+
+    override fun deleteRefreshToken() {
+        defaults.removeObjectForKey(refreshTokenKey)
+    }
+
 }

@@ -43,7 +43,6 @@ final class KeyboardObserver: ObservableObject {
     }
 
     private func keyWindow() -> UIWindow? {
-        // Prefer the active scene's key window
         return UIApplication.shared
             .connectedScenes
             .compactMap { $0 as? UIWindowScene }

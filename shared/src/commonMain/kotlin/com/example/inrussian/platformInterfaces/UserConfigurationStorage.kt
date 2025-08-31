@@ -9,4 +9,7 @@ interface UserConfigurationStorage {
     fun saveToken(token: String)
     fun getToken(): String?
     fun deleteToken()
+    fun saveRefreshToken(token: String)
+    fun getRefreshToken(): String?
+    fun deleteRefreshToken()
 }
