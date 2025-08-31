@@ -3,7 +3,7 @@ package com.example.inrussian.models.models
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Gap(
-    val correctWord: String,
-    val index: Int
+data class TextInputWithVariantModel(
+    val text: String,
+    val gaps: List<GapWithVariantModel>
 )

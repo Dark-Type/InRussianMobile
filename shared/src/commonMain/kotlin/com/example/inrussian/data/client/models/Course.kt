@@ -37,7 +37,6 @@ import kotlinx.serialization.encoding.*
 @Serializable
 
 data class Course (
-
     @SerialName(value = "id") @Required val id: kotlin.String,
 
     @SerialName(value = "name") @Required val name: kotlin.String,

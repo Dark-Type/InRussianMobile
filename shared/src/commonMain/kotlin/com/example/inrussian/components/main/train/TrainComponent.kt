@@ -14,10 +14,15 @@ import com.example.inrussian.repository.main.train.TrainRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
+import kotlin.coroutines.cancellation.CancellationException
 
 sealed interface TrainOutput {
     data object NavigateBack : TrainOutput
@@ -128,23 +133,30 @@ class DefaultTrainCoursesListComponent(
     override val state: Value<TrainCoursesState> = _state
 
     init {
-        TODO()
-        /*scope.launch {
-            repository.userCourses()
-                .flatMapLatest { courses ->
-                    if (courses.isEmpty()) flowOf(emptyList())
-                    else {
-                        val flows = courses.map { course ->
-                            repository.sectionsForCourse(course.id)
-                                .map { secs -> CourseWithSections(course, secs) }
-                        }
-                        combine(flows) { it.toList() }
+
+        scope.launch {
+            try {
+                val courses = withContext(Dispatchers.IO) { repository.userCourses() }
+                if (courses.isEmpty()) {
+                    _state.value = TrainCoursesState(isLoading = false, courses = emptyList())
+                    return@launch
+                }
+
+                val deferred = courses.map { course ->
+                    async(Dispatchers.IO) {
+                        val secs = repository.sectionsForCourse(course.id)
+                        CourseWithSections(course, secs)
                     }
                 }
-                .collect { list ->
-                    _state.value = TrainCoursesState(isLoading = false, courses = list)
-                }
-        }*/
+
+                val list = deferred.awaitAll()
+                _state.value = TrainCoursesState(isLoading = false, courses = list)
+            } catch (ce: CancellationException) {
+                throw ce
+            } catch (t: Throwable) {
+                _state.value = TrainCoursesState(isLoading = false, courses = emptyList())
+            }
+        }
     }
 
     override fun onSectionClick(sectionId: String) = onSectionSelected(sectionId)

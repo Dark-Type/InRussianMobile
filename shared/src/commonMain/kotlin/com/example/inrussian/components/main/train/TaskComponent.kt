@@ -21,6 +21,7 @@ import com.example.inrussian.components.main.train.tasks.ImageConnectTaskCompone
 import com.example.inrussian.components.main.train.tasks.ImageConnectTaskComponentImpl
 import com.example.inrussian.components.main.train.tasks.TextConnectTaskComponent
 import com.example.inrussian.components.main.train.tasks.TextConnectTaskComponentImpl
+import com.example.inrussian.models.models.TaskBody
 import com.example.inrussian.models.models.TaskBody.AudioTask
 import com.example.inrussian.models.models.TaskBody.ImageTask
 import com.example.inrussian.models.models.TaskBody.TextInputTask
@@ -110,6 +111,7 @@ class TrainComponentImpl(
                         is TextInputWithVariantTask -> TextInputWithVariantConfig(it.showedTask.taskBody)
                         is TextTask -> TextConnectConfig(it.showedTask.taskBody)
                         null -> Config.EmptyTaskConfig
+                        is TaskBody.ListenAndSelect -> TODO()
                     }
                 )
             }

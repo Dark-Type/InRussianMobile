@@ -90,7 +90,7 @@ class RecoveryStoreFactory(
                                 if (showPasswordScreen) {
                                     validator.validatePassword(password)
                                     validator.validateConfirmPassword(password, confirmPassword)
-                                    repository.updatePassword(email, password)
+                                    repository.updatePassword(email, code, password)
                                     publish(Label.UpdateSuccessfully)
                                     startTimer(state())
                                 } else if (showCodeScreen) {
@@ -173,6 +173,7 @@ class RecoveryStoreFactory(
                 val (newMinute, newSecond) = backUpForSecond(timerMinute, timerSecond)
                 copy(timerMinute = newMinute, timerSecond = newSecond)
             }
+
             Msg.StartTimer -> {
                 val (newMinute, newSecond) = backUpForSecond(timerMinute, timerSecond)
                 copy(timerMinute = newMinute, timerSecond = newSecond)

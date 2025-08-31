@@ -23,7 +23,7 @@ class HomeRepositoryImpl(
     }
 
     override suspend fun getMyCourses(): List<CourseModel> =
-        api.studentEnrollmentsGet().errorHandle()
+        api.studentEnrollmentsGet().errorHandle(userConfigurationStorage ,authRepository)
             .map { api.contentCoursesCourseIdGet(it.courseId).errorHandle(userConfigurationStorage ,authRepository).toDomain() }
 
 

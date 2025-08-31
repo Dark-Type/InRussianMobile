@@ -1,9 +1,9 @@
 package com.example.inrussian.utils
 
+import co.touchlab.kermit.Logger
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.lifecycle.doOnDestroy
-import com.example.inrussian.data.client.infrastructure.ApiClient
 import com.example.inrussian.data.client.infrastructure.HttpResponse
 import com.example.inrussian.models.ErrorType.InvalidRefreshToken
 import com.example.inrussian.platformInterfaces.UserConfigurationStorage
@@ -33,20 +33,26 @@ suspend fun <T : Any> HttpResponse<T>.errorHandle(
     userConfigurationStorage: UserConfigurationStorage? = null,
     authRepository: AuthRepository? = null,
 ): T {
+    Logger.i { "code: $status" }
     when (status) {
         in 200..299 -> return this.body()
-        401 -> {
-            val refreshToken = userConfigurationStorage?.getRefreshToken()
-            if (refreshToken != null) {
-                val result = try {
-                    authRepository?.refreshToken(refreshToken)!!
-                } catch (e: Throwable) {
-                    throw InvalidRefreshToken
+        in (401..403) -> {
+            try {
+                val refreshToken = userConfigurationStorage?.getRefreshToken()
+                Logger.i { refreshToken.toString() }
+                if (refreshToken != null) {
+                    val result = try {
+                        authRepository?.refreshToken(refreshToken)!!
+                    } catch (e: Throwable) {
+                        throw InvalidRefreshToken
+                    }
+                    authRepository.setToken(result)
                 }
-                authRepository.setToken(result)
+
+            } catch (e: Throwable) {
+
+                Logger.i { e.message.toString() }
             }
-
-
             return this.body()
         }
 

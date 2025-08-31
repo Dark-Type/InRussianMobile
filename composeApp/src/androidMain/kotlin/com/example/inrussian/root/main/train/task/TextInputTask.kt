@@ -44,7 +44,7 @@ fun TextInputTask(
                 Sentence(
                     "Текст будет здесь\nТекст ебать копать хоронить будет здесь\nПеревод будет находиться здесь \n" +
                             "Либо его не будет",
-                    listOf(Gap("находиться", "находиться", 11), Gap("", ",будет", 23))
+                    listOf(Gap( "находиться", 11), Gap( ",будет", 23))
                 )
             )
         )
@@ -96,8 +96,8 @@ fun TextInputTask(
                                     contentAlignment = Alignment.CenterStart
                                 ) {
                                     BasicTextField(
-                                        value = gap.enter,
-                                        onValueChange = { new -> onGapChange(gap.copy(enter = new)) },
+                                        value = gap.correctWord,
+                                        onValueChange = { new -> onGapChange(gap.copy()) },
                                         modifier = Modifier
                                             .offset(y = 5.dp)
                                             .fillMaxSize()
