@@ -37,7 +37,11 @@ fun EnterEmailUi(component: EnterEmailComponent) {
     val state by component.state.subscribeAsState()
     val currentColors = LocalExtraColors.current
 
-    Column(modifier = Modifier.background(currentColors.baseBackground).padding(horizontal = 28.dp)) {
+    Column(
+        modifier = Modifier
+            .background(currentColors.baseBackground)
+            .padding(horizontal = 28.dp)
+    ) {
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -61,25 +65,33 @@ fun EnterEmailUi(component: EnterEmailComponent) {
                 color = currentColors.fontCaptive
             )
         }
-        Text(
-            stringResource(Res.string.write_email), fontSize = 16.sp,
-            fontWeight = FontWeight.W600,
-            modifier = Modifier.padding(top = 30.dp),
-            color =  currentColors.footnote
-        )
-        CommonTextField(
-            value = state.email,
-            onValueChange = component::omEmailChange,
-            label = stringResource(Res.string.email),
-        )
 
-        Spacer(modifier = Modifier.height(125.dp))
-        CommonButton(
-            onClick = component::onContinueClick,
-            text = stringResource(Res.string.send_code),
-            enable = false,
-        )
-        Spacer(modifier = Modifier.height(50.dp))
+        Column(
+            verticalArrangement = Arrangement.Bottom
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    stringResource(Res.string.write_email),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W600
+                )
+                CommonTextField(
+                    value = state.email,
+                    onValueChange = component::omEmailChange,
+                    label = stringResource(Res.string.email),
+                )
+            }
+
+            Spacer(modifier = Modifier.height(100.dp))
+
+            CommonButton(
+                onClick = component::onContinueClick,
+                text = stringResource(Res.string.send_code),
+                enable = state.isButtonActive,
+            )
+        }
     }
 }
 

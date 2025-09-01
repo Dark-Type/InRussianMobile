@@ -2,6 +2,7 @@ package com.example.inrussian.root.auth.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,10 +43,17 @@ fun LoginUi(component: LoginComponent) {
     val state by component.state.subscribeAsState()
     val context = LocalContext.current
     val currentColors = LocalExtraColors.current
-    Column(modifier = Modifier.background(currentColors.baseBackground).padding(16.dp)) {
-        Row(modifier = Modifier.padding(top = 32.dp)) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(currentColors.baseBackground)
+            .padding(horizontal = 16.dp)
+    ) {
+        Row(modifier = Modifier.padding(top = 48.dp)) {
             BackButton(enable = true, onClick = component::onBackClicked)
         }
+
         Box(
             modifier = Modifier
                 .weight(1f)
@@ -53,50 +61,57 @@ fun LoginUi(component: LoginComponent) {
         ) {
             Image(
                 painter = painterResource(Res.drawable.placeholder),
-                "",
-                modifier = Modifier
-                    .fillMaxSize()
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize()
             )
         }
-        CommonTextField(
-            value = state.email,
-            onValueChange = { component.onEmailChange(it) },
-            label = stringResource(Res.string.email),
-            error = state.emailError?.getString(context),
-            icon = if (state.email.isBlank()) null else vectorResource(
-                Res.drawable.cancel
-            ),
-            onIconClick = component::onDeleteEmailClick,
-        )
-        CommonTextField(
-            value = state.password,
-            onValueChange = component::onPasswordChange,
-            label = stringResource(Res.string.password),
-            error = state.passwordError?.getString(context),
-            icon = if (state.password.isBlank()) null else if (state.showPassword) vectorResource(
-                Res.drawable.eye_off
-            ) else vectorResource(
-                Res.drawable.eye_show
-            ),
-            onIconClick = component::onShowPasswordClick,
-            visualTransformation = if (!state.showPassword) PasswordVisualTransformation() else null
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        CommonButton(
-            onClick = { component.onLogin(state.email, state.password) },
-            text = stringResource(Res.string.sign_in),
-            enable = state.isButtonActive,
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        TextButton(
-            onClick = { component.onForgotPasswordClicked() }, modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(stringResource(Res.string.forgot_password), color = currentColors.footnote)
-        }
-        Spacer(modifier = Modifier.height(40.dp))
 
+        Column(
+            verticalArrangement = Arrangement.Bottom,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(0.dp)) {
+                CommonTextField(
+                    value = state.email,
+                    onValueChange = { component.onEmailChange(it) },
+                    label = stringResource(Res.string.email),
+                    error = state.emailError?.getString(context),
+                    icon = if (state.email.isBlank()) null else vectorResource(Res.drawable.cancel),
+                    onIconClick = component::onDeleteEmailClick,
+                )
+                CommonTextField(
+                    value = state.password,
+                    onValueChange = component::onPasswordChange,
+                    label = stringResource(Res.string.password),
+                    error = state.passwordError?.getString(context),
+                    icon = if (state.password.isBlank()) null
+                    else if (state.showPassword) vectorResource(Res.drawable.eye_off)
+                    else vectorResource(Res.drawable.eye_show),
+                    onIconClick = component::onShowPasswordClick,
+                    visualTransformation = if (!state.showPassword) PasswordVisualTransformation() else null
+                )
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            CommonButton(
+                onClick = { component.onLogin(state.email, state.password) },
+                text = stringResource(Res.string.sign_in),
+                enable = state.isButtonActive,
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            TextButton(
+                onClick = { component.onForgotPasswordClicked() },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(Res.string.forgot_password), color = currentColors.footnote)
+            }
+        }
     }
 }
+
 
 
 //class LoginUi() : LoginComponent {

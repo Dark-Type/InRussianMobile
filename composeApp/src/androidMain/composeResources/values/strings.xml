@@ -15,6 +15,7 @@
     <string name="password">Пароль</string>
     <string name="confirm_password">Подтверждение пароля</string>
     <string name="write_email">Укажите почту, на которую придет код подтверждения</string>
+    <string name="write_code">Введите код из сообщения, которое пришло на указанную вами почту</string>
     <string name="send_code">Отправить код подтверждения</string>
     <string name="sms_code">Код из сообщения</string>
     <string name="is_no_got_mail">Не пришло письмо?</string>

@@ -1,5 +1,6 @@
 package com.example.inrussian.root.auth.recovery.code
 
+import android.R.attr.text
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,13 +38,17 @@ import com.example.inrussian.ui.theme.LightGrey
 import com.example.inrussian.ui.theme.Orange
 import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.check_spam
+import inrussian.composeapp.generated.resources.email
 import inrussian.composeapp.generated.resources.is_no_got_mail
 import inrussian.composeapp.generated.resources.password_recovery
 import inrussian.composeapp.generated.resources.question
 import inrussian.composeapp.generated.resources.repeat_send_code
+import inrussian.composeapp.generated.resources.send_code
 import inrussian.composeapp.generated.resources.sms_code
 import inrussian.composeapp.generated.resources.support_contact
+import inrussian.composeapp.generated.resources.write_code
 import inrussian.composeapp.generated.resources.write_email
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -51,7 +56,6 @@ import org.jetbrains.compose.resources.vectorResource
 @Composable
 fun EnterRecoveryCodeUi(component: EnterRecoveryCodeComponent) {
     val state by component.state.subscribeAsState()
-
 
     Box() {
         Column(modifier = Modifier.padding(horizontal = 28.dp)) {
@@ -77,23 +81,32 @@ fun EnterRecoveryCodeUi(component: EnterRecoveryCodeComponent) {
                     textAlign = TextAlign.Center
                 )
             }
-            Text(
-                stringResource(Res.string.write_email), fontSize = 16.sp,
-                fontWeight = FontWeight.W600,
-                modifier = Modifier.padding(top = 30.dp),
-            )
-            CommonTextField(
-                value = state.code,
-                onValueChange = component::codeChange,
-                label = stringResource(Res.string.sms_code),
-            )
-            Spacer(modifier = Modifier.height(50.dp))
-            CommonButton(
-                onClick = { },
-                text = stringResource(Res.string.repeat_send_code) + " " + state.timerMinute + ":" + state.timerSecond,
-                enable = false,
-            )
-            Spacer(modifier = Modifier.height(50.dp))
+            Column(
+                verticalArrangement = Arrangement.Bottom
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        stringResource(Res.string.write_code), fontSize = 16.sp,
+                        fontWeight = FontWeight.W600,
+                        modifier = Modifier.padding(top = 30.dp),
+                    )
+                    CommonTextField(
+                        value = state.code,
+                        onValueChange = component::codeChange,
+                        label = stringResource(Res.string.sms_code),
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(100.dp))
+
+                CommonButton(
+                    onClick = {component.onCodeEntered(state.code)},
+                    text = if(state.isButtonActive) "Далее" else stringResource(Res.string.repeat_send_code) + " " + state.timerString,
+                    enable = state.isButtonActive,
+                )
+            }
         }
         IconButton(
             component::onQuestionClick, modifier = Modifier

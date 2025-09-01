@@ -30,7 +30,10 @@ import com.example.inrussian.stores.auth.recovery.RecoveryStore.Msg.PasswordTran
 import com.example.inrussian.stores.auth.recovery.RecoveryStore.State
 import com.example.inrussian.stores.auth.recovery.RecoveryStoreFactory.ReducerImpl.backUpForSecond
 import com.example.inrussian.utils.ErrorDecoder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class RecoveryStoreFactory(
@@ -49,26 +52,24 @@ class RecoveryStoreFactory(
         ) {}
 
     private inner class ExecutorImpl : CoroutineExecutor<Intent, Action, State, Msg, Label>() {
-        suspend fun startTimer(state: State) {
-            var minute = state.timerMinute
-            var second = state.timerSecond
-            while (minute != 0 || second != 0) {
-                delay(1000)
-                val (newMinute, newSecond) = backUpForSecond(minute, second)
-                minute = newMinute
-                second = newSecond
-                dispatch(Msg.UpdateTime)
+        private var timerJob: Job? = null
+
+        private fun startTimer(scope: CoroutineScope) {
+            timerJob?.cancel()
+
+            timerJob = scope.launch {
+                while (isActive) {
+                    delay(1000)
+                    dispatch(Msg.UpdateTime)
+                }
             }
         }
-
 
         override fun executeAction(action: Action) {
         }
 
         override fun executeIntent(intent: Intent) {
             when (intent) {
-
-
                 is Intent.EmailChange -> dispatch(EmailChanged(intent.email))
                 Intent.EmailImageClick -> dispatch(EmailChanged(""))
                 is Intent.PasswordChange -> dispatch(
@@ -92,13 +93,13 @@ class RecoveryStoreFactory(
                                     validator.validateConfirmPassword(password, confirmPassword)
                                     repository.updatePassword(email, code, password)
                                     publish(Label.UpdateSuccessfully)
-                                    startTimer(state())
                                 } else if (showCodeScreen) {
                                     repository.sendCode(code, email)
                                     publish(Label.SetCorrectCode)
                                 } else if (showEmailScreen) {
                                     validator.validateEmail(email)
                                     publish(Label.SetEmail)
+                                    startTimer(scope)
                                 }
 
                             }
@@ -127,15 +128,12 @@ class RecoveryStoreFactory(
 
 
     private object ReducerImpl : Reducer<State, Msg> {
-        fun backUpForSecond(minute: Int, second: Int): Pair<Int, Int> {
-            return if (minute == 0 && second == 0) {
-                0 to 0
-            } else if (second == 0) {
-                (minute - 1) to 59
-            } else {
-                minute to (second - 1)
-            }
+        fun backUpForSecond(minute: Int, second: Int): Pair<Int, Int> = when {
+            minute == 0 && second == 0 -> 0 to 0
+            second == 0 -> (minute - 1) to 59
+            else -> minute to (second - 1)
         }
+
 
         override fun State.reduce(msg: Msg): State = when (msg) {
             is CodeChanged -> copy(code = msg.code)
@@ -158,7 +156,7 @@ class RecoveryStoreFactory(
             )
 
             is PasswordChanged -> copy(
-                email = msg.password,
+                password = msg.password,
                 passwordError = null,
             )
 
@@ -169,15 +167,11 @@ class RecoveryStoreFactory(
             FinishLoading -> copy(loading = false)
             Msg.QuestionClick -> copy(questionShow = true)
             Msg.QuestionDismiss -> copy(questionShow = false)
-            Msg.UpdateTime -> {
-                val (newMinute, newSecond) = backUpForSecond(timerMinute, timerSecond)
-                copy(timerMinute = newMinute, timerSecond = newSecond)
-            }
+            Msg.UpdateTime -> copy(
+                remainingSeconds = (remainingSeconds - 1).coerceAtLeast(0)
+            )
 
-            Msg.StartTimer -> {
-                val (newMinute, newSecond) = backUpForSecond(timerMinute, timerSecond)
-                copy(timerMinute = newMinute, timerSecond = newSecond)
-            }
+            Msg.StartTimer -> this
         }
 
     }

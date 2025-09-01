@@ -74,5 +74,4 @@ class DefaultEnterRecoveryCodeComponent(
     override fun onSupportContactClick() {
         store.accept(Intent.QuestionButtonClick)
     }
-
 }

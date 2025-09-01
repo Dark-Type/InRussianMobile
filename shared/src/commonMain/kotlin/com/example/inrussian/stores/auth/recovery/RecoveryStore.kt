@@ -33,8 +33,7 @@ interface RecoveryStore : Store<Intent, State, Label> {
         val confirmPasswordError: StringResource? = null,
         val code: String = "",
         val codeError: StringResource? = null,
-        val timerMinute: Int = 0,
-        val timerSecond: Int = 0,
+        val remainingSeconds: Int = 90,
         val loading: Boolean = false,
         val showEmailScreen: Boolean = true,
         val showCodeScreen: Boolean = false,
@@ -42,7 +41,15 @@ interface RecoveryStore : Store<Intent, State, Label> {
         val questionShow: Boolean = false,
     ) {
         val isButtonActive: Boolean
-            get() = email.isNotBlank() && emailError == null && password == confirmPassword && passwordError == null && confirmPasswordError == null && timerMinute == 0 && timerSecond == 0
+            get() = (email.isNotBlank() || code.isNotBlank())  && emailError == null && password == confirmPassword && passwordError == null && confirmPasswordError == null //&& timerMinute == 0 && timerSecond == 0
+
+        val timerString: String
+            get() {
+                val minutes = remainingSeconds / 60
+                val seconds = remainingSeconds % 60
+                return "${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}"
+            }
+
     }
 
     sealed interface Action {}

@@ -1,5 +1,6 @@
 package com.example.inrussian.root.auth.recovery.password
 
+import android.R.attr.onClick
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,11 +28,14 @@ import com.example.inrussian.ui.theme.DarkGrey
 import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.choose_new_password
 import inrussian.composeapp.generated.resources.confirm_password
+import inrussian.composeapp.generated.resources.email
 import inrussian.composeapp.generated.resources.eye_off
 import inrussian.composeapp.generated.resources.eye_show
 import inrussian.composeapp.generated.resources.password
 import inrussian.composeapp.generated.resources.password_recovery
+import inrussian.composeapp.generated.resources.send_code
 import inrussian.composeapp.generated.resources.update_password
+import inrussian.composeapp.generated.resources.write_email
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -40,7 +44,7 @@ import org.jetbrains.compose.resources.vectorResource
 fun UpdatePasswordUi(component: UpdatePasswordComponent) {
     val state by component.state.subscribeAsState()
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = Modifier.padding(horizontal = 28.dp)) {
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -63,42 +67,50 @@ fun UpdatePasswordUi(component: UpdatePasswordComponent) {
                 textAlign = TextAlign.Center
             )
         }
-        Text(
-            stringResource(Res.string.choose_new_password),
-            fontSize = 16.sp,
-            color = DarkGrey.copy(alpha = 0.8f)
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        CommonTextField(
-            value = state.password,
-            onValueChange = component::onPasswordChange,
-            label = stringResource(Res.string.password),
-            icon = if (state.showPassword) vectorResource(Res.drawable.eye_show) else vectorResource(
-                Res.drawable.eye_off
-            ),
-            onIconClick = component::onShowPasswordClick,
-            visualTransformation = if (state.showPassword) PasswordVisualTransformation() else null
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        CommonTextField(
-            value = state.confirmPassword,
-            onValueChange = component::onConfirmPasswordChange,
-            label = stringResource(Res.string.confirm_password),
-            icon = if (state.showConfirmPassword) vectorResource(Res.drawable.eye_show) else vectorResource(
-                Res.drawable.eye_off
-            ),
-            onIconClick = component::onShowConfirmPasswordClick,
-            visualTransformation = if (state.showConfirmPassword) PasswordVisualTransformation() else null
-        )
 
+        Column(
+            verticalArrangement = Arrangement.Bottom
+        ) {
+            Column{
+                Text(
+                    stringResource(Res.string.choose_new_password),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W600
+                )
 
-        Spacer(modifier = Modifier.height(60.dp))
-        CommonButton(
-            onClick = { component.onBackClicked() },
-            enable = state.updateButtonEnable,
-            text = stringResource(Res.string.update_password)
-        )
-        Spacer(modifier = Modifier.height(34.dp))
+                Spacer(modifier = Modifier.height(12.dp))
+
+                CommonTextField(
+                    value = state.password,
+                    onValueChange = component::onPasswordChange,
+                    label = stringResource(Res.string.password),
+                    icon = if (state.showPassword) vectorResource(Res.drawable.eye_show) else vectorResource(
+                        Res.drawable.eye_off
+                    ),
+                    onIconClick = component::onShowPasswordClick,
+                    visualTransformation = if (state.showPassword) PasswordVisualTransformation() else null
+                )
+
+                CommonTextField(
+                    value = state.confirmPassword,
+                    onValueChange = component::onConfirmPasswordChange,
+                    label = stringResource(Res.string.confirm_password),
+                    icon = if (state.showConfirmPassword) vectorResource(Res.drawable.eye_show) else vectorResource(
+                        Res.drawable.eye_off
+                    ),
+                    onIconClick = component::onShowConfirmPasswordClick,
+                    visualTransformation = if (state.showConfirmPassword) PasswordVisualTransformation() else null
+                )
+            }
+
+            Spacer(modifier = Modifier.height(100.dp))
+
+            CommonButton(
+                onClick = { component.onPasswordUpdated() },
+                enable = state.updateButtonEnable,
+                text = stringResource(Res.string.update_password)
+            )
+        }
     }
 }
 
