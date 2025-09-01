@@ -2,6 +2,7 @@ package com.example.inrussian.root.auth.register
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -17,6 +18,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -505,20 +508,21 @@ fun CitizenshipDate(component: CitizenshipComponent) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 64.dp)
-                .offset(x = 10.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(top = 64.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             BackButton(true, component::onBack)
+
+            Text(
+                stringResource(Res.string.citizenship_data),
+                style = MaterialTheme.typography.titleLarge,
+                color = currentColors.fontCaptive,
+                textAlign = TextAlign.Center
+            )
+
             ContinueButton(state.continueEnable, component::onNext)
         }
-
-        Text(
-            stringResource(Res.string.citizenship_data),
-            fontSize = 40.sp,
-            fontWeight = FontWeight.W600,
-            color = currentColors.fontCaptive
-        )
 
         Box(
             Modifier
@@ -622,7 +626,11 @@ fun CommonClips(onClick: (String) -> Unit, text: String) {
             modifier = Modifier
                 .clip(RoundedCornerShape(18.dp))
                 .background(DarkGrey.copy(0.1f))
-                .border(width = 1.dp, color = currentColors.stroke, shape = RoundedCornerShape(18.dp))
+                .border(
+                    width = 1.dp,
+                    color = currentColors.stroke,
+                    shape = RoundedCornerShape(18.dp)
+                )
                 .padding(horizontal = 9.dp, vertical = 3.dp)
                 .align(Alignment.Center)
         )
@@ -656,7 +664,10 @@ fun ClipsContainer(
     val currentColors = LocalExtraColors.current
 
     Box(Modifier.fillMaxWidth()) {
-        FlowRow(Modifier.padding(start = 16.dp, end = 12.dp, top = 12.dp, bottom = 8.dp)) {
+        FlowRow(
+            Modifier.padding(start = 16.dp, end = 12.dp, top = 12.dp, bottom = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             active.forEach { text ->
                 CommonClips(onClick, text)
             }
@@ -720,17 +731,12 @@ private fun SingleSelectRow(
             verticalAlignment = Alignment.CenterVertically
         ) {
             val isEmpty = value.isEmpty()
+
             Text(
                 if (isEmpty) placeholder else value,
                 color = if (isEmpty) currentColors.fontInactive else currentColors.fontCaptive,
                 modifier = Modifier.weight(1f)
             )
-
-            if (!isEmpty) {
-                IconButton(onClick = onClear) {
-                    Icon(vectorResource(Res.drawable.delete), contentDescription = "", tint = currentColors.fontCaptive)
-                }
-            }
 
             IconButton(onClick = { onChangeExpanded(!isOpen) }, Modifier.size(32.dp)) {
                 Icon(

@@ -13,6 +13,7 @@ import com.example.inrussian.ui.theme.BaseBackgroundLight
 import com.example.inrussian.ui.theme.Black
 import com.example.inrussian.ui.theme.ComponentBackgroundDark
 import com.example.inrussian.ui.theme.ComponentBackgroundLight
+import com.example.inrussian.ui.theme.ErrorColor
 import com.example.inrussian.ui.theme.FontCaptiveDark
 import com.example.inrussian.ui.theme.FontCaptiveLight
 import com.example.inrussian.ui.theme.FontInactiveDark
@@ -31,6 +32,7 @@ data class ExtraColors(
     val baseBackground: Color,
     val componentBackground: Color,
     val fontCaptive: Color,
+    val errorColor: Color,
     val fontInactive: Color,
     val footnote: Color,
     val inactive: Color,
@@ -44,6 +46,7 @@ val LocalExtraColors = staticCompositionLocalOf {
     ExtraColors(
         baseBackground = BaseBackgroundLight,
         componentBackground = ComponentBackgroundLight,
+        errorColor = ErrorColor,
         fontCaptive = FontCaptiveLight,
         fontInactive = FontInactiveLight,
         footnote = FootnoteLight,
@@ -65,6 +68,7 @@ fun InRussianTheme(
         ExtraColors(
             baseBackground = BaseBackgroundDark,
             componentBackground = ComponentBackgroundDark,
+            errorColor = ErrorColor,
             fontCaptive = FontCaptiveDark,
             fontInactive = FontInactiveDark,
             footnote = FootnoteDark,
@@ -78,6 +82,7 @@ fun InRussianTheme(
         ExtraColors(
             baseBackground = BaseBackgroundLight,
             componentBackground = ComponentBackgroundLight,
+            errorColor = ErrorColor,
             fontCaptive = FontCaptiveLight,
             fontInactive = FontInactiveLight,
             footnote = FootnoteLight,

@@ -55,7 +55,6 @@ fun BackButton(enable: Boolean, onClick: () -> Unit) {
 @Composable
 fun RowScope.ContinueButton(enable: Boolean, onClick: () -> Unit) {
 
-    Spacer(Modifier.weight(1f))
     IconButton({if(enable) onClick() }) {
         Icon(
             vectorResource(Res.drawable.front_arror),

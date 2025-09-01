@@ -3,6 +3,7 @@ package com.example.inrussian.root.auth.register
 import android.app.DatePickerDialog
 import android.widget.DatePicker
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -36,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -78,19 +81,21 @@ fun PersonaDataUi(component: PersonalDataComponent) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 64.dp)
-                    .offset(x = 10.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(top = 64.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 BackButton(true, component::onBack)
+
+                Text(
+                    stringResource(Res.string.personal_data),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = currentColors.fontCaptive,
+                    textAlign = TextAlign.Center
+                )
+
                 ContinueButton(state.isEnableContinueButton, component::onNext)
             }
-            Text(
-                stringResource(Res.string.personal_data),
-                fontSize = 40.sp,
-                fontWeight = FontWeight.W600,
-                color = currentColors.fontCaptive
-            )
             Box(
                 Modifier
                     .weight(0.8f)

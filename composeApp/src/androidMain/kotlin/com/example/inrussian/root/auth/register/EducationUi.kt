@@ -1,6 +1,7 @@
 package com.example.inrussian.root.auth.register
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -57,19 +59,21 @@ fun EducationUi(component: EducationComponent) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 64.dp)
-                .offset(x = 10.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(top = 64.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             BackButton(true, component::onBack)
+
+            Text(
+                stringResource(Res.string.education),
+                style = MaterialTheme.typography.titleLarge,
+                color = currentColors.fontCaptive
+            )
+
             ContinueButton(state.continueEnable, component::onNext)
         }
-        Text(
-            stringResource(Res.string.education),
-            fontSize = 40.sp,
-            fontWeight = FontWeight.W600,
-            color = currentColors.fontCaptive
-        )
+
         Box(
             Modifier
                 .weight(0.8f)

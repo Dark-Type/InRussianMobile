@@ -229,7 +229,7 @@ class DefaultSectionDetailComponent(
 
     override fun openTasks(option: TasksOption) {
         _state.value = _state.value.copy(selectedOption = option)
-        navigation.pushNew(InnerConfig.Tasks(state.value.s))
+        navigation.pushNew(InnerConfig.Tasks(state.value.selectedOption?.name ?: TasksOption.All.name))
     }
 
     override fun onBack() {

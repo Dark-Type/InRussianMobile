@@ -1,5 +1,6 @@
 package com.example.inrussian.root.auth.register
 
+import android.widget.Space
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -27,6 +28,7 @@ import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -41,6 +43,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -85,18 +88,19 @@ fun LanguageChooseUi(component: LanguageComponent) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 64.dp)
-                    .offset(x = 10.dp),
+                    .padding(top = 64.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                Text(
+                    stringResource(Res.string.app_n_language),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = currentColors.fontCaptive
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
                 ContinueButton(state.isActiveContinueButton, component::onNext)
             }
-            Text(
-                stringResource(Res.string.app_n_language),
-                fontSize = 40.sp,
-                fontWeight = FontWeight.W600,
-                color = currentColors.fontCaptive
-            )
             Column(
                 Modifier.weight(0.8f),
                 verticalArrangement = Arrangement.Center,

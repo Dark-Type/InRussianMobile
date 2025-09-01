@@ -74,12 +74,12 @@ fun LoginUi(component: LoginComponent) {
             label = stringResource(Res.string.password),
             error = state.passwordError?.getString(context),
             icon = if (state.password.isBlank()) null else if (state.showPassword) vectorResource(
-                Res.drawable.eye_show
-            ) else vectorResource(
                 Res.drawable.eye_off
+            ) else vectorResource(
+                Res.drawable.eye_show
             ),
             onIconClick = component::onShowPasswordClick,
-            visualTransformation = if (state.showPassword) PasswordVisualTransformation() else null
+            visualTransformation = if (!state.showPassword) PasswordVisualTransformation() else null
         )
         Spacer(modifier = Modifier.height(16.dp))
         CommonButton(

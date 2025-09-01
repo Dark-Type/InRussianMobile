@@ -29,6 +29,8 @@ val FontInactiveLight = Color(0xFF5C5C5C)
 val FontInactiveDark = Color(0xEBEBEF).copy(alpha = 0.6f)
 val FootnoteLight = Color(0x3C3C43).copy(alpha = 0.6f)
 val FootnoteDark = Color(0xEBEBEF).copy(alpha = 0.6f)
+
+val ErrorColor = Color.Red
 val Inactive = Color(0xFF4D4D4D)
 val SecondaryBackgroundLight = Color(0xFFEAEAEA)
 val SecondaryBackgroundDark = Color(0xFF1E1E1E)
