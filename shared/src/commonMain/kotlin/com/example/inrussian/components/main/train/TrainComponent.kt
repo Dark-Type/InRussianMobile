@@ -1,5 +1,6 @@
 package com.example.inrussian.components.main.train
 
+import co.touchlab.kermit.Logger
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
@@ -53,6 +54,7 @@ interface TrainComponent {
     sealed interface Config {
         @Serializable
         data object Courses : Config
+
         @Serializable
         data class SectionDetail(val sectionId: String) : Config
     }
@@ -136,7 +138,9 @@ class DefaultTrainCoursesListComponent(
 
         scope.launch {
             try {
+                Logger.d { "start".toString() }
                 val courses = withContext(Dispatchers.IO) { repository.userCourses() }
+                Logger.d { courses.toString() }
                 if (courses.isEmpty()) {
                     _state.value = TrainCoursesState(isLoading = false, courses = emptyList())
                     return@launch

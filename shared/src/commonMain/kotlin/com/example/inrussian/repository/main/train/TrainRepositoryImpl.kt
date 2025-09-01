@@ -10,17 +10,16 @@ import com.example.inrussian.components.main.train.TasksOption
 import com.example.inrussian.components.main.train.UserTaskQueueItem
 import com.example.inrussian.data.client.apis.DefaultApi
 import com.example.inrussian.models.models.FullTaskMode
+import com.example.inrussian.models.models.TaskModel
 import com.example.inrussian.utils.errorHandle
 import kotlinx.coroutines.flow.Flow
 import org.openapitools.client.models.Section
 
 class TrainRepositoryImpl(private val api: DefaultApi) : TrainRepository {
     override suspend fun userCourses(): List<ShortCourse> {
-        /*api.contentCoursesGet().errorHandle().map {
-            api.contentCoursesCourseIdGet()
-            api.studentSectionsSectionIdProgressGet()
-        }*/
-        TODO("Not yet implemented")
+      return  api.contentCoursesGet().errorHandle().map {
+            ShortCourse(it.id,it.name)
+        }
     }
 
     override suspend fun sectionsForCourse(courseId: String): List<SectionModel> {
@@ -33,8 +32,8 @@ class TrainRepositoryImpl(private val api: DefaultApi) : TrainRepository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun tasksForSection(sectionId: String): List<Task> {
-        TODO("Not yet implemented")
+    override suspend fun tasksForSection(sectionId: String): List<TaskModel> {
+       return api.taskThemeIdGet(sectionId).errorHandle()
     }
 
     override suspend fun contentItemsForTask(taskId: String): List<TaskContentItem> {

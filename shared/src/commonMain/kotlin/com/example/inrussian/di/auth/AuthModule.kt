@@ -6,6 +6,6 @@ import com.example.inrussian.repository.auth.AuthRepositoryImpl
 import org.koin.dsl.module
 
 val authModule = module {
-    single<DefaultApi> { DefaultApi() }
+    single<DefaultApi> { DefaultApi(userConfigurationStorage = get()) }
     single<AuthRepository> { AuthRepositoryImpl(get(),get()) }
 }

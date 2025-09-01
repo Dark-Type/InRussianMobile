@@ -25,6 +25,10 @@ import com.example.inrussian.data.client.models.PasswordResetRequest
 import com.example.inrussian.data.client.models.PasswordResetResponse
 import com.example.inrussian.data.client.models.RecoveryCheckRequest
 import com.example.inrussian.data.client.models.RecoveryCheckResponse
+import com.example.inrussian.models.models.TaskModel
+import com.example.inrussian.models.models.task.Task
+import com.example.inrussian.platformInterfaces.UserConfigurationStorage
+import com.example.inrussian.repository.auth.AuthRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngine
@@ -90,19 +94,22 @@ open class DefaultApi : ApiClient {
     constructor(
         baseUrl: String = BASE_URL,
         httpClientEngine: HttpClientEngine? = null,
+        userConfigurationStorage: UserConfigurationStorage,
         httpClientConfig: ((HttpClientConfig<*>) -> Unit)? = null,
         jsonSerializer: Json = JSON_DEFAULT
     ) : super(
         baseUrl = baseUrl,
         httpClientEngine = httpClientEngine,
         httpClientConfig = httpClientConfig,
-        jsonBlock = jsonSerializer
+        jsonBlock = jsonSerializer,
+        userConfigurationStorage = userConfigurationStorage,
     )
 
     constructor(
         baseUrl: String,
-        httpClient: HttpClient
-    ) : super(baseUrl = baseUrl, httpClient = httpClient)
+        httpClient: HttpClient,
+        userConfigurationStorage: UserConfigurationStorage,
+    ) : super(baseUrl = baseUrl, httpClient = httpClient,  userConfigurationStorage)
 
 
     @Suppress("UNCHECKED_CAST")
@@ -1357,6 +1364,31 @@ open class DefaultApi : ApiClient {
         val localVariableConfig = RequestConfig<Any?>(
             RequestMethod.GET,
             "/content/tasks/{taskId}".replace("{" + "taskId" + "}", "$taskId"),
+            query = localVariableQuery,
+            headers = localVariableHeaders,
+            requiresAuthentication = false,
+        )
+
+        return request(
+            localVariableConfig,
+            localVariableBody,
+            localVariableAuthNames
+        ).wrap()
+    }
+    @Suppress("UNCHECKED_CAST")
+    open suspend fun taskThemeIdGet(themeId: String): HttpResponse<List<TaskModel>> {
+
+        val localVariableAuthNames = listOf<String>()
+
+        val localVariableBody =
+            EmptyContent
+
+        val localVariableQuery = mutableMapOf<String, List<String>>()
+        val localVariableHeaders = mutableMapOf<String, String>()
+
+        val localVariableConfig = RequestConfig<Any?>(
+            RequestMethod.GET,
+            "/task/{themeId}".replace("{" + "themeId" + "}", themeId),
             query = localVariableQuery,
             headers = localVariableHeaders,
             requiresAuthentication = false,

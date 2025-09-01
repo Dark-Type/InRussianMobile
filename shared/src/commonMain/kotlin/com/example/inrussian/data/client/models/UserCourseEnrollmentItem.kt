@@ -41,8 +41,6 @@ data class UserCourseEnrollmentItem (
 
     @SerialName(value = "progress") @Required val progress: kotlin.String,
 
-    @SerialName(value = "completedAt") val completedAt: kotlin.String? = null
-
 ) {
 
 

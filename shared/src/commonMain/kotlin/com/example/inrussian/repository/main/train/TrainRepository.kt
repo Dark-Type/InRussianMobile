@@ -9,13 +9,14 @@ import com.example.inrussian.components.main.train.TaskContentItem
 import com.example.inrussian.components.main.train.TasksOption
 import com.example.inrussian.components.main.train.UserTaskQueueItem
 import com.example.inrussian.models.models.FullTaskMode
+import com.example.inrussian.models.models.TaskModel
 import kotlinx.coroutines.flow.Flow
 
 interface TrainRepository {
     suspend fun userCourses(): List<ShortCourse>
     suspend fun sectionsForCourse(courseId: String): List<SectionModel>
     suspend fun section(sectionId: String): SectionModel?
-    suspend fun tasksForSection(sectionId: String): List<Task>
+    suspend fun tasksForSection(sectionId: String):  List<TaskModel>
 
     suspend fun contentItemsForTask(taskId: String): List<TaskContentItem>
     suspend fun answerOptionsForTask(taskId: String): List<TaskAnswerOptionItem>
