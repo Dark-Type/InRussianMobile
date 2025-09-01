@@ -1,7 +1,7 @@
 package com.example.inrussian.stores.main.train
 
 import com.arkivanov.mvikotlin.core.store.Store
-import com.example.inrussian.models.models.FullTaskMode
+import com.example.inrussian.models.models.FullTaskModel
 import com.example.inrussian.stores.main.train.TrainStore.Intent
 import com.example.inrussian.stores.main.train.TrainStore.Label
 import com.example.inrussian.stores.main.train.TrainStore.State
@@ -16,11 +16,11 @@ interface TrainStore : Store<Intent, State, Label> {
     }
 
     data class State(
-        val tasks: List<FullTaskMode>? = null,
-        val rejectedTask: SuspendingQueue<FullTaskMode> = queueOf(),
+        val tasks: List<FullTaskModel>? = null,
+        val rejectedTask: SuspendingQueue<FullTaskModel> = queueOf(),
         val currentTaskIndex: Int = 0,
         val isStartRepeat: Boolean = false,
-        val showedTask: FullTaskMode? = null,
+        val showedTask: FullTaskModel? = null,
         val errorCounter: Int = 0,
         val isChecking: Boolean = true,
         val isButtonEnable: Boolean = false,
@@ -34,10 +34,10 @@ interface TrainStore : Store<Intent, State, Label> {
     }
 
     sealed interface Msg {
-        data class UpdateTasks(val tasks: List<FullTaskMode>) : Msg
+        data class UpdateTasks(val tasks: List<FullTaskModel>) : Msg
         data object UpdateTaskFromQueue : Msg
-        data class UpdateTask(val task: FullTaskMode?) : Msg
-        data class AddTaskInQueue(val task: FullTaskMode) : Msg
+        data class UpdateTask(val task: FullTaskModel?) : Msg
+        data class AddTaskInQueue(val task: FullTaskModel) : Msg
         data object UpdateCounter : Msg
         data object UpdateIndexAndTask : Msg
         data class UpdateButtonState(val isEnable: Boolean) : Msg
@@ -47,7 +47,7 @@ interface TrainStore : Store<Intent, State, Label> {
     }
 
     sealed interface Label {
-        data class ChangeTask(val task: FullTaskMode?) : Label
+        data class ChangeTask(val task: FullTaskModel?) : Label
     }
 
 }

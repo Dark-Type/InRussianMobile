@@ -1,32 +1,5 @@
 package com.example.inrussian.repository.main.train
 
-import com.example.inrussian.components.main.train.AnswerType
-import com.example.inrussian.components.main.train.ContentType
-import com.example.inrussian.components.main.train.PRACTICE_TASK_TYPES
-import com.example.inrussian.components.main.train.SectionModel
-import com.example.inrussian.components.main.train.ShortCourse
-import com.example.inrussian.components.main.train.THEORY_TASK_TYPES
-import com.example.inrussian.components.main.train.Task
-import com.example.inrussian.components.main.train.TaskAnswerItem
-import com.example.inrussian.components.main.train.TaskAnswerOptionItem
-import com.example.inrussian.components.main.train.TaskContentItem
-import com.example.inrussian.components.main.train.TaskType
-import com.example.inrussian.components.main.train.TasksOption
-import com.example.inrussian.components.main.train.ThemeMeta
-import com.example.inrussian.components.main.train.UserTaskQueueItem
-import com.example.inrussian.models.models.FullTaskMode
-import com.example.inrussian.models.models.TaskBody
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.buildJsonArray
-import kotlin.random.Random
-import kotlin.uuid.ExperimentalUuidApi
 /*
 
 class MockTrainRepository(

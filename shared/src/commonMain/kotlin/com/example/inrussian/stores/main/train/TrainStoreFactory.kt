@@ -39,7 +39,7 @@ class TrainStoreFactory(
             when (action) {
                 is Action.LoadTasks -> {
                     scope.launch(Dispatchers.Main) {
-                        dispatch(Msg.UpdateTasks(repository.getTasksByCourseId(action.courseId)))
+                        dispatch(Msg.UpdateTasks(repository.getTasksByThemeId(action.courseId)))
                     }
                 }
             }

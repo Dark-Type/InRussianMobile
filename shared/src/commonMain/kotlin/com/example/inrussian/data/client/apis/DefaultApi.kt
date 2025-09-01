@@ -25,10 +25,9 @@ import com.example.inrussian.data.client.models.PasswordResetRequest
 import com.example.inrussian.data.client.models.PasswordResetResponse
 import com.example.inrussian.data.client.models.RecoveryCheckRequest
 import com.example.inrussian.data.client.models.RecoveryCheckResponse
+import com.example.inrussian.models.models.TaskCountRequest
 import com.example.inrussian.models.models.TaskModel
-import com.example.inrussian.models.models.task.Task
 import com.example.inrussian.platformInterfaces.UserConfigurationStorage
-import com.example.inrussian.repository.auth.AuthRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngine
@@ -109,7 +108,7 @@ open class DefaultApi : ApiClient {
         baseUrl: String,
         httpClient: HttpClient,
         userConfigurationStorage: UserConfigurationStorage,
-    ) : super(baseUrl = baseUrl, httpClient = httpClient,  userConfigurationStorage)
+    ) : super(baseUrl = baseUrl, httpClient = httpClient, userConfigurationStorage)
 
 
     @Suppress("UNCHECKED_CAST")
@@ -854,7 +853,7 @@ open class DefaultApi : ApiClient {
      * @return kotlin.String
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun contentStatsCourseCourseIdTasksCountGet(courseId: String): HttpResponse<String> {
+    open suspend fun contentStatsCourseCourseIdTasksCountGet(courseId: String): HttpResponse<Long> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -922,7 +921,7 @@ open class DefaultApi : ApiClient {
      * @return kotlin.String
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun contentStatsSectionSectionIdTasksCountGet(sectionId: String): HttpResponse<String> {
+    open suspend fun contentStatsSectionSectionIdTasksCountGet(sectionId: String): HttpResponse<TaskCountRequest> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -958,7 +957,7 @@ open class DefaultApi : ApiClient {
      * @return kotlin.String
      */
     @Suppress("UNCHECKED_CAST")
-    open suspend fun contentStatsThemeThemeIdTasksCountGet(themeId: String): HttpResponse<String> {
+    open suspend fun contentStatsThemeThemeIdTasksCountGet(themeId: String): HttpResponse<TaskCountRequest> {
 
         val localVariableAuthNames = listOf<String>()
 
@@ -1375,6 +1374,7 @@ open class DefaultApi : ApiClient {
             localVariableAuthNames
         ).wrap()
     }
+
     @Suppress("UNCHECKED_CAST")
     open suspend fun taskThemeIdGet(themeId: String): HttpResponse<List<TaskModel>> {
 

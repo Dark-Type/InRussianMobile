@@ -1,97 +1,73 @@
 package com.example.inrussian.repository.main.train
 
+import co.touchlab.kermit.Logger
 import com.example.inrussian.components.main.train.SectionModel
 import com.example.inrussian.components.main.train.ShortCourse
-import com.example.inrussian.components.main.train.Task
-import com.example.inrussian.components.main.train.TaskAnswerItem
-import com.example.inrussian.components.main.train.TaskAnswerOptionItem
-import com.example.inrussian.components.main.train.TaskContentItem
-import com.example.inrussian.components.main.train.TasksOption
-import com.example.inrussian.components.main.train.UserTaskQueueItem
+import com.example.inrussian.components.main.train.ThemeMeta
 import com.example.inrussian.data.client.apis.DefaultApi
-import com.example.inrussian.models.models.FullTaskMode
-import com.example.inrussian.models.models.TaskModel
+import com.example.inrussian.models.models.FullTaskModel
 import com.example.inrussian.utils.errorHandle
-import kotlinx.coroutines.flow.Flow
-import org.openapitools.client.models.Section
 
 class TrainRepositoryImpl(private val api: DefaultApi) : TrainRepository {
     override suspend fun userCourses(): List<ShortCourse> {
-      return  api.contentCoursesGet().errorHandle().map {
-            ShortCourse(it.id,it.name)
+        return api.contentCoursesGet().errorHandle().map {
+            ShortCourse(it.id, it.name)
         }
     }
 
     override suspend fun sectionsForCourse(courseId: String): List<SectionModel> {
-        api.contentSectionsByCourseCourseIdGet(courseId).errorHandle().map { it }
-        TODO("Not yet implemented")
+
+        return api.contentSectionsByCourseCourseIdGet(courseId).errorHandle().map {
+
+            Logger.i { it.id }
+            SectionModel(
+                it.id,
+                courseId,
+                title = it.name,
+                totalTheory = 0,
+                totalPractice = api.contentStatsSectionSectionIdTasksCountGet(it.id).errorHandle()
+                    .count.toInt(),
+                completedTheory = 0,
+                completedPractice = 0,
+                themes = api.contentThemesBySectionSectionIdGet(it.id).errorHandle().map {
+                    ThemeMeta(
+                        it.id, it.orderNum, 0, api
+                            .contentStatsThemeThemeIdTasksCountGet(it.id).errorHandle().count.toInt()
+                    )
+                }
+            )
+        }
     }
 
-    override suspend fun section(sectionId: String):SectionModel? {
-       api
-        TODO("Not yet implemented")
-    }
+    override suspend fun section(sectionId: String): SectionModel? {
+         val section =  api.contentSectionsSectionIdGet(sectionId).errorHandle()
+        return SectionModel(
+            section.id,
+            section.courseId,
+                title = section.name,
+                totalTheory = 0,
+                totalPractice = api.contentStatsSectionSectionIdTasksCountGet(section.id).errorHandle()
+                    .count.toInt(),
+                completedTheory = 0,
+                completedPractice = 0,
+                themes = api.contentThemesBySectionSectionIdGet(section.id).errorHandle().map {
+                    ThemeMeta(
+                        it.id, it.orderNum, 0, api
+                            .contentStatsThemeThemeIdTasksCountGet(it.id).errorHandle().count.toInt()
+                    )
+                }
+            )
+        }
 
-    override suspend fun tasksForSection(sectionId: String): List<TaskModel> {
-       return api.taskThemeIdGet(sectionId).errorHandle()
-    }
-
-    override suspend fun contentItemsForTask(taskId: String): List<TaskContentItem> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun answerOptionsForTask(taskId: String): List<TaskAnswerOptionItem> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun answerForTask(taskId: String):TaskAnswerItem? {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun userQueue(sectionId: String): List<UserTaskQueueItem> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun ensureQueuePopulated(sectionId: String, minSize: Int) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun consumeCurrentQueueTask(
-        sectionId: String,
-        correct: Boolean
-    ) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun scheduleReinforcement(
-        sectionId: String,
-        taskId: String,
-        offsetRange: IntRange
-    ) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun selectOption(
-        sectionId: String,
-        option: TasksOption
-    ) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun recordTaskResult(
-        sectionId: String,
-        taskId: String,
-        correct: Boolean
-    ) {
-
-    }
-
-    override suspend fun refreshSection(sectionId: String) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun getTasksByCourseId(courseId: String): List<FullTaskMode> {
-        TODO("Not yet implemented")
+    override suspend fun getTasksByThemeId(themeId: String): List<FullTaskModel> {
+        return api.taskThemeIdGet(themeId).errorHandle().map {
+            FullTaskModel(
+                it.id,
+                taskText = it.question.toString(),
+                taskType = it.taskType,
+                taskBody = it.taskBody
+            )
+        }
     }
 }
 
