@@ -229,7 +229,7 @@ class DefaultSectionDetailComponent(
 
     override fun openTasks(option: TasksOption) {
         _state.value = _state.value.copy(selectedOption = option)
-        navigation.pushNew(InnerConfig.Tasks(option))
+        navigation.pushNew(InnerConfig.Tasks(state.value.s))
     }
 
     override fun onBack() {
@@ -241,7 +241,7 @@ class DefaultSectionDetailComponent(
         when (config) {
             InnerConfig.Details -> InnerChild.DetailsChild(this)
             is InnerConfig.Tasks -> InnerChild.TasksChild(
-                tasksFactory(ctx, sectionId) { out ->
+                tasksFactory(ctx, config.themeId) { out ->
                     when (out) {
                         TasksOutput.NavigateBack -> onBack()
                         TasksOutput.CompletedSection ->
@@ -255,7 +255,7 @@ class DefaultSectionDetailComponent(
 
     sealed interface InnerConfig {
         data object Details : InnerConfig
-        data class Tasks(val option: TasksOption) : InnerConfig
+        data class Tasks(val themeId: String) : InnerConfig
     }
 
     sealed interface InnerChild {

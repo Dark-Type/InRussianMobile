@@ -30,7 +30,7 @@ interface TrainStore : Store<Intent, State, Label> {
     }
 
     sealed interface Action {
-        data class LoadTasks(val courseId: String) : Action
+        data class LoadTasks(val themeId: String) : Action
     }
 
     sealed interface Msg {

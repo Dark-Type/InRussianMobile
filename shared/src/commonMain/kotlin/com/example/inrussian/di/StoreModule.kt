@@ -37,12 +37,12 @@ val storeModule = module {
         ).create()
     }
 
-    factory<TrainStore> { (courseId: String) ->
+    factory<TrainStore> { (themeId: String) ->
         TrainStoreFactory(
             storeFactory = get(),
             errorDecoder = get(),
             repository = get(),
-        ).create(courseId)
+        ).create(themeId)
     }
 
     factory<RegisterStore> {
