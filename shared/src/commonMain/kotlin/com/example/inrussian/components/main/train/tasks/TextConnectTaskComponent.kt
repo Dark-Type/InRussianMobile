@@ -72,15 +72,7 @@ interface TextConnectTaskComponent {
     fun endDrag()
     fun cancelDrag()
     fun reset()
-    /* data class  State(
-        val elements: List<Pair<Task, Task>> = listOf(),
-        val isChecked: Boolean = false,
-        val selectedTask: Task? = null,
-        val hasError: Boolean? = null,
-        val isAllConnected: Boolean = false,
-        val pairs: MutableList<Pair<Task, Task>> = mutableListOf()
-    )
-*/
+
     fun onTaskClick(taskId: String)
     fun onContinueClick()
 }

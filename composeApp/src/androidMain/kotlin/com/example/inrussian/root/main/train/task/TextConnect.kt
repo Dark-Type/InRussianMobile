@@ -85,7 +85,6 @@ fun TextConnect(
                             right = r.right,
                             isRightHovered = state.hoveredRightId == r.right.id,
                             onLeftHandlePositioned = { coords ->
-                                // convert Compose Rect -> shared RectF then call store
                                 val rectF = coords.rectInRootToRectF()
                                 component.onPairLeftPositioned(r.left.id, rectF)
                             },
@@ -141,43 +140,6 @@ fun TextConnect(
             item { Spacer(Modifier.height(24.dp)) }
         }
     }
-    /*Grid(
-        2,
-        dataSize = 2,
-        withSpacer = true,
-        vSpacing = 24.dp
-    ) {
-        items(state.elements.size * 2) { mod,index ->
-            if (index % 2 == 0)
-                PuzzleLayoutIn(
-                    TabSide.RIGHT,
-                    modifier = mod,
-                    background = when (state.elements[index / 2].first.state) {
-                        TaskState.Correct -> Green
-                        TaskState.Incorrect -> Red
-                        TaskState.NotSelected -> White
-                        TaskState.Selected -> Orange
-                        TaskState.Connect -> Orange.copy(0.5f)
-                    },
-                    onClick = { component.onTaskClick(state.elements[index / 2].first.id) }) {
-                    Text((state.elements[index / 2].first as TextTaskModel).text, it)
-                }
-            else
-                PuzzleLayoutOut(
-                    onClick = { component.onTaskClick(state.elements[index / 2].second.id) },
-                    modifier = mod,
-                    color = when (state.elements[index / 2].second.state) {
-                        TaskState.Correct -> Green
-                        TaskState.Incorrect -> Red
-                        TaskState.NotSelected -> White
-                        TaskState.Selected -> Orange
-                        TaskState.Connect -> Orange.copy(0.5f)
-                    }
-                ) {
-                    Text((state.elements[index / 2].second as TextTaskModel).text, it)
-                }
-        }
-    }*/
     onContinueClick{
         component.onContinueClick()
     }

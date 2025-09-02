@@ -26,17 +26,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.value.Value
+import com.example.inrussian.components.main.train.TaskType
 import com.example.inrussian.components.main.train.TasksComponent
 import com.example.inrussian.components.main.train.TasksOption
 import com.example.inrussian.components.main.train.TasksState
+import com.example.inrussian.getImageRes
 import com.example.inrussian.ui.theme.DarkGrey
 import com.example.inrussian.ui.theme.Green
 import com.example.inrussian.ui.theme.Orange
 import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.attention
-import inrussian.composeapp.generated.resources.book
-import inrussian.composeapp.generated.resources.headphones
-import inrussian.composeapp.generated.resources.list_checkbox
 import inrussian.composeapp.generated.resources.pause
 import inrussian.composeapp.generated.resources.play_button
 import inrussian.composeapp.generated.resources.speaker
@@ -54,7 +53,7 @@ fun ContinueQueueTasks(state: TasksState, component: TasksComponent) {
 }
 
 @Composable
-fun TaskDescription(onInfoClick: () -> Unit, text: String) {
+fun TaskDescription(onInfoClick: () -> Unit, text: String, tasksTypes: List<TaskType>) {
     Column(
         Modifier
             .clip(RoundedCornerShape(12.dp))
@@ -64,14 +63,13 @@ fun TaskDescription(onInfoClick: () -> Unit, text: String) {
     ) {
         Row {
             Spacer(Modifier.width(16.dp))
-            Image(painterResource(Res.drawable.book), "", Modifier.size(25.dp, 35.dp))
-            Spacer(Modifier.width(8.dp))
-            Image(painterResource(Res.drawable.headphones), "", Modifier.size(25.dp, 35.dp))
-            Spacer(Modifier.width(8.dp))
-            Image(painterResource(Res.drawable.list_checkbox), "", Modifier.size(25.dp, 35.dp))
+            for (type in tasksTypes) {
+                Image(painterResource(type.getImageRes()), "", Modifier.size(25.dp, 35.dp))
+                Spacer(Modifier.width(8.dp))
+            }
             Spacer(Modifier.weight(1f))
             IconButton(
-                {}, Modifier
+                onInfoClick, Modifier
                     .padding(top = 16.dp)
                     .size(33.dp)
             ) {
@@ -82,7 +80,7 @@ fun TaskDescription(onInfoClick: () -> Unit, text: String) {
         }
         Spacer(Modifier.height(4.dp))
         Text(
-            "Прослушайте диалог и ответьте на вопрос:\nНа каком направлении может учиться спикер 2?",
+            text,
             fontSize = 16.sp
         )
     }

@@ -16,7 +16,7 @@ import kotlin.random.Random
 class TrainRepositoryImpl(private val api: DefaultApi) : TrainRepository {
     private val tasks = listOf<TaskModel>(
         TaskModel(
-            taskType = listOf(TaskType.READ, TaskType.LISTEN_AND_CHOOSE),
+            taskType = listOf(TaskType.READ, TaskType.READ),
             taskBody = TaskBody.TextTask(
                 variant = listOf("BudetMir, goyda " to "Гойда")
             ),
@@ -89,7 +89,7 @@ class TrainRepositoryImpl(private val api: DefaultApi) : TrainRepository {
     }
 
     override suspend fun sendResultAndGetNextTask() {
-        TODO("Not yet implemented")
+
     }
 
 
