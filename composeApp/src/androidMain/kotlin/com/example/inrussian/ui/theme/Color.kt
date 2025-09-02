@@ -6,7 +6,7 @@ val reallyLightGrey = Color(0xFFEAEAEA)
 
 val DarkGrey = Color(0xFF4D4D4D)
 val Orange = Color(0xFFE0411B)
-val LightGrey = Color(0x33999999)
+val LightGrey = Color(0xFF999999)
 val LightBlue = Color(0xFF0077FF)
 val Blue = Color(0xFF4E1BE0)
 val Black = Color(0xFF000000)
@@ -17,7 +17,8 @@ val Green = Color(0xFF28A745)
 val Yellow = Color(0xFFFFD60A)
 
 val TabUnselectedColor = Color(0xFF999999)
-val TabBackground = Color(0xF2F9F9F9)
+val TabBackgroundLight = Color(0xF2F9F9F9)
+val TabBackgroundDark = Color(0xF2090909)
 
 val BaseBackgroundLight = Color(0xFFFFFFFF)
 val BaseBackgroundDark = Color(0xFF1E1E1E)

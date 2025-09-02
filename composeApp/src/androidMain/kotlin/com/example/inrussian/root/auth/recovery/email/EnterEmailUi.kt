@@ -75,7 +75,8 @@ fun EnterEmailUi(component: EnterEmailComponent) {
                 Text(
                     stringResource(Res.string.write_email),
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.W600
+                    fontWeight = FontWeight.W600,
+                    color = currentColors.fontCaptive
                 )
                 CommonTextField(
                     value = state.email,
@@ -90,6 +91,7 @@ fun EnterEmailUi(component: EnterEmailComponent) {
                 onClick = component::onContinueClick,
                 text = stringResource(Res.string.send_code),
                 enable = state.isButtonActive,
+                modifier = Modifier.padding(bottom = 24.dp)
             )
         }
     }

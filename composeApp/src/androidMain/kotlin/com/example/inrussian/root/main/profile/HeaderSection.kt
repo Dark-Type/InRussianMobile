@@ -28,6 +28,7 @@ import inrussian.composeapp.generated.resources.logout
 import inrussian.composeapp.generated.resources.profile
 import inrussian.composeapp.generated.resources.register_date
 import inrussian.composeapp.generated.resources.your_achievements
+import nekit.corporation.shift_app.ui.theme.LocalExtraColors
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.painterResource
 
@@ -88,5 +89,6 @@ fun HeaderSection(
 
 @Composable
 fun LabelText(text: String) {
-    Text(text = text, fontSize = 35.sp, fontWeight = FontWeight.W600)
+    val currentColors = LocalExtraColors.current
+    Text(text = text, fontSize = 35.sp, fontWeight = FontWeight.W600, color = currentColors.fontCaptive)
 }

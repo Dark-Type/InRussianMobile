@@ -53,7 +53,6 @@ import com.example.inrussian.ui.theme.Grid
 import com.example.inrussian.ui.theme.Orange
 import com.example.inrussian.ui.theme.PuzzleLayoutIn
 import com.example.inrussian.ui.theme.PuzzleLayoutOut
-import com.example.inrussian.ui.theme.TabBackground
 import com.example.inrussian.ui.theme.TabSide
 import com.example.inrussian.utils.DragSource
 import com.example.inrussian.utils.Piece
@@ -61,6 +60,7 @@ import com.example.inrussian.utils.RowModel
 import com.example.inrussian.utils.RowModel.PairRow
 import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.`continue`
+import nekit.corporation.shift_app.ui.theme.LocalExtraColors
 import org.jetbrains.compose.resources.stringResource
 
 
@@ -69,8 +69,9 @@ fun TextConnect(
     component: TextConnectTaskComponent,
     onContinueClick: (() -> Unit) -> Unit
 ) {
+    val currentColors = LocalExtraColors.current
     val state by component.state.subscribeAsState()
-    Column(Modifier.fillMaxSize().background(TabBackground)) {
+    Column(Modifier.fillMaxSize().background(currentColors.baseBackground)) {
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),

@@ -2,6 +2,7 @@ package com.example.inrussian.root.auth.recovery.password
 
 import android.R.attr.onClick
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -36,6 +37,7 @@ import inrussian.composeapp.generated.resources.password_recovery
 import inrussian.composeapp.generated.resources.send_code
 import inrussian.composeapp.generated.resources.update_password
 import inrussian.composeapp.generated.resources.write_email
+import nekit.corporation.shift_app.ui.theme.LocalExtraColors
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -43,8 +45,9 @@ import org.jetbrains.compose.resources.vectorResource
 @Composable
 fun UpdatePasswordUi(component: UpdatePasswordComponent) {
     val state by component.state.subscribeAsState()
+    val currentColors = LocalExtraColors.current
 
-    Column(modifier = Modifier.padding(horizontal = 28.dp)) {
+    Column(modifier = Modifier.background(currentColors.baseBackground).padding(horizontal = 28.dp)) {
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -64,7 +67,8 @@ fun UpdatePasswordUi(component: UpdatePasswordComponent) {
                 fontSize = 26.sp,
                 fontWeight = FontWeight.W600,
                 modifier = Modifier.padding(top = 30.dp),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                color = currentColors.fontCaptive
             )
         }
 
@@ -75,7 +79,8 @@ fun UpdatePasswordUi(component: UpdatePasswordComponent) {
                 Text(
                     stringResource(Res.string.choose_new_password),
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.W600
+                    fontWeight = FontWeight.W600,
+                    color = currentColors.fontCaptive
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -108,7 +113,8 @@ fun UpdatePasswordUi(component: UpdatePasswordComponent) {
             CommonButton(
                 onClick = { component.onPasswordUpdated() },
                 enable = state.updateButtonEnable,
-                text = stringResource(Res.string.update_password)
+                text = stringResource(Res.string.update_password),
+                modifier = Modifier.padding(bottom = 24.dp)
             )
         }
     }

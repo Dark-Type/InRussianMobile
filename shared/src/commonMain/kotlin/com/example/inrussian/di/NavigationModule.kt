@@ -133,7 +133,8 @@ val navigationModule = module {
             DefaultEnterEmailComponent(
                 componentContext = componentContext,
                 onOutput = onOutput,
-                store = get()
+                store = get(),
+                authRepository = get()
             )
         }
     }
@@ -142,7 +143,8 @@ val navigationModule = module {
             DefaultEnterRecoveryCodeComponent(
                 componentContext = componentContext,
                 onOutput = onOutput,
-                store = get()
+                store = get(),
+                authRepository = get()
             )
         }
     }

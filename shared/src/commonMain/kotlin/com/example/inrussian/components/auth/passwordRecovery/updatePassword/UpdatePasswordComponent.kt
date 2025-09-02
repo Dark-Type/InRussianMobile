@@ -56,6 +56,7 @@ class DefaultUpdatePasswordComponent(
             confirmPasswordError = error,
             updateButtonEnable = enable
         )
+        onOutput(UpdatePasswordOutput.PasswordUpdated)
     }
     override fun onShowPasswordClick() {
         _state.value = _state.value.copy(showPassword = !_state.value.showPassword)

@@ -74,7 +74,7 @@ fun CourseDetailsComponentUi(component: CourseDetailsComponent) {
                 IconButton(
                     component::onBack,
                     Modifier
-                        .padding(start = 20.dp)
+                        .padding(start = 20.dp, top = 32.dp)
                         .clip(CircleShape)
                         .size(40.dp)
                         .background(Orange)
@@ -91,7 +91,7 @@ fun CourseDetailsComponentUi(component: CourseDetailsComponent) {
                         .align(
                             Alignment.TopEnd
                         )
-                        .padding(end = 16.dp)
+                        .padding(end = 20.dp, top = 32.dp)
 
                 ) { Text(stringResource(if (state.isEnrolled) Res.string.y_enrolled else Res.string.enroll)) }
                 Text(

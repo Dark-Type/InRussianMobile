@@ -25,6 +25,7 @@ import com.example.inrussian.data.client.models.PasswordResetRequest
 import com.example.inrussian.data.client.models.PasswordResetResponse
 import com.example.inrussian.data.client.models.RecoveryCheckRequest
 import com.example.inrussian.data.client.models.RecoveryCheckResponse
+import com.example.inrussian.data.client.models.RecoveryEmailRequest
 import com.example.inrussian.models.models.TaskCountRequest
 import com.example.inrussian.models.models.TaskModel
 import com.example.inrussian.platformInterfaces.UserConfigurationStorage
@@ -283,10 +284,10 @@ open class DefaultApi : ApiClient {
         ).wrap()
     }
 
-    open suspend fun recoveryRequest(email: String): HttpResponse<Pair<String, Boolean>> {
+    open suspend fun recoveryRequest(recoveryEmailRequest: RecoveryEmailRequest): HttpResponse<Pair<String, Boolean>> {
         val localVariableAuthNames = listOf<String>()
 
-        val localVariableBody = email
+        val localVariableBody = recoveryEmailRequest
 
         val localVariableQuery = mutableMapOf<String, List<String>>()
         val localVariableHeaders = mutableMapOf<String, String>()

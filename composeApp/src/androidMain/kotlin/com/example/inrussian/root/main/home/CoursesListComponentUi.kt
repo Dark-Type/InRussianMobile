@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,17 +46,19 @@ import inrussian.composeapp.generated.resources.course_for_you
 import inrussian.composeapp.generated.resources.courses
 import inrussian.composeapp.generated.resources.main
 import inrussian.composeapp.generated.resources.recommended_image_mock
+import nekit.corporation.shift_app.ui.theme.LocalExtraColors
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun CoursesListComponentUi(component: CoursesListComponent) {
+    val currentColors = LocalExtraColors.current
     val state by component.state.subscribeAsState()
 
     LazyColumn(
         Modifier
             .fillMaxSize()
-            .background(LightGrey)
+            .background(currentColors.baseBackground)
             .padding(horizontal = 16.dp)
     ) {
         item {
@@ -68,7 +71,12 @@ fun CoursesListComponentUi(component: CoursesListComponent) {
             Spacer(Modifier.height(50.dp))
         }
         item {
-            Text(stringResource(Res.string.course_for_you))
+            Text(
+                stringResource(Res.string.course_for_you),
+                color = currentColors.fontInactive,
+                modifier = Modifier.padding(bottom = 8.dp),
+                fontWeight = FontWeight.W400
+            )
         }
         item {
             LazyRow {
@@ -81,7 +89,12 @@ fun CoursesListComponentUi(component: CoursesListComponent) {
             Spacer(Modifier.height(50.dp))
         }
         item {
-            Text(stringResource(Res.string.courses))
+            Text(
+                stringResource(Res.string.courses),
+                color = currentColors.fontInactive,
+                modifier = Modifier.padding(bottom = 8.dp),
+                fontWeight = FontWeight.W400
+            )
         }
         items(state.enrolled) {
             CourseItem(it) { component.onEnrolledCourseClick(it.id) }

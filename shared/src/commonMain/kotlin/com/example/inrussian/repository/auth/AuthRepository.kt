@@ -5,6 +5,7 @@ import com.example.inrussian.data.client.apis.DefaultApi
 import com.example.inrussian.data.client.models.PasswordResetRequest
 import com.example.inrussian.data.client.models.PasswordResetResponse
 import com.example.inrussian.data.client.models.RecoveryCheckRequest
+import com.example.inrussian.data.client.models.RecoveryEmailRequest
 import com.example.inrussian.models.models.AuthResponseModel
 import com.example.inrussian.models.models.LoginModel
 import com.example.inrussian.models.models.RegisterModel
@@ -47,7 +48,7 @@ class AuthRepositoryImpl(
         api.authRefreshPost(refreshTokenRequest = RefreshTokenRequest(token)).body()
 
     override suspend fun sendMail(email: String) {
-        api.recoveryRequest(email)
+        api.recoveryRequest(RecoveryEmailRequest(email))
     }
 
     override suspend fun saveRefreshToken(token: String) {

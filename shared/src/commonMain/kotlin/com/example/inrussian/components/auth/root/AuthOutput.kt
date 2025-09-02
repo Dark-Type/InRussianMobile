@@ -3,4 +3,6 @@ package com.example.inrussian.components.auth.root
 sealed class AuthOutput {
     data object NavigateToOnboarding : AuthOutput()
     data object NavigateToMain : AuthOutput()
+
+    data object NavigateToLogin : AuthOutput()
 }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -26,7 +27,6 @@ import com.example.inrussian.root.main.profile.ProfileComponentUi
 import com.example.inrussian.root.main.train.TrainComponentUi
 
 import com.example.inrussian.ui.theme.Orange
-import com.example.inrussian.ui.theme.TabBackground
 import com.example.inrussian.ui.theme.TabUnselectedColor
 import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.book_pages
@@ -35,6 +35,8 @@ import inrussian.composeapp.generated.resources.main
 import inrussian.composeapp.generated.resources.person_crop_circle
 import inrussian.composeapp.generated.resources.profile
 import inrussian.composeapp.generated.resources.training
+import nekit.corporation.shift_app.ui.theme.ExtraColors
+import nekit.corporation.shift_app.ui.theme.LocalExtraColors
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -44,6 +46,7 @@ fun MainRootComponentUi(component: MainRootComponent) {
     val stack by component.childStack.subscribeAsState()
     val current = stack.active.instance
     val activeTab = component.activeTab.value
+    val currentColors = LocalExtraColors.current
 
     Box(modifier = Modifier.fillMaxSize()) {
         when (current) {
@@ -64,7 +67,7 @@ fun MainRootComponentUi(component: MainRootComponent) {
             NavigationBar(
                 modifier = Modifier
                     .fillMaxWidth(),
-                containerColor = TabBackground
+                containerColor = currentColors.tabColor
             ) {
                 NavigationBarItem(
                     selected = activeTab == MainRootComponent.Tab.Home,

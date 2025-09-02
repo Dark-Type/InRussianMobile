@@ -5,6 +5,7 @@ import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
+import com.arkivanov.decompose.router.stack.popToFirst
 import com.arkivanov.decompose.router.stack.pushNew
 import com.arkivanov.decompose.value.Value
 import com.example.inrussian.components.auth.base.BaseAuthComponent
@@ -174,7 +175,7 @@ class DefaultAuthRootComponent(
 
     private fun onUpdatePasswordOutput(output: UpdatePasswordOutput): Unit =
         when (output) {
-            is UpdatePasswordOutput.PasswordUpdated -> onOutput(AuthOutput.NavigateToOnboarding)
+            is UpdatePasswordOutput.PasswordUpdated -> navigation.popToFirst()
             is UpdatePasswordOutput.NavigateBack -> navigation.pop()
         }
 

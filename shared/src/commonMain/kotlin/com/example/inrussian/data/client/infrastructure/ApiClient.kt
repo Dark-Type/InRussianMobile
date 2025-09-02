@@ -278,12 +278,9 @@ open class ApiClient(
         if (response.status.value in 200..299) {
             return response
         } else {
-            val raw = try {
-                response.bodyAsText()
-            } catch (_: Throwable) {
-                null
-            }
-            throw IllegalStateException(raw ?: "HTTP ${response.status.value}")
+            val raw = runCatching { response.bodyAsText() }.getOrNull()
+            Logger.e { "HTTP ${response.status.value} -> $raw" }
+            return response
         }
     }
 

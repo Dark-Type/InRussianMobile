@@ -44,11 +44,13 @@ import com.example.inrussian.ui.theme.Yellow
 import com.example.inrussian.ui.theme.lightCircleGreen
 import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.main
+import nekit.corporation.shift_app.ui.theme.LocalExtraColors
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TrainCoursesScreen(component: TrainCoursesListComponent) {
     val state by component.state.subscribeAsState()
+    val currentColors = LocalExtraColors.current
 
     if (state.isLoading) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -60,7 +62,7 @@ fun TrainCoursesScreen(component: TrainCoursesListComponent) {
 
     LazyColumn(
         Modifier
-            .background(LightGrey)
+            .background(currentColors.baseBackground)
             .padding(horizontal = 16.dp)
             .fillMaxSize()
     ) {

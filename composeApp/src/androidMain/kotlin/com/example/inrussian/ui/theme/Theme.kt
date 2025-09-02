@@ -26,6 +26,8 @@ import com.example.inrussian.ui.theme.SecondaryBackgroundDark
 import com.example.inrussian.ui.theme.SecondaryBackgroundLight
 import com.example.inrussian.ui.theme.StrokeDark
 import com.example.inrussian.ui.theme.StrokeLight
+import com.example.inrussian.ui.theme.TabBackgroundDark
+import com.example.inrussian.ui.theme.TabBackgroundLight
 
 
 data class ExtraColors(
@@ -39,7 +41,8 @@ data class ExtraColors(
     val secondaryBackground: Color,
     val stroke: Color,
     val vk: Color,
-    val yandex: Color
+    val yandex: Color,
+    val tabColor: Color
 )
 
 val LocalExtraColors = staticCompositionLocalOf {
@@ -54,7 +57,8 @@ val LocalExtraColors = staticCompositionLocalOf {
         secondaryBackground = SecondaryBackgroundLight,
         stroke = StrokeLight,
         vk = LightBlue,
-        yandex = Black
+        yandex = Black,
+        tabColor = TabBackgroundLight
     )
 }
 
@@ -76,7 +80,8 @@ fun InRussianTheme(
             secondaryBackground = SecondaryBackgroundDark,
             stroke = StrokeDark,
             vk = LightBlue,
-            yandex = Black
+            yandex = Black,
+            tabColor = TabBackgroundDark,
         )
     } else {
         ExtraColors(
@@ -90,7 +95,8 @@ fun InRussianTheme(
             secondaryBackground = SecondaryBackgroundLight,
             stroke = StrokeLight,
             vk = LightBlue,
-            yandex = Black
+            yandex = Black,
+            tabColor = TabBackgroundLight
         )
     }
 

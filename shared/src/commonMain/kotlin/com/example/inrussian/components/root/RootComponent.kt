@@ -90,6 +90,9 @@ class DefaultRootComponent(
             AuthOutput.NavigateToMain -> {
                 navigateTo(Configuration.Main, RootIntent.ShowMain)
             }
+            AuthOutput.NavigateToLogin -> {
+                navigateTo(Configuration.Auth, RootIntent.ShowAuth)
+            }
         }
     }
 

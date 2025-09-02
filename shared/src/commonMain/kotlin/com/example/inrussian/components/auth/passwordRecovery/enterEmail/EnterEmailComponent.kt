@@ -3,6 +3,7 @@ package com.example.inrussian.components.auth.passwordRecovery.enterEmail
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
+import com.example.inrussian.repository.auth.AuthRepository
 import com.example.inrussian.stores.auth.recovery.RecoveryStore
 import com.example.inrussian.utils.asValue
 import com.example.inrussian.utils.componentCoroutineScope
@@ -19,6 +20,7 @@ class DefaultEnterEmailComponent(
     componentContext: ComponentContext,
     private val onOutput: (EnterEmailOutput) -> Unit,
     private val store: RecoveryStore,
+    private val authRepository: AuthRepository
 ) : EnterEmailComponent, ComponentContext by componentContext {
     override val state = store.asValue()
     override fun omEmailChange(email: String) {
@@ -43,6 +45,9 @@ class DefaultEnterEmailComponent(
     }
 
     override fun onContinueClick() {
+        scope.launch {
+            authRepository.sendMail(state.value.email)
+        }
         store.accept(RecoveryStore.Intent.ContinueClick)
     }
 }
