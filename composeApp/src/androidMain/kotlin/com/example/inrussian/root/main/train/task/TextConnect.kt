@@ -1,6 +1,5 @@
 package com.example.inrussian.root.main.train.task
 
-import android.provider.CalendarContract.Colors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -18,8 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.Text
@@ -37,7 +34,6 @@ import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,33 +41,26 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.inrussian.components.main.train.tasks.TextConnectTaskComponent
 import com.example.inrussian.components.main.train.tasks.TextConnectTaskComponent.PointF
 import com.example.inrussian.components.main.train.tasks.TextConnectTaskComponent.RectF
-import com.example.inrussian.models.models.TaskState
-import com.example.inrussian.models.models.task.TextTaskModel
-import com.example.inrussian.ui.theme.CommonButton
-import com.example.inrussian.ui.theme.Green
-import com.example.inrussian.ui.theme.Grid
-import com.example.inrussian.ui.theme.Orange
 import com.example.inrussian.ui.theme.PuzzleLayoutIn
 import com.example.inrussian.ui.theme.PuzzleLayoutOut
 import com.example.inrussian.ui.theme.TabSide
-import com.example.inrussian.utils.DragSource
 import com.example.inrussian.utils.Piece
 import com.example.inrussian.utils.RowModel
 import com.example.inrussian.utils.RowModel.PairRow
-import inrussian.composeapp.generated.resources.Res
-import inrussian.composeapp.generated.resources.`continue`
 import nekit.corporation.shift_app.ui.theme.LocalExtraColors
-import org.jetbrains.compose.resources.stringResource
 
 
 @Composable
 fun TextConnect(
-    component: TextConnectTaskComponent,
-    onContinueClick: (() -> Unit) -> Unit
+    component: TextConnectTaskComponent, onContinueClick: (() -> Unit) -> Unit
 ) {
     val currentColors = LocalExtraColors.current
     val state by component.state.subscribeAsState()
-    Column(Modifier.fillMaxSize().background(currentColors.baseBackground)) {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(currentColors.baseBackground)
+    ) {
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -85,6 +74,7 @@ fun TextConnect(
                             left = r.left,
                             right = r.right,
                             isRightHovered = state.hoveredRightId == r.right.id,
+                            isWrong = state.invalidLeftIds.contains(r.left.id),
                             onLeftHandlePositioned = { coords ->
                                 val rectF = coords.rectInRootToRectF()
                                 component.onPairLeftPositioned(r.left.id, rectF)
@@ -105,9 +95,9 @@ fun TextConnect(
                             },
                             onLeftDragCancel = {
                                 component.cancelDrag()
-                            }
-                        )
+                            })
                     }
+
                     is RowModel.UnmatchedRow -> {
                         UnmatchedRow(
                             left = r.left,
@@ -132,8 +122,7 @@ fun TextConnect(
                             },
                             onLeftDragCancel = {
                                 component.cancelDrag()
-                            }
-                        )
+                            })
                     }
 
                 }
@@ -141,24 +130,11 @@ fun TextConnect(
             item { Spacer(Modifier.height(24.dp)) }
         }
     }
-    onContinueClick{
+    onContinueClick {
         component.onContinueClick()
     }
 
 }
-private fun applyDrop(
-    matches: MutableMap<String, String>, dragSource: DragSource?, hoveredRightId: String?
-) {
-    val src = dragSource ?: return
-    val rid = hoveredRightId ?: return
-
-    val prevLeft = matches.entries.firstOrNull { it.value == rid }?.key
-    if (prevLeft != null && prevLeft != src.leftId) {
-        matches.remove(prevLeft)
-    }
-    matches[src.leftId] = rid
-}
-
 
 @Composable
 private fun UnmatchedRow(
@@ -178,8 +154,8 @@ private fun UnmatchedRow(
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .background(com.example.inrussian.root.main.train.task.Colors.RowBg, shape)
-            .border(1.dp,com.example.inrussian.root.main.train.task.Colors.RowBorder, shape)
+            .background(Colors.RowBg, shape)
+            .border(1.dp, Colors.RowBorder, shape)
             .padding(horizontal = 10.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -189,25 +165,33 @@ private fun UnmatchedRow(
                 .padding(end = 6.dp)
                 .then(
                     if (left != null) {
-                        Modifier
-                            .onGloballyPositioned { onLeftPositioned(left.id, it) }
-                            .background(com.example.inrussian.root.main.train.task.Colors.Surface, RoundedCornerShape(10.dp))
-                            .border(1.dp,com.example.inrussian.root.main.train.task.Colors.Outline, RoundedCornerShape(10.dp))
-                            .pointerInput(left.id) {
-                                detectDragGestures(
-                                    onDragStart = { onLeftDragStart(left.id) },
-                                    onDrag = { change, amount ->
-                                        onLeftDragBy(left.id, amount)
-                                        change.consume()
-                                    },
-                                    onDragEnd = { onLeftDragEnd() },
-                                    onDragCancel = { onLeftDragCancel() })
-                            }
-                    } else {
-                        Modifier
-                            .background(com.example.inrussian.root.main.train.task.Colors.EmptyBg, RoundedCornerShape(10.dp))
-                            .border(1.dp,com.example.inrussian.root.main.train.task.Colors.EmptyBorder, RoundedCornerShape(10.dp))
-                    })
+                    Modifier.onGloballyPositioned { onLeftPositioned(left.id, it) }.background(
+                            com.example.inrussian.root.main.train.task.Colors.Surface,
+                            RoundedCornerShape(10.dp)
+                        ).border(
+                            1.dp,
+                            com.example.inrussian.root.main.train.task.Colors.Outline,
+                            RoundedCornerShape(10.dp)
+                        ).pointerInput(left.id) {
+                            detectDragGestures(
+                                onDragStart = { onLeftDragStart(left.id) },
+                                onDrag = { change, amount ->
+                                    onLeftDragBy(left.id, amount)
+                                    change.consume()
+                                },
+                                onDragEnd = { onLeftDragEnd() },
+                                onDragCancel = { onLeftDragCancel() })
+                        }
+                } else {
+                    Modifier.background(
+                            com.example.inrussian.root.main.train.task.Colors.EmptyBg,
+                            RoundedCornerShape(10.dp)
+                        ).border(
+                            1.dp,
+                            com.example.inrussian.root.main.train.task.Colors.EmptyBorder,
+                            RoundedCornerShape(10.dp)
+                        )
+                })
                 .padding(horizontal = 10.dp, vertical = 8.dp),
             contentAlignment = Alignment.CenterStart) {
             if (left != null) {
@@ -223,16 +207,16 @@ private fun UnmatchedRow(
         }
 
         val rightBorder = when {
-            right == null ->com.example.inrussian.root.main.train.task.Colors.EmptyBorder
+            right == null -> com.example.inrussian.root.main.train.task.Colors.EmptyBorder
             isWrong -> Red
-            isRightHovered ->com.example.inrussian.root.main.train.task.Colors.Accent
-            else ->com.example.inrussian.root.main.train.task.Colors.Outline
+            isRightHovered -> com.example.inrussian.root.main.train.task.Colors.Accent
+            else -> com.example.inrussian.root.main.train.task.Colors.Outline
         }
         val rightBg = when {
-            right == null ->com.example.inrussian.root.main.train.task.Colors.EmptyBg
+            right == null -> com.example.inrussian.root.main.train.task.Colors.EmptyBg
             isWrong -> Red
-            isRightHovered ->com.example.inrussian.root.main.train.task.Colors.HoverBg
-            else ->com.example.inrussian.root.main.train.task.Colors.Surface
+            isRightHovered -> com.example.inrussian.root.main.train.task.Colors.HoverBg
+            else -> Colors.Surface
         }
         Box(
             modifier = Modifier
@@ -240,15 +224,13 @@ private fun UnmatchedRow(
                 .padding(start = 6.dp)
                 .then(
                     if (right != null) {
-                        Modifier
-                            .onGloballyPositioned { onRightPositioned(right.id, it) }
-                            .background(rightBg, RoundedCornerShape(10.dp))
-                            .border(1.dp, rightBorder, RoundedCornerShape(10.dp))
-                    } else {
-                        Modifier
-                            .background(rightBg, RoundedCornerShape(10.dp))
-                            .border(1.dp, rightBorder, RoundedCornerShape(10.dp))
-                    })
+                    Modifier.onGloballyPositioned { onRightPositioned(right.id, it) }
+                        .background(rightBg, RoundedCornerShape(10.dp))
+                        .border(1.dp, rightBorder, RoundedCornerShape(10.dp))
+                } else {
+                    Modifier.background(rightBg, RoundedCornerShape(10.dp))
+                        .border(1.dp, rightBorder, RoundedCornerShape(10.dp))
+                })
                 .padding(horizontal = 10.dp, vertical = 8.dp),
             contentAlignment = Alignment.CenterStart) {
             if (right != null) {
@@ -269,6 +251,7 @@ private fun PairRow(
     left: Piece,
     right: Piece,
     isRightHovered: Boolean,
+    isWrong: Boolean,
     onLeftHandlePositioned: (LayoutCoordinates) -> Unit,
     onRightPositioned: (LayoutCoordinates) -> Unit,
     onLeftDragStart: () -> Unit,
@@ -281,9 +264,14 @@ private fun PairRow(
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .background(com.example.inrussian.root.main.train.task.Colors.MatchedBg, shape)
-            .border(1.dp, if (isRightHovered)com.example.inrussian.root.main.train.task.Colors.Accent else
-                com.example.inrussian.root.main.train.task.Colors.Primary, shape)
+            .background(if(isWrong)Red.copy(0.1f) else Colors.MatchedBg, shape)
+            .border(
+                1.dp, when {
+                    isWrong -> Red
+                    isRightHovered -> Colors.Accent
+                    else -> Colors.Primary
+                }, shape
+            )
             .padding(horizontal = 10.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -308,9 +296,11 @@ private fun PairRow(
                 }
                 .padding(horizontal = 10.dp, vertical = 8.dp),
         ) {
-            Text(left.label, modifier = it
-                .fillMaxHeight()
-                .align(Alignment.Center))
+            Text(
+                left.label, modifier = it
+                    .fillMaxHeight()
+                    .align(Alignment.Center)
+            )
 
         }
 
@@ -321,16 +311,23 @@ private fun PairRow(
                 .fillMaxHeight()
                 .padding(start = 6.dp)
                 .onGloballyPositioned { onRightPositioned(it) }
-                .background(com.example.inrussian.root.main.train.task.Colors.MatchedBg, rightShape)
+                .background(if(isWrong)Red.copy(0.1f) else Colors.MatchedBg, shape)
+
                 .padding(horizontal = 10.dp, vertical = 8.dp), onClick = {}) {
-            Text(right.label, modifier = it.fillMaxHeight().align(Alignment.Center))
+            Text(
+                right.label, modifier = it
+                    .fillMaxHeight()
+                    .align(Alignment.Center)
+            )
         }
     }
 }
 
 
 @Composable
-private fun TextSmall(text: String, color: Color = com.example.inrussian.root.main.train.task.Colors.TextSecondary) {
+private fun TextSmall(
+    text: String, color: Color = com.example.inrussian.root.main.train.task.Colors.TextSecondary
+) {
     BasicText(
         text = text, style = TextStyle(
             color = color, fontSize = 13.sp
@@ -338,40 +335,18 @@ private fun TextSmall(text: String, color: Color = com.example.inrussian.root.ma
     )
 }
 
-fun Rect.toRectF(): RectF = RectF(left, top, right, bottom)
+private fun Rect.toRectF(): RectF = RectF(left, top, right, bottom)
 
 // reuse user's LayoutCoordinates.rectInRoot() that returns androidx.compose.ui.geometry.Rect
-fun LayoutCoordinates.rectInRootRect(): Rect = this.positionInRoot().let { pos ->
+private fun LayoutCoordinates.rectInRootRect(): Rect = this.positionInRoot().let { pos ->
     val size: IntSize = this.size
     Rect(
-        left = pos.x,
-        top = pos.y,
-        right = pos.x + size.width,
-        bottom = pos.y + size.height
+        left = pos.x, top = pos.y, right = pos.x + size.width, bottom = pos.y + size.height
     )
 }
-fun LayoutCoordinates.rectInRootToRectF(): RectF = rectInRootRect().toRectF()
-private object Colors {
-    val Background = Color(0xFFF7F7F7)
-    val TopBar = Color(0xFFEDEDED)
 
-    val RowBg = Color(0xFFFDFDFD)
-    val RowBorder = Color(0xFFE5E5E5)
+private fun LayoutCoordinates.rectInRootToRectF(): RectF = rectInRootRect().toRectF()
 
-    val Surface = Color(0xFFFFFFFF)
-    val Outline = Color(0xFFBDBDBD)
-    val Primary = Color(0xFF2962FF)
-    val Accent = Color(0xFF00BFA5)
-
-    val EmptyBg = Color(0xFFF5F5F5)
-    val EmptyBorder = Color(0xFFDDDDDD)
-
-    val HoverBg = Accent.copy(alpha = 0.16f)
-    val MatchedBg = Color(0xFFE3F2FD)
-
-    val TextPrimary = Color(0xFF1E1E1E)
-    val TextSecondary = Color(0xFF424242)
-}
 
 /* ---------------- Geometry helpers ---------------- */
 

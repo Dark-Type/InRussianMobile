@@ -102,7 +102,9 @@ class TrainComponentImpl(
             state.subscribe {
                 Logger.i {
                     it.showedTask?.let { it1 -> "activete: ${it1.taskBody::class}" }.toString()
+
                 }
+                Logger.i { "percent: ${state.value.percent}" }
                 navigation.activate(
                     configuration = when (it.showedTask?.taskBody) {
                         is AudioTask -> AudioConnectConfig(it.showedTask.taskBody)

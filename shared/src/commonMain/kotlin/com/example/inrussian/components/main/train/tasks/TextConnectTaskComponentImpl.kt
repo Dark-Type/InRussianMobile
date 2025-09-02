@@ -38,9 +38,6 @@ class TextConnectTaskComponentImpl(
             }).shuffled(Random(42))
         ))
     override val state: Value<State> = _state
-    override fun onTaskClick(taskId: String) {
-        TODO("Not yet implemented")
-    }
     init {
         updateButtonEnable()
     }

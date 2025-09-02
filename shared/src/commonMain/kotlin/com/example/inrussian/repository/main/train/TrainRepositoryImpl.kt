@@ -11,6 +11,7 @@ import com.example.inrussian.models.models.TaskBody
 import com.example.inrussian.models.models.TaskModel
 import com.example.inrussian.models.models.TaskResponse
 import com.example.inrussian.utils.errorHandle
+import kotlin.math.abs
 import kotlin.random.Random
 
 class TrainRepositoryImpl(private val api: DefaultApi) : TrainRepository {
@@ -18,10 +19,28 @@ class TrainRepositoryImpl(private val api: DefaultApi) : TrainRepository {
         TaskModel(
             taskType = listOf(TaskType.READ, TaskType.READ),
             taskBody = TaskBody.TextTask(
-                variant = listOf("BudetMir, goyda " to "Гойда")
+                variant = listOf("BudetMir, goyd2a " to "Гойда")
             ),
             question = "live or die, that is question"
-        )
+        ),
+        TaskModel(
+            taskType = listOf(TaskType.READ, TaskType.WRITE),
+            taskBody = TaskBody.TextTask(
+                variant = listOf(
+                    "BudetMir, goyd1a " to "Гойда1",
+                    "BudetMir, goyd2a " to "Гойда2",
+                    "BudetMir, goyd3a " to "Гойда3",
+                ),
+            ),
+            question = "live or die, that is question"
+        ),
+        TaskModel(
+            taskType = listOf(TaskType.CONNECT_AUDIO, TaskType.SELECT),
+            taskBody = TaskBody.TextTask(
+                variant = listOf("BudetMir, goyd3a " to "Гойда")
+            ),
+            question = "live or die, that is question"
+        ),
     )
 
     override suspend fun userCourses(): List<ShortCourse> {
@@ -78,7 +97,7 @@ class TrainRepositoryImpl(private val api: DefaultApi) : TrainRepository {
     override suspend fun getNextTask(): TaskResponse {
         val task = tasks.shuffled().first()
         return TaskResponse(
-            Random(1).nextFloat() % 1,
+            abs(Random(1231).nextInt()) % 100 / 100f,
             FullTaskModel(
                 id = task.id,
                 taskText = task.question.toString(),

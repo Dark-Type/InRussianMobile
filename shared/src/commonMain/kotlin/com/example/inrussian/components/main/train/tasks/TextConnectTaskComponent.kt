@@ -73,6 +73,5 @@ interface TextConnectTaskComponent {
     fun cancelDrag()
     fun reset()
 
-    fun onTaskClick(taskId: String)
     fun onContinueClick()
 }

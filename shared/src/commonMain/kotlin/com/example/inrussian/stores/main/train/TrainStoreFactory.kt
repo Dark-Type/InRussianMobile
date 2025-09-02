@@ -1,5 +1,6 @@
 package com.example.inrussian.stores.main.train
 
+import co.touchlab.kermit.Logger
 import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.SimpleBootstrapper
 import com.arkivanov.mvikotlin.core.store.Store
@@ -63,6 +64,7 @@ class TrainStoreFactory(
 
 
             is Msg.UpdateTasks -> {
+                Logger.i{"update"}
                 copy(
                     showedTask = msg.tasks.task,
                     percent = msg.tasks.percent
