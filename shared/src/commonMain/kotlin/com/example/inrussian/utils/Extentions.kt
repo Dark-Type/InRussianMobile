@@ -28,7 +28,6 @@ fun ComponentContext.componentCoroutineScope(): CoroutineScope {
     return scope
 }
 
-//Знаю что выглядит ужасно,но мы очень спешили(
 suspend fun <T : Any> HttpResponse<T>.errorHandle(
     userConfigurationStorage: UserConfigurationStorage? = null,
     authRepository: AuthRepository? = null,

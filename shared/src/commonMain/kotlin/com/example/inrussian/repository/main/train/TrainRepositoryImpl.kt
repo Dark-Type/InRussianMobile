@@ -9,14 +9,16 @@ import com.example.inrussian.data.client.apis.DefaultApi
 import com.example.inrussian.models.models.FullTaskModel
 import com.example.inrussian.models.models.TaskBody
 import com.example.inrussian.models.models.TaskModel
+import com.example.inrussian.models.models.TaskResponse
 import com.example.inrussian.utils.errorHandle
+import kotlin.random.Random
 
 class TrainRepositoryImpl(private val api: DefaultApi) : TrainRepository {
     private val tasks = listOf<TaskModel>(
         TaskModel(
             taskType = listOf(TaskType.READ, TaskType.LISTEN_AND_CHOOSE),
             taskBody = TaskBody.TextTask(
-                variant = listOf("Blut, zaebal " to "")
+                variant = listOf("BudetMir, goyda " to "Гойда")
             ),
             question = "live or die, that is question"
         )
@@ -73,23 +75,23 @@ class TrainRepositoryImpl(private val api: DefaultApi) : TrainRepository {
         )
     }
 
-    override suspend fun getNextTask(): TaskModel {
-        return tasks.shuffled().first()
+    override suspend fun getNextTask(): TaskResponse {
+        val task = tasks.shuffled().first()
+        return TaskResponse(
+            Random(1).nextFloat() % 1,
+            FullTaskModel(
+                id = task.id,
+                taskText = task.question.toString(),
+                taskType = task.taskType,
+                taskBody = task.taskBody
+            )
+        )
     }
 
     override suspend fun sendResultAndGetNextTask() {
         TODO("Not yet implemented")
     }
 
-    /*override suspend fun getTasksByThemeId(themeId: String): List<FullTaskModel> {
-        return api.taskThemeIdGet(themeId).errorHandle().map {
-            FullTaskModel(
-                it.id,
-                taskText = it.question.toString(),
-                taskType = it.taskType,
-                taskBody = it.taskBody
-            )
-        }
-    }*/
+
 }
 

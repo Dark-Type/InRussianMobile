@@ -369,9 +369,6 @@ class PersonalDataUi() : PersonalDataComponent {
         TODO("Not yet implemented")
     }
 
-    override fun onContinue() {
-        TODO("Not yet implemented")
-    }
 
 
 }

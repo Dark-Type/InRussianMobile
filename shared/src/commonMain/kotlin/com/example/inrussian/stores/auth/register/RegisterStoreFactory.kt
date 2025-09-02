@@ -68,7 +68,7 @@ class RegisterStoreFactory(
         @OptIn(ExperimentalTime::class)
         override fun executeIntent(intent: Intent) {
             scope.launch {
-                Logger.d {state().toString() }
+                Logger.d { state().toString() }
                 when (intent) {
                     Intent.SignUpClick -> {
                         scope.launch {
@@ -235,7 +235,10 @@ class RegisterStoreFactory(
                     }
 
                     is Intent.UpdateLanguage -> dispatch(UpdateLanguage(intent.state))
-                    is Intent.UpdatePersonalData -> dispatch(UpdatePersonalData(intent.state))
+                    is Intent.UpdatePersonalData -> {
+                        Logger.d { "UpdatePersonalData : ${intent.state}" }
+                        dispatch(UpdatePersonalData(intent.state))
+                    }
                 }
             }
         }

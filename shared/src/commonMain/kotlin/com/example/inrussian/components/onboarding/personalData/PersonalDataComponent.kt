@@ -6,7 +6,6 @@ import com.example.inrussian.stores.auth.register.RegisterStore
 import com.example.inrussian.stores.auth.register.RegisterStore.Intent
 
 interface PersonalDataComponent {
-    fun onNext()
 
     val state: Value<State>
 
@@ -39,7 +38,7 @@ interface PersonalDataComponent {
     fun onDataChange(date: String)
     fun dataPickerMissClick()
     fun onBack()
-    fun onContinue()
+    fun onNext()
 }
 
 sealed class PersonalDataOutput {
@@ -109,12 +108,8 @@ class DefaultPersonalDataComponent(
         onOutput(PersonalDataOutput.Back)
     }
 
-    override fun onContinue() {
-        store.accept(Intent.UpdatePersonalData(state = state.value))
-        onOutput(PersonalDataOutput.Filled)
-    }
-
     override fun onNext() {
+        store.accept(Intent.UpdatePersonalData(state = state.value))
         onOutput(PersonalDataOutput.Filled)
     }
 }

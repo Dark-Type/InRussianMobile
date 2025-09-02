@@ -28,6 +28,7 @@ interface RegisterStore : Store<RegisterStore.Intent, RegisterStore.State, Regis
         val email: String = "",
         val emailError: StringResource? = null,
         val password: String = "",
+        val phone: String = "",
         val showPassword: Boolean = false,
         val passwordError: StringResource? = null,
         val confirmPassword: String = "",
