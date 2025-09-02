@@ -1,6 +1,7 @@
 package com.example.inrussian.stores.auth.register
 
 import co.touchlab.kermit.Logger
+import co.touchlab.kermit.Logger.Companion.e
 import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.SimpleBootstrapper
 import com.arkivanov.mvikotlin.core.store.Store
@@ -12,6 +13,7 @@ import com.example.inrussian.components.main.profile.UserProfile
 import com.example.inrussian.domain.Validator
 import com.example.inrussian.models.ErrorType
 import com.example.inrussian.models.RegisterError
+import com.example.inrussian.models.models.LoginModel
 import com.example.inrussian.models.models.RegisterModel
 import com.example.inrussian.models.models.SystemLanguage
 import com.example.inrussian.repository.auth.AuthRepository
@@ -70,9 +72,66 @@ class RegisterStoreFactory(
                 when (intent) {
                     Intent.SignUpClick -> {
                         scope.launch {
-                            dispatch(FinishLoading)
-                            publish(Label.SubmittedSuccessfully)
+                            val state = state()
 
+                            try {
+                                dispatch(Loading)
+                                validator.validateEmail(state.email)
+                                validator.validatePassword(state.password)
+                                validator.validateConfirmPassword(
+                                    state.password, state.confirmPassword
+                                )
+
+                                val response = authRepository.login(
+                                    LoginModel(
+                                        email = state.email,
+                                        password = state.password
+                                    )
+                                )
+
+                                throw ErrorType.EmailExist
+                            }catch (e : ErrorType){
+                                if (e is RegisterError) {
+                                    when (e) {
+                                        ErrorType.InvalidEmail -> dispatch(
+                                            EmailError(
+                                                errorDecoder.decode(
+                                                    e
+                                                )
+                                            )
+                                        )
+
+                                        ErrorType.EmailExist -> dispatch(
+                                            EmailError(
+                                                errorDecoder.decode(
+                                                    e
+                                                )
+                                            )
+                                        )
+
+                                        ErrorType.InvalidPassword -> dispatch(
+                                            PasswordError(
+                                                errorDecoder.decode(
+                                                    e
+                                                )
+                                            )
+                                        )
+
+                                        ErrorType.UnAuthorize -> dispatch(
+                                            PasswordError(
+                                                errorDecoder.decode(
+                                                    e
+                                                )
+                                            )
+                                        )
+
+
+                                    }
+                                }
+                            }
+                            catch (e : Exception){
+                                publish(Label.SubmittedSuccessfully)
+                            }
                         }
                     }
 
@@ -87,24 +146,21 @@ class RegisterStoreFactory(
                     Intent.PasswordImageClick -> dispatch(PasswordTransform)
                     is Intent.ConfirmPasswordChange -> dispatch(ConfirmPasswordChanged(intent.password))
                     Intent.ConfirmPasswordImageClick -> dispatch(ConfirmPasswordTransform)
-                    is Intent.UpdateCitizenship -> dispatch(UpdateCitizenship(intent.state))
+                    is Intent.UpdateCitizenship -> {
+                        dispatch(UpdateCitizenship(intent.state))
+                    }
                     is Intent.UpdateEducation -> {
                         dispatch(UpdateEducation(intent.state))
-                        try {
+                        scope.launch {
                             val state = state()
+
                             try {
-                                dispatch(Loading)
-                                validator.validateEmail(state.email)
-                                validator.validatePassword(state.password)
-                                validator.validateConfirmPassword(
-                                    state.password, state.confirmPassword
-                                )
                                 val token = authRepository.register(
                                     RegisterModel(
                                         email = state.email,
                                         password = state.password,
-                                        phone = state.personalDataState!!.phoneNumber,
-                                        systemLanguage = SystemLanguage.valueOf(state.languageState!!.selectedLanguage)
+                                        phone = state.personalDataState?.phoneNumber ?: "",
+                                        systemLanguage = SystemLanguage.valueOf(state.languageState?.selectedLanguage ?: "RUSSIAN")
                                     )
                                 )
                                 authRepository.setToken(token.accessToken)
@@ -112,11 +168,11 @@ class RegisterStoreFactory(
 
                                 userRepository.createProfile(
                                     UserProfile(
-                                        surname = state.personalDataState.surname,
-                                        name = state.personalDataState.name,
-                                        patronymic = state.personalDataState.patronymic,
-                                        gender = Gender.valueOf(state.personalDataState.gender),
-                                        dob = state.personalDataState.birthDate,
+                                        surname = state.personalDataState?.surname ?: "",
+                                        name = state.personalDataState?.name ?: "",
+                                        patronymic = state.personalDataState?.patronymic,
+                                        gender = Gender.valueOf(state.personalDataState?.gender ?: ""),
+                                        dob = state.personalDataState?.birthDate ?: "",
                                         dor = now().toString(),
                                         citizenship = state.citizenshipState?.citizenship,
                                         nationality = state.citizenshipState?.nationality,
@@ -131,7 +187,7 @@ class RegisterStoreFactory(
                                         purposeOfRegister = state.educationState?.purposeOfRegistration,
                                         languages = state.educationState?.languages ?: listOf(),
                                         language = com.example.inrussian.components.main.profile.SystemLanguage.valueOf(
-                                            state.languageState.selectedLanguage
+                                            (state.languageState?.selectedLanguage ?: SystemLanguage.RUSSIAN) as String
                                         ),
                                         email = state.email
                                     )
@@ -168,7 +224,9 @@ class RegisterStoreFactory(
                                     }
                                 }
                             }
-                        } catch (e: Throwable) {
+                            catch (e: Exception){
+                                println(e.message)
+                            }
                         }
                     }
 
