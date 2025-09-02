@@ -11,17 +11,16 @@ import org.openapitools.client.models.CreateUserProfileRequest
 import org.openapitools.client.models.UpdateUserProfileRequest
 
 class UserRepositoryImpl(
-    private val api: DefaultApi, private val userConfigurationStorage: UserConfigurationStorage,
-    private val authRepository: AuthRepository,
+    private val api: DefaultApi
 ) : UserRepository {
     override suspend fun updateProfile(profile: UserProfile) {
         api.profilesUserIdPut(profile.userId, profile.toUpdateUserProfileRequest())
-            .errorHandle(userConfigurationStorage,  authRepository)
+            .errorHandle()
     }
 
     override suspend fun createProfile(profile: UserProfile) {
         api.profilesUserPost(profile.toCreateUserProfileRequest())
-            .errorHandle(userConfigurationStorage,  authRepository)
+            .errorHandle()
     }
 }
 

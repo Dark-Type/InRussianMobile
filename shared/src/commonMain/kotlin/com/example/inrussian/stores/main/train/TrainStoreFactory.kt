@@ -39,7 +39,7 @@ class TrainStoreFactory(
             when (action) {
                 is Action.LoadTasks -> {
                     scope.launch(Dispatchers.Main) {
-                        dispatch(Msg.UpdateTasks(repository.getTasksByThemeId(action.themeId)))
+                       // dispatch(Msg.UpdateTasks(repository.getNextTask()))
                     }
                 }
             }
@@ -65,7 +65,7 @@ class TrainStoreFactory(
 
                         if (shouldMoveToNext) {
                             if (st.isStartRepeat) {
-                                if (st.rejectedTask.size()!=0) {
+                                if (st.rejectedTask.size() != 0) {
                                     dispatch(Msg.UpdateTaskFromQueue)
                                 } else {
                                     dispatch(Msg.StartRepeat(false))
@@ -75,7 +75,7 @@ class TrainStoreFactory(
                                 dispatch(UpdateIndexAndTask)
                             }
                         } else {
-                            if (st.rejectedTask.size()!=0) {
+                            if (st.rejectedTask.size() != 0) {
                                 dispatch(Msg.StartRepeat(true))
                                 dispatch(Msg.UpdateTaskFromQueue)
                             } else {

@@ -169,6 +169,7 @@ class RegisterStoreFactory(
                                 }
                             }
                         } catch (e: Throwable) {
+                            Logger.e { e.message.toString() }
                         }
                     }
 

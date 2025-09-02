@@ -8,8 +8,8 @@ import com.example.inrussian.repository.main.settings.SettingsRepository
 import com.example.inrussian.repository.main.settings.SettingsRepositoryImpl
 import com.example.inrussian.repository.main.train.TrainRepository
 import com.example.inrussian.repository.main.train.TrainRepositoryImpl
-import com.example.inrussian.repository.main.user.MockUserRepository
 import com.example.inrussian.repository.main.user.UserRepository
+import com.example.inrussian.repository.main.user.UserRepositoryImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -25,7 +25,11 @@ val mainModule = module {
         CoroutineScope(SupervisorJob() + Dispatchers.Default)
     }
 
-    single<UserRepository> { MockUserRepository(scope = get(QAppScope)) }
+    single<UserRepository> {
+        UserRepositoryImpl(
+            api = get(),
+        )
+    }
     single<BadgeRepository> { MockBadgeRepository(scope = get(QAppScope)) }
     single<SettingsRepository> { SettingsRepositoryImpl() }
 

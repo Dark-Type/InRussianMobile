@@ -3,12 +3,25 @@ package com.example.inrussian.repository.main.train
 import co.touchlab.kermit.Logger
 import com.example.inrussian.components.main.train.SectionModel
 import com.example.inrussian.components.main.train.ShortCourse
+import com.example.inrussian.components.main.train.TaskType
 import com.example.inrussian.components.main.train.ThemeMeta
 import com.example.inrussian.data.client.apis.DefaultApi
 import com.example.inrussian.models.models.FullTaskModel
+import com.example.inrussian.models.models.TaskBody
+import com.example.inrussian.models.models.TaskModel
 import com.example.inrussian.utils.errorHandle
 
 class TrainRepositoryImpl(private val api: DefaultApi) : TrainRepository {
+    private val tasks = listOf<TaskModel>(
+        TaskModel(
+            taskType = listOf(TaskType.READ, TaskType.LISTEN_AND_CHOOSE),
+            taskBody = TaskBody.TextTask(
+                variant = listOf("Blut, zaebal " to "")
+            ),
+            question = "live or die, that is question"
+        )
+    )
+
     override suspend fun userCourses(): List<ShortCourse> {
         return api.contentCoursesGet().errorHandle().map {
             ShortCourse(it.id, it.name)
@@ -32,7 +45,8 @@ class TrainRepositoryImpl(private val api: DefaultApi) : TrainRepository {
                 themes = api.contentThemesBySectionSectionIdGet(it.id).errorHandle().map {
                     ThemeMeta(
                         it.id, it.orderNum, 0, api
-                            .contentStatsThemeThemeIdTasksCountGet(it.id).errorHandle().count.toInt()
+                            .contentStatsThemeThemeIdTasksCountGet(it.id)
+                            .errorHandle().count.toInt()
                     )
                 }
             )
@@ -40,26 +54,34 @@ class TrainRepositoryImpl(private val api: DefaultApi) : TrainRepository {
     }
 
     override suspend fun section(sectionId: String): SectionModel? {
-         val section =  api.contentSectionsSectionIdGet(sectionId).errorHandle()
+        val section = api.contentSectionsSectionIdGet(sectionId).errorHandle()
         return SectionModel(
             section.id,
             section.courseId,
-                title = section.name,
-                totalTheory = 0,
-                totalPractice = api.contentStatsSectionSectionIdTasksCountGet(section.id).errorHandle()
-                    .count.toInt(),
-                completedTheory = 0,
-                completedPractice = 0,
-                themes = api.contentThemesBySectionSectionIdGet(section.id).errorHandle().map {
-                    ThemeMeta(
-                        it.id, it.orderNum, 0, api
-                            .contentStatsThemeThemeIdTasksCountGet(it.id).errorHandle().count.toInt()
-                    )
-                }
-            )
-        }
+            title = section.name,
+            totalTheory = 0,
+            totalPractice = api.contentStatsSectionSectionIdTasksCountGet(section.id).errorHandle()
+                .count.toInt(),
+            completedTheory = 0,
+            completedPractice = 0,
+            themes = api.contentThemesBySectionSectionIdGet(section.id).errorHandle().map {
+                ThemeMeta(
+                    it.id, it.orderNum, 0, api
+                        .contentStatsThemeThemeIdTasksCountGet(it.id).errorHandle().count.toInt()
+                )
+            }
+        )
+    }
 
-    override suspend fun getTasksByThemeId(themeId: String): List<FullTaskModel> {
+    override suspend fun getNextTask(): TaskModel {
+        return tasks.shuffled().first()
+    }
+
+    override suspend fun sendResultAndGetNextTask() {
+        TODO("Not yet implemented")
+    }
+
+    /*override suspend fun getTasksByThemeId(themeId: String): List<FullTaskModel> {
         return api.taskThemeIdGet(themeId).errorHandle().map {
             FullTaskModel(
                 it.id,
@@ -68,6 +90,6 @@ class TrainRepositoryImpl(private val api: DefaultApi) : TrainRepository {
                 taskBody = it.taskBody
             )
         }
-    }
+    }*/
 }
 

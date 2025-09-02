@@ -9,7 +9,7 @@ interface TrainRepository {
     suspend fun userCourses(): List<ShortCourse>
     suspend fun sectionsForCourse(courseId: String): List<SectionModel>
     suspend fun section(sectionId: String): SectionModel?
-
-    suspend fun getTasksByThemeId(courseId: String): List<FullTaskModel>
+    suspend fun getNextTask(): TaskModel
+    suspend fun sendResultAndGetNextTask()
 
 }
