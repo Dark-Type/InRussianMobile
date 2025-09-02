@@ -46,23 +46,10 @@ data class SectionModel(
  * ----------------------------------------------------------- */
 
 enum class TaskType {
-    LISTEN_AND_CHOOSE,
-    READ_AND_CHOOSE,
-    LOOK_AND_CHOOSE,
-    MATCH_AUDIO_TEXT,
-    MATCH_TEXT_TEXT,
-    WORD_ORDER,
     WRITE, LISTEN, READ, SPEAK, REMIND, MARK, FILL, CONNECT_AUDIO, CONNECT_IMAGE, CONNECT_TRANSLATE, SELECT
 
 }
 
-val THEORY_TASK_TYPES = setOf(TaskType.LISTEN_AND_CHOOSE, TaskType.READ_AND_CHOOSE)
-val PRACTICE_TASK_TYPES = setOf(
-    TaskType.MATCH_AUDIO_TEXT,
-    TaskType.MATCH_TEXT_TEXT,
-    TaskType.WORD_ORDER,
-    TaskType.LOOK_AND_CHOOSE
-)
 
 enum class AnswerType {
     MULTIPLE_CHOICE_SHORT,
@@ -83,12 +70,11 @@ data class Task(
     val id: String = "",
     val sectionId: String = "",
     val themeId: String = "",
-    val type: TaskType = TaskType.READ_AND_CHOOSE,
+    val type: TaskType = TaskType.READ,
     val text: String? = null,
     val isTraining: Boolean = false,
     val answer: TaskAnswerItem? = null
 ) {
-    val isTheory: Boolean get() = type in THEORY_TASK_TYPES
 }
 
 @Serializable

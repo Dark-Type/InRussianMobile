@@ -110,13 +110,13 @@ private fun Header(fullTask: FullTask, showQueueMeta: Boolean, onClick: (String)
             Image(painterResource(Res.drawable.book), "", Modifier.size(25.dp, 35.dp))
             Spacer(Modifier.width(8.dp))
             when (fullTask.task.type) {
-                TaskType.LISTEN_AND_CHOOSE -> Image(
+                TaskType.LISTEN -> Image(
                     painterResource(Res.drawable.headphones),
                     "",
                     Modifier.size(25.dp, 35.dp)
                 )
 
-                TaskType.READ_AND_CHOOSE -> Image(
+                TaskType.MARK -> Image(
                     painterResource(Res.drawable.list_checkbox),
                     "",
                     Modifier.size(25.dp, 35.dp)

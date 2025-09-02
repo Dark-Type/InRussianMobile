@@ -126,11 +126,8 @@ class TrainComponentImpl(
         config: Config,
         context: ComponentContext
     ): Child {
-        Logger.i { "createChild: $config" }
         return when (config) {
-
             is TextConnectConfig -> {
-                Logger.i { "createChild: $config" }
                 TextConnectChild(
                     component = TextConnectTaskComponentImpl(
                         context,
@@ -143,7 +140,6 @@ class TrainComponentImpl(
             }
 
             is ImageConnectConfig -> {
-                Logger.i { "createChild: $config" }
                 ImageConnectChild(
                     component = ImageConnectTaskComponentImpl(
                         context,
@@ -169,7 +165,6 @@ class TrainComponentImpl(
     }
 
     fun inCheck(inCheck: Boolean) {
-        Logger.i { "in check" }
         store.accept(TrainStore.Intent.InCheckStateChange(inCheck))
     }
 
@@ -178,7 +173,6 @@ class TrainComponentImpl(
     }
 
     fun onChangeButtonState(isEnable: Boolean) {
-        Logger.i { "stay enable" }
         store.accept(TrainStore.Intent.OnButtonStateChange(isEnable))
 
     }

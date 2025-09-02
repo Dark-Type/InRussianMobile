@@ -48,7 +48,11 @@ fun TaskUi(component: TrainComponentCopy) {
             trackColor = Orange.copy(0.5f)
         )
         Spacer(Modifier.height(16.dp))
-        TaskDescription({}, state.showedTask?.taskText ?: "")
+        TaskDescription(
+            {},
+            state.showedTask?.taskText ?: "",
+            state.showedTask?.taskType ?: listOf()
+        )
         Spacer(Modifier.height(16.dp))
         Box(
             modifier = Modifier
@@ -57,9 +61,10 @@ fun TaskUi(component: TrainComponentCopy) {
         ) {
             when (val state = slot.child?.instance) {
                 TrainComponentCopy.Child.EmptyChild -> EmptyTaskScreen()
-                is TrainComponentCopy.Child.ImageConnectChild -> ImageConnectTask(state.component){
+                is TrainComponentCopy.Child.ImageConnectChild -> ImageConnectTask(state.component) {
                     onEvent = it
                 }
+
                 is TrainComponentCopy.Child.TextConnectChild -> TextConnect(state.component) {
                     onEvent = it
                 }
