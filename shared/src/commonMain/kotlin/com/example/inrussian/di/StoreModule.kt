@@ -37,7 +37,7 @@ val storeModule = module {
         ).create()
     }
 
-    factory<TrainStore> { (themeId: String) ->
+    single<TrainStore> { (themeId: String) ->
         TrainStoreFactory(
             storeFactory = get(),
             errorDecoder = get(),
@@ -45,7 +45,7 @@ val storeModule = module {
         ).create(themeId)
     }
 
-    factory<RegisterStore> {
+    single<RegisterStore> {
         RegisterStoreFactory(get(), get(), get(),get(),get()).create()
     }
 }

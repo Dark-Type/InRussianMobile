@@ -1,7 +1,6 @@
 package com.example.inrussian.stores.auth.register
 
 import co.touchlab.kermit.Logger
-import co.touchlab.kermit.Logger.Companion.e
 import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.SimpleBootstrapper
 import com.arkivanov.mvikotlin.core.store.Store
@@ -69,6 +68,7 @@ class RegisterStoreFactory(
         @OptIn(ExperimentalTime::class)
         override fun executeIntent(intent: Intent) {
             scope.launch {
+                Logger.d {state().toString() }
                 when (intent) {
                     Intent.SignUpClick -> {
                         scope.launch {
@@ -90,7 +90,7 @@ class RegisterStoreFactory(
                                 )
 
                                 throw ErrorType.EmailExist
-                            }catch (e : ErrorType){
+                            } catch (e: ErrorType) {
                                 if (e is RegisterError) {
                                     when (e) {
                                         ErrorType.InvalidEmail -> dispatch(
@@ -128,8 +128,7 @@ class RegisterStoreFactory(
 
                                     }
                                 }
-                            }
-                            catch (e : Exception){
+                            } catch (e: Exception) {
                                 publish(Label.SubmittedSuccessfully)
                             }
                         }
@@ -149,6 +148,7 @@ class RegisterStoreFactory(
                     is Intent.UpdateCitizenship -> {
                         dispatch(UpdateCitizenship(intent.state))
                     }
+
                     is Intent.UpdateEducation -> {
                         dispatch(UpdateEducation(intent.state))
                         scope.launch {
@@ -160,7 +160,9 @@ class RegisterStoreFactory(
                                         email = state.email,
                                         password = state.password,
                                         phone = state.personalDataState?.phoneNumber ?: "",
-                                        systemLanguage = SystemLanguage.valueOf(state.languageState?.selectedLanguage ?: "RUSSIAN")
+                                        systemLanguage = SystemLanguage.valueOf(
+                                            state.languageState?.selectedLanguage ?: "RUSSIAN"
+                                        )
                                     )
                                 )
                                 authRepository.setToken(token.accessToken)
@@ -171,7 +173,9 @@ class RegisterStoreFactory(
                                         surname = state.personalDataState?.surname ?: "",
                                         name = state.personalDataState?.name ?: "",
                                         patronymic = state.personalDataState?.patronymic,
-                                        gender = Gender.valueOf(state.personalDataState?.gender ?: ""),
+                                        gender = Gender.valueOf(
+                                            state.personalDataState?.gender ?: ""
+                                        ),
                                         dob = state.personalDataState?.birthDate ?: "",
                                         dor = now().toString(),
                                         citizenship = state.citizenshipState?.citizenship,
@@ -187,7 +191,8 @@ class RegisterStoreFactory(
                                         purposeOfRegister = state.educationState?.purposeOfRegistration,
                                         languages = state.educationState?.languages ?: listOf(),
                                         language = com.example.inrussian.components.main.profile.SystemLanguage.valueOf(
-                                            (state.languageState?.selectedLanguage ?: SystemLanguage.RUSSIAN) as String
+                                            (state.languageState?.selectedLanguage
+                                                ?: SystemLanguage.RUSSIAN) as String
                                         ),
                                         email = state.email
                                     )
@@ -223,8 +228,7 @@ class RegisterStoreFactory(
                                         )
                                     }
                                 }
-                            }
-                            catch (e: Exception){
+                            } catch (e: Exception) {
                                 println(e.message)
                             }
                         }
