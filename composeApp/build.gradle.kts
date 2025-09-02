@@ -19,6 +19,7 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
+            implementation ("com.google.android.exoplayer:exoplayer:2.19.0")
             implementation(libs.ktor.client.okhttp)
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)

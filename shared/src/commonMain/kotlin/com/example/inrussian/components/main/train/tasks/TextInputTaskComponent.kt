@@ -1,20 +1,48 @@
 package com.example.inrussian.components.main.train.tasks
 
+import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
-import com.example.inrussian.models.models.task.Task
+import com.arkivanov.decompose.value.update
+import com.example.inrussian.models.models.TaskBody
 
-interface TextInputTaskComponent {
-    val state: Value<State>
-
-    data class State(
-        val elements: List<Task> = listOf(),
-        val isChecked: Boolean = false,
-        val electedTask: Task? = null,
-        val hasError: Boolean? = null,
-        val pairs: MutableList<Pair<Task, Task>> = mutableListOf()
+class TextInputTaskComponent(
+    context: ComponentContext,
+    private val onContinueClicked: (Boolean) -> Unit,
+    private val inChecking: (Boolean) -> Unit,
+    private val onButtonEnable: (Boolean) -> Unit,
+    listAudioTasks: TaskBody.TextInputTask,
+) : TextInputTask {
+    private val _state = MutableValue(
+        TextInputTask.State(listAudioTasks.task.map {
+            TextInputTask.InputBlock(
+                text = it.text,
+                label = it.label,
+                gaps = it.gaps.map {
+                    TextInputTask.InputGap(
+                        answer = it.correctWord,
+                        pos = it.index
+                    )
+                })
+        })
     )
+    override val state: Value<TextInputTask.State> = _state
 
-    fun onTaskClick(taskId: String)
+    override fun onTextChange(blockIndex: Int, gapPos: Int, newText: String) {
+        _state.update { s ->
+            val newBlocks = s.blocks.mapIndexed { idx, block ->
+                if (idx != blockIndex) return@mapIndexed block
+                val newGaps = block.gaps.map { gap ->
+                    if (gap.pos == gapPos) gap.copy(answer = newText) else gap
+                }
+                block.copy(gaps = newGaps)
+            }
+            s.copy(blocks = newBlocks)
+        }
+    }
 
-    fun onContinueClick()
+    override fun onContinueClick() {
+        TODO("Not yet implemented")
+    }
+
 }

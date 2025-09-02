@@ -37,13 +37,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.inrussian.components.main.train.tasks.ImageConnectTaskComponent
 import com.example.inrussian.components.main.train.tasks.ImageConnectTaskComponent.PointF
 import com.example.inrussian.components.main.train.tasks.ImageConnectTaskComponent.RectF
-import com.example.inrussian.root.main.train.task.Colors.WrongBg
-import com.example.inrussian.root.main.train.task.Colors.WrongBorder
-import com.example.inrussian.root.main.train.task.PairRow
 import com.example.inrussian.ui.theme.PuzzleLayoutIn
 import com.example.inrussian.ui.theme.PuzzleLayoutOut
 import com.example.inrussian.ui.theme.TabSide
@@ -75,7 +73,8 @@ fun ImageConnectTask(
                         PairRow(
                             left = r.left,
                             right = r.right,
-                            isWrong = state.invalidLeftIds.contains(r.left.id),isRightHovered = state.hoveredRightId == r.right.id,
+                            isWrong = state.invalidLeftIds.contains(r.left.id),
+                            isRightHovered = state.hoveredRightId == r.right.id,
                             onLeftHandlePositioned = { coords ->
                                 val rectF = coords.rectInRootToRectF()
                                 component.onPairLeftPositioned(r.left.id, rectF)
@@ -151,28 +150,6 @@ private fun UnmatchedRow(
     onLeftDragCancel: () -> Unit
 ) {
     val shape = RoundedCornerShape(12.dp)
-    val leftBorder = when {
-        left == null -> Colors.EmptyBorder
-        isWrong -> Colors.WrongBorder
-        else -> Colors.Outline
-    }
-    val leftBg = when {
-        left == null -> Colors.EmptyBg
-        isWrong -> Colors. WrongBg
-        else -> Colors.Surface
-    }
-    val rightBorder = when {
-        right == null -> Colors.EmptyBorder
-        isWrong -> WrongBorder
-        isRightHovered -> Colors.Accent
-        else -> Colors.Outline
-    }
-    val rightBg = when {
-        right == null -> Colors.EmptyBg
-        isWrong -> WrongBg
-        isRightHovered -> Colors.HoverBg
-        else -> Colors.Surface
-    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -182,7 +159,6 @@ private fun UnmatchedRow(
             .padding(horizontal = 10.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // LEFT
         Box(
             modifier = Modifier
                 .weight(1f)
@@ -191,8 +167,15 @@ private fun UnmatchedRow(
                     if (left != null) {
                         Modifier
                             .onGloballyPositioned { onLeftPositioned(left.id, it) }
-                            .background(leftBg, RoundedCornerShape(10.dp))
-                            .border(1.dp, leftBorder, RoundedCornerShape(10.dp))
+                            .background(
+                                com.example.inrussian.root.main.train.task.Colors.Surface,
+                                RoundedCornerShape(10.dp)
+                            )
+                            .border(
+                                1.dp,
+                                com.example.inrussian.root.main.train.task.Colors.Outline,
+                                RoundedCornerShape(10.dp)
+                            )
                             .pointerInput(left.id) {
                                 detectDragGestures(
                                     onDragStart = { onLeftDragStart(left.id) },
@@ -205,104 +188,21 @@ private fun UnmatchedRow(
                             }
                     } else {
                         Modifier
-                            .background(Colors.EmptyBg, RoundedCornerShape(10.dp))
-                            .border(1.dp, Colors.EmptyBorder, RoundedCornerShape(10.dp))
-                    }
-                )
-                .padding(horizontal = 10.dp, vertical = 8.dp),
-            contentAlignment = Alignment.CenterStart
-        ) {
-            if (left != null) {
-                PuzzleLayoutIn(TabSide.RIGHT, onClick = {}) {
-                    Text(left.label, modifier = it)
-                }
-            } else {
-                PuzzleLayoutIn(TabSide.RIGHT, onClick = {}) {
-                    TextSmall("—")
-                }
-            }
-        }
-
-        // RIGHT
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 6.dp)
-                .then(
-                    if (right != null) {
-                        Modifier
-                            .onGloballyPositioned { onRightPositioned(right.id, it) }
-                            .background(rightBg, RoundedCornerShape(10.dp))
-                            .border(1.dp, rightBorder, RoundedCornerShape(10.dp))
-                    } else {
-                        Modifier
-                            .background(rightBg, RoundedCornerShape(10.dp))
-                            .border(1.dp, rightBorder, RoundedCornerShape(10.dp))
-                    }
-                )
-                .padding(horizontal = 10.dp, vertical = 8.dp),
-            contentAlignment = Alignment.CenterStart
-        ) {
-            if (right != null) {
-                PuzzleLayoutOut(onClick = {}) {
-                    Text(right.label, modifier = it)
-                }
-            } else {
-                PuzzleLayoutOut(onClick = {}) {
-                    TextSmall("—")
-                }
-            }
-        }
-    }
-}
-    /*Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min)
-            .background(com.example.inrussian.root.main.train.task.Colors.RowBg, shape)
-            .border(1.dp, com.example.inrussian.root.main.train.task.Colors.RowBorder, shape)
-            .padding(horizontal = 10.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .padding(end = 6.dp)
-                .then(
-                    if (left != null) {
-                    Modifier.onGloballyPositioned { onLeftPositioned(left.id, it) }.background(
-                            com.example.inrussian.root.main.train.task.Colors.Surface,
-                            RoundedCornerShape(10.dp)
-                        ).border(
-                            1.dp,
-                            com.example.inrussian.root.main.train.task.Colors.Outline,
-                            RoundedCornerShape(10.dp)
-                        ).pointerInput(left.id) {
-                            detectDragGestures(
-                                onDragStart = { onLeftDragStart(left.id) },
-                                onDrag = { change, amount ->
-                                    onLeftDragBy(left.id, amount)
-                                    change.consume()
-                                },
-                                onDragEnd = { onLeftDragEnd() },
-                                onDragCancel = { onLeftDragCancel() })
-                        }
-                } else {
-                    Modifier.background(
-                            com.example.inrussian.root.main.train.task.Colors.EmptyBg,
-                            RoundedCornerShape(10.dp)
-                        ).border(
-                            1.dp,
-                            com.example.inrussian.root.main.train.task.Colors.EmptyBorder,
-                            RoundedCornerShape(10.dp)
-                        )
-                })
+                            .background(
+                                com.example.inrussian.root.main.train.task.Colors.EmptyBg,
+                                RoundedCornerShape(10.dp)
+                            )
+                            .border(
+                                1.dp,
+                                com.example.inrussian.root.main.train.task.Colors.EmptyBorder,
+                                RoundedCornerShape(10.dp)
+                            )
+                    })
                 .padding(horizontal = 10.dp, vertical = 8.dp),
             contentAlignment = Alignment.CenterStart) {
             if (left != null) {
                 PuzzleLayoutIn(TabSide.RIGHT, onClick = {}) {
-                    Text(left.label, modifier = it)
+                    AsyncImage(left.label, "", modifier = it.height(98.dp))
 
                 }
             } else {
@@ -322,7 +222,7 @@ private fun UnmatchedRow(
             right == null -> com.example.inrussian.root.main.train.task.Colors.EmptyBg
             isWrong -> Red
             isRightHovered -> com.example.inrussian.root.main.train.task.Colors.HoverBg
-            else -> com.example.inrussian.root.main.train.task.Colors.Surface
+            else -> Colors.Surface
         }
         Box(
             modifier = Modifier
@@ -330,18 +230,20 @@ private fun UnmatchedRow(
                 .padding(start = 6.dp)
                 .then(
                     if (right != null) {
-                    Modifier.onGloballyPositioned { onRightPositioned(right.id, it) }
-                        .background(rightBg, RoundedCornerShape(10.dp))
-                        .border(1.dp, rightBorder, RoundedCornerShape(10.dp))
-                } else {
-                    Modifier.background(rightBg, RoundedCornerShape(10.dp))
-                        .border(1.dp, rightBorder, RoundedCornerShape(10.dp))
-                })
+                        Modifier
+                            .onGloballyPositioned { onRightPositioned(right.id, it) }
+                            .background(rightBg, RoundedCornerShape(10.dp))
+                            .border(1.dp, rightBorder, RoundedCornerShape(10.dp))
+                    } else {
+                        Modifier
+                            .background(rightBg, RoundedCornerShape(10.dp))
+                            .border(1.dp, rightBorder, RoundedCornerShape(10.dp))
+                    })
                 .padding(horizontal = 10.dp, vertical = 8.dp),
             contentAlignment = Alignment.CenterStart) {
             if (right != null) {
                 PuzzleLayoutOut(onClick = {}) {
-                    Text(right.label, modifier = it)
+                    Text(right.label, modifier = it.height(98.dp))
                 }
             } else {
                 PuzzleLayoutOut(onClick = {}) {
@@ -350,14 +252,15 @@ private fun UnmatchedRow(
             }
         }
     }
-}*/
+}
+
 
 @Composable
 private fun PairRow(
     left: Piece,
     right: Piece,
-    isWrong: Boolean,
     isRightHovered: Boolean,
+    isWrong: Boolean,
     onLeftHandlePositioned: (LayoutCoordinates) -> Unit,
     onRightPositioned: (LayoutCoordinates) -> Unit,
     onLeftDragStart: () -> Unit,
@@ -366,31 +269,22 @@ private fun PairRow(
     onLeftDragCancel: () -> Unit
 ) {
     val shape = RoundedCornerShape(12.dp)
-    val leftBorder = if (isWrong) WrongBorder else Color.Transparent
-    val leftBg = if (isWrong) WrongBg else Color.Transparent
-    val rightBorder = when {
-        isWrong -> WrongBorder
-        isRightHovered -> Colors.Accent
-        else -> Colors.Primary
-    }
-    val rightBg = when {
-        isWrong -> WrongBg
-        else -> Colors.MatchedBg
-    }
-    val rightShape = RoundedCornerShape(10.dp)
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .background(com.example.inrussian.root.main.train.task.Colors.MatchedBg, shape)
+            .background(if (isWrong) Red.copy(0.1f) else Colors.MatchedBg, shape)
             .border(
-                1.dp,
-                if (isRightHovered) com.example.inrussian.root.main.train.task.Colors.Accent else com.example.inrussian.root.main.train.task.Colors.Primary,
-                shape
+                1.dp, when {
+                    isWrong -> Red
+                    isRightHovered -> Colors.Accent
+                    else -> Colors.Primary
+                }, shape
             )
             .padding(horizontal = 10.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+
         PuzzleLayoutIn(
             TabSide.RIGHT, onClick = {},
             modifier = Modifier
@@ -398,8 +292,7 @@ private fun PairRow(
                 .fillMaxHeight()
                 .padding(end = 6.dp)
                 .onGloballyPositioned { onLeftHandlePositioned(it) }
-                .border(1.dp, leftBorder, RoundedCornerShape(10.dp))
-                .background(leftBg, RoundedCornerShape(10.dp))
+                .background(White.copy(alpha = 0.0f))
                 .pointerInput(left.id) {
                     detectDragGestures(
                         onDragStart = { onLeftDragStart() },
@@ -420,15 +313,14 @@ private fun PairRow(
 
         }
 
-        val rightShape = RoundedCornerShape(10.dp)
         PuzzleLayoutOut(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()
                 .padding(start = 6.dp)
                 .onGloballyPositioned { onRightPositioned(it) }
-                .background(rightBg, rightShape)
-                .border(1.dp, rightBorder, rightShape)
+                .background(if (isWrong) Red.copy(0.1f) else Colors.MatchedBg, shape)
+
                 .padding(horizontal = 10.dp, vertical = 8.dp), onClick = {}) {
             Text(
                 right.label, modifier = it
@@ -460,10 +352,6 @@ private fun TextSmall(text: String, color: Color = Colors.TextSecondary) {
 private fun Rect.toRectF(): RectF = RectF(left, top, right, bottom)
 
 object Colors {
-    internal val WrongBg = Color(0xFFFFEBEE) // светло-красный фон
-    internal val WrongBorder = Color(0xFFEF5350) //val Background = Color(0xFFF7F7F7)
-    val TopBar = Color(0xFFEDEDED)
-
     val RowBg = Color(0xFFFDFDFD)
     val RowBorder = Color(0xFFE5E5E5)
 

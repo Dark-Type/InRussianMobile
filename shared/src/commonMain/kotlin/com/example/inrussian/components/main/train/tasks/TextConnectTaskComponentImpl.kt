@@ -7,7 +7,7 @@ import com.arkivanov.decompose.value.update
 import com.example.inrussian.components.main.train.tasks.TextConnectTaskComponent.PointF
 import com.example.inrussian.components.main.train.tasks.TextConnectTaskComponent.RectF
 import com.example.inrussian.components.main.train.tasks.TextConnectTaskComponent.State
-import com.example.inrussian.models.models.TaskBody.TextTask
+import com.example.inrussian.models.models.TaskBody.TextConnectTask
 import com.example.inrussian.utils.DragSource
 import com.example.inrussian.utils.Piece
 import kotlin.math.abs
@@ -21,7 +21,7 @@ class TextConnectTaskComponentImpl(
     private val onContinueClicked: (Boolean) -> Unit,
     private val inChecking: (Boolean) -> Unit,
     private val onButtonEnable: (Boolean) -> Unit,
-    listTextTasks: TextTask,
+    listTextTasks: TextConnectTask,
 
     ) : TextConnectTaskComponent, ComponentContext by component {
     private val _state = MutableValue(

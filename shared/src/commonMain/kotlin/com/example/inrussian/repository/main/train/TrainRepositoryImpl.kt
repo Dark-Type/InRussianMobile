@@ -10,6 +10,7 @@ import com.example.inrussian.models.models.FullTaskModel
 import com.example.inrussian.models.models.TaskBody
 import com.example.inrussian.models.models.TaskModel
 import com.example.inrussian.models.models.TaskResponse
+import com.example.inrussian.models.models.task.AudioTask
 import com.example.inrussian.utils.errorHandle
 import kotlin.math.abs
 import kotlin.random.Random
@@ -17,15 +18,22 @@ import kotlin.random.Random
 class TrainRepositoryImpl(private val api: DefaultApi) : TrainRepository {
     private val tasks = listOf<TaskModel>(
         TaskModel(
+            taskType = listOf(TaskType.LISTEN),
+            taskBody = TaskBody.AudioConnectTask(
+                variant = listOf("https://ru-d1.drivemusic.me/dl/aUXUtDqRsTEr0AyF_pBYhA/1756874921/download_music/2019/11/the-weeknd-blinding-lights.mp3" to "Гойда")
+            ),
+            question = "как же надоело писать этот проект"
+        ),
+        /*TaskModel(
             taskType = listOf(TaskType.READ, TaskType.READ),
-            taskBody = TaskBody.TextTask(
+            taskBody = TaskBody.TextConnectTask(
                 variant = listOf("BudetMir, goyd2a " to "Гойда")
             ),
             question = "live or die, that is question"
         ),
         TaskModel(
             taskType = listOf(TaskType.READ, TaskType.WRITE),
-            taskBody = TaskBody.TextTask(
+            taskBody = TaskBody.TextConnectTask(
                 variant = listOf(
                     "BudetMir, goyd1a " to "Гойда1",
                     "BudetMir, goyd2a " to "Гойда2",
@@ -36,11 +44,11 @@ class TrainRepositoryImpl(private val api: DefaultApi) : TrainRepository {
         ),
         TaskModel(
             taskType = listOf(TaskType.CONNECT_AUDIO, TaskType.SELECT),
-            taskBody = TaskBody.TextTask(
+            taskBody = TaskBody.TextConnectTask(
                 variant = listOf("BudetMir, goyd3a " to "Гойда")
             ),
             question = "live or die, that is question"
-        ),
+        ),*/
     )
 
     override suspend fun userCourses(): List<ShortCourse> {

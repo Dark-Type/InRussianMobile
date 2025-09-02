@@ -1,6 +1,5 @@
 package com.example.inrussian.components.main.train.tasks
 
-import co.touchlab.kermit.Logger
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
@@ -9,14 +8,8 @@ import com.example.inrussian.components.main.train.tasks.ImageConnectTaskCompone
 import com.example.inrussian.components.main.train.tasks.ImageConnectTaskComponent.PointF
 import com.example.inrussian.components.main.train.tasks.ImageConnectTaskComponent.RectF
 import com.example.inrussian.models.models.TaskBody
-import com.example.inrussian.models.models.TaskState
-import com.example.inrussian.models.models.task.ImageConnectTaskModel
-import com.example.inrussian.models.models.task.Task
-import com.example.inrussian.models.models.task.TextTaskModel
 import com.example.inrussian.utils.DragSource
 import com.example.inrussian.utils.Piece
-import com.example.inrussian.utils.componentCoroutineScope
-import kotlinx.coroutines.launch
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -31,7 +24,7 @@ class ImageConnectTaskComponentImpl(
     private val onContinueClicked: (Boolean) -> Unit,
     private val inChecking: (Boolean) -> Unit,
     private val onButtonEnable: (Boolean) -> Unit,
-    listImageTasks: TaskBody.ImageTask
+    listImageTasks: TaskBody.ImageConnectTask
 ) : ImageConnectTaskComponent, ComponentContext by context {
     private val _state = MutableValue(
         State(

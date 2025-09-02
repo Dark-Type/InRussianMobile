@@ -17,16 +17,17 @@ import com.example.inrussian.components.main.train.TrainComponentCopy.Config.Tex
 import com.example.inrussian.components.main.train.TrainComponentCopy.Config.TextInputConfig
 import com.example.inrussian.components.main.train.TrainComponentCopy.Config.TextInputWithVariantConfig
 import com.example.inrussian.components.main.train.tasks.AudioConnectTaskComponent
+import com.example.inrussian.components.main.train.tasks.AudioConnectTaskComponentImpl
 import com.example.inrussian.components.main.train.tasks.ImageConnectTaskComponent
 import com.example.inrussian.components.main.train.tasks.ImageConnectTaskComponentImpl
 import com.example.inrussian.components.main.train.tasks.TextConnectTaskComponent
 import com.example.inrussian.components.main.train.tasks.TextConnectTaskComponentImpl
 import com.example.inrussian.models.models.TaskBody
-import com.example.inrussian.models.models.TaskBody.AudioTask
-import com.example.inrussian.models.models.TaskBody.ImageTask
+import com.example.inrussian.models.models.TaskBody.AudioConnectTask
+import com.example.inrussian.models.models.TaskBody.ImageConnectTask
+import com.example.inrussian.models.models.TaskBody.TextConnectTask
 import com.example.inrussian.models.models.TaskBody.TextInputTask
 import com.example.inrussian.models.models.TaskBody.TextInputWithVariantTask
-import com.example.inrussian.models.models.TaskBody.TextTask
 import com.example.inrussian.stores.main.train.TrainStore
 import com.example.inrussian.utils.asValue
 import com.example.inrussian.utils.componentCoroutineScope
@@ -53,15 +54,15 @@ interface TrainComponentCopy {
     sealed interface Config {
         @Serializable
         @SerialName("TextConnect")
-        data class TextConnectConfig(val tasks: TextTask) : Config
+        data class TextConnectConfig(val tasks: TextConnectTask) : Config
 
         @Serializable
         @SerialName("ImageConnect")
-        data class ImageConnectConfig(val tasks: ImageTask) : Config
+        data class ImageConnectConfig(val tasks: ImageConnectTask) : Config
 
         @Serializable
         @SerialName("AudioConnect")
-        data class AudioConnectConfig(val tasks: AudioTask) : Config
+        data class AudioConnectConfig(val tasks: AudioConnectTask) : Config
 
         @Serializable
         @SerialName("TextInput")
@@ -107,13 +108,16 @@ class TrainComponentImpl(
                 Logger.i { "percent: ${state.value.percent}" }
                 navigation.activate(
                     configuration = when (it.showedTask?.taskBody) {
-                        is AudioTask -> AudioConnectConfig(it.showedTask.taskBody)
-                        is ImageTask -> ImageConnectConfig(it.showedTask.taskBody)
+                        is AudioConnectTask -> AudioConnectConfig(it.showedTask.taskBody)
+                        is ImageConnectTask -> ImageConnectConfig(it.showedTask.taskBody)
                         is TextInputTask -> TextInputConfig(it.showedTask.taskBody)
                         is TextInputWithVariantTask -> TextInputWithVariantConfig(it.showedTask.taskBody)
-                        is TextTask -> TextConnectConfig(it.showedTask.taskBody)
+                        is TextConnectTask -> TextConnectConfig(it.showedTask.taskBody)
                         null -> Config.EmptyTaskConfig
                         is TaskBody.ListenAndSelect -> TODO()
+                        is TaskBody.ConstructSentenceTask -> TODO()
+                        is TaskBody.ImageAndSelect -> TODO()
+                        is TaskBody.SelectWordsTask -> TODO()
                     }
                 )
             }
@@ -154,7 +158,15 @@ class TrainComponentImpl(
             }
 
             Config.EmptyTaskConfig -> Child.EmptyChild
-            is AudioConnectConfig -> TODO()
+            is AudioConnectConfig -> Child.AudioConnectChild(
+                component = AudioConnectTaskComponentImpl(
+                    context,
+                    onContinueClicked = ::onNextClick,
+                    inChecking = ::inCheck,
+                    onButtonEnable = ::onChangeButtonState, config.tasks
+                )
+            )
+
             is TextInputConfig -> TODO()
             is TextInputWithVariantConfig -> TODO()
 
