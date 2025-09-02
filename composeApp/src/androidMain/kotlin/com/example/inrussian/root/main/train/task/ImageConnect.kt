@@ -39,9 +39,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.example.inrussian.components.main.train.tasks.ImageConnectTaskComponent
-import com.example.inrussian.components.main.train.tasks.ImageConnectTaskComponent.PointF
-import com.example.inrussian.components.main.train.tasks.ImageConnectTaskComponent.RectF
+import com.example.inrussian.components.main.train.tasks.interfaces.ImageConnectTaskComponent
+import com.example.inrussian.components.main.train.tasks.interfaces.ImageConnectTaskComponent.PointF
+import com.example.inrussian.components.main.train.tasks.interfaces.ImageConnectTaskComponent.RectF
 import com.example.inrussian.ui.theme.PuzzleLayoutIn
 import com.example.inrussian.ui.theme.PuzzleLayoutOut
 import com.example.inrussian.ui.theme.TabSide

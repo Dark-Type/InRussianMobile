@@ -1,12 +1,11 @@
-package com.example.inrussian.components.main.train.tasks
+package com.example.inrussian.components.main.train.tasks.interfaces
 
 import com.arkivanov.decompose.value.Value
-import com.example.inrussian.models.models.task.Task
 import com.example.inrussian.utils.DragSource
 import com.example.inrussian.utils.Piece
 import com.example.inrussian.utils.RowModel
 
-interface AudioConnectTaskComponent {
+interface TextConnectTaskComponent {
     val state: Value<State>
 
     data class PointF(val x: Float, val y: Float) {

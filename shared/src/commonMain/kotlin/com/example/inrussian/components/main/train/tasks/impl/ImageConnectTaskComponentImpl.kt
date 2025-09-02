@@ -1,12 +1,13 @@
-package com.example.inrussian.components.main.train.tasks
+package com.example.inrussian.components.main.train.tasks.impl
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
-import com.example.inrussian.components.main.train.tasks.ImageConnectTaskComponent.State
-import com.example.inrussian.components.main.train.tasks.ImageConnectTaskComponent.PointF
-import com.example.inrussian.components.main.train.tasks.ImageConnectTaskComponent.RectF
+import com.example.inrussian.components.main.train.tasks.interfaces.ImageConnectTaskComponent
+import com.example.inrussian.components.main.train.tasks.interfaces.ImageConnectTaskComponent.State
+import com.example.inrussian.components.main.train.tasks.interfaces.ImageConnectTaskComponent.PointF
+import com.example.inrussian.components.main.train.tasks.interfaces.ImageConnectTaskComponent.RectF
 import com.example.inrussian.models.models.TaskBody
 import com.example.inrussian.utils.DragSource
 import com.example.inrussian.utils.Piece

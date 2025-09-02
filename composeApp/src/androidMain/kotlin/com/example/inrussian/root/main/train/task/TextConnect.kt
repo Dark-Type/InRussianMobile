@@ -38,9 +38,9 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.example.inrussian.components.main.train.tasks.TextConnectTaskComponent
-import com.example.inrussian.components.main.train.tasks.TextConnectTaskComponent.PointF
-import com.example.inrussian.components.main.train.tasks.TextConnectTaskComponent.RectF
+import com.example.inrussian.components.main.train.tasks.interfaces.TextConnectTaskComponent
+import com.example.inrussian.components.main.train.tasks.interfaces.TextConnectTaskComponent.PointF
+import com.example.inrussian.components.main.train.tasks.interfaces.TextConnectTaskComponent.RectF
 import com.example.inrussian.ui.theme.PuzzleLayoutIn
 import com.example.inrussian.ui.theme.PuzzleLayoutOut
 import com.example.inrussian.ui.theme.TabSide

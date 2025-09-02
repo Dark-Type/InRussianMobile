@@ -31,13 +31,17 @@ class TrainStoreFactory(
             reducer = ReducerImpl,
         ) {}
 
+    private var sectionId: String = ""
+
     private inner class ExecutorImpl : CoroutineExecutor<Intent, Action, State, Msg, Label>() {
 
         override fun executeAction(action: Action) {
             when (action) {
                 is Action.LoadTasks -> {
                     scope.launch(Dispatchers.Main) {
-                        dispatch(Msg.UpdateTasks(repository.getNextTask()))
+                        sectionId = action.themeId
+                        Logger.i { "sectionId $sectionId" }
+                        dispatch(Msg.UpdateTasks(repository.getNextTask(sectionId = action.themeId)))
                     }
                 }
             }
@@ -48,7 +52,7 @@ class TrainStoreFactory(
                 when (intent) {
                     is Intent.ContinueClick -> {
                         repository.sendResultAndGetNextTask()
-                        dispatch(Msg.UpdateTasks(repository.getNextTask()))
+                        dispatch(Msg.UpdateTasks(repository.getNextTask(sectionId)))
                     }
 
                     is Intent.OnButtonStateChange -> dispatch(UpdateButtonState(intent.isEnable))
@@ -64,7 +68,7 @@ class TrainStoreFactory(
 
 
             is Msg.UpdateTasks -> {
-                Logger.i{"update"}
+                Logger.i { "update" }
                 copy(
                     showedTask = msg.tasks.task,
                     percent = msg.tasks.percent

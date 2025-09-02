@@ -16,12 +16,16 @@ import com.example.inrussian.components.main.train.TrainComponentCopy.Config.Ima
 import com.example.inrussian.components.main.train.TrainComponentCopy.Config.TextConnectConfig
 import com.example.inrussian.components.main.train.TrainComponentCopy.Config.TextInputConfig
 import com.example.inrussian.components.main.train.TrainComponentCopy.Config.TextInputWithVariantConfig
-import com.example.inrussian.components.main.train.tasks.AudioConnectTaskComponent
-import com.example.inrussian.components.main.train.tasks.AudioConnectTaskComponentImpl
-import com.example.inrussian.components.main.train.tasks.ImageConnectTaskComponent
-import com.example.inrussian.components.main.train.tasks.ImageConnectTaskComponentImpl
-import com.example.inrussian.components.main.train.tasks.TextConnectTaskComponent
-import com.example.inrussian.components.main.train.tasks.TextConnectTaskComponentImpl
+import com.example.inrussian.components.main.train.tasks.impl.AudioConnectTaskComponentImpl
+import com.example.inrussian.components.main.train.tasks.impl.ImageConnectTaskComponentImpl
+import com.example.inrussian.components.main.train.tasks.impl.TextConnectTaskComponentImpl
+import com.example.inrussian.components.main.train.tasks.impl.TextInputTaskComponentImpl
+import com.example.inrussian.components.main.train.tasks.impl.TextInputTaskWithVariantComponentImpl
+import com.example.inrussian.components.main.train.tasks.interfaces.AudioConnectTaskComponent
+import com.example.inrussian.components.main.train.tasks.interfaces.ImageConnectTaskComponent
+import com.example.inrussian.components.main.train.tasks.interfaces.TextConnectTaskComponent
+import com.example.inrussian.components.main.train.tasks.interfaces.TextInputTaskComponent
+import com.example.inrussian.components.main.train.tasks.interfaces.TextInputTaskWithVariantComponent
 import com.example.inrussian.models.models.TaskBody
 import com.example.inrussian.models.models.TaskBody.AudioConnectTask
 import com.example.inrussian.models.models.TaskBody.ImageConnectTask
@@ -47,6 +51,9 @@ interface TrainComponentCopy {
         data class TextConnectChild(val component: TextConnectTaskComponent) : Child
         data class AudioConnectChild(val component: AudioConnectTaskComponent) : Child
         data class ImageConnectChild(val component: ImageConnectTaskComponent) : Child
+        data class TextInputChild(val component: TextInputTaskComponent) : Child
+        data class TextInputWithVariantsChild(val component: TextInputTaskWithVariantComponent) : Child
+
         data object EmptyChild : Child
     }
 
@@ -100,6 +107,7 @@ class TrainComponentImpl(
 
     init {
         scope.launch {
+            Logger.i { "TrainComponentImpl courseId: $courseId" }
             state.subscribe {
                 Logger.i {
                     it.showedTask?.let { it1 -> "activete: ${it1.taskBody::class}" }.toString()
@@ -129,8 +137,7 @@ class TrainComponentImpl(
     }
 
     private fun createChild(
-        config: Config,
-        context: ComponentContext
+        config: Config, context: ComponentContext
     ): Child {
         return when (config) {
             is TextConnectConfig -> {
@@ -163,12 +170,31 @@ class TrainComponentImpl(
                     context,
                     onContinueClicked = ::onNextClick,
                     inChecking = ::inCheck,
-                    onButtonEnable = ::onChangeButtonState, config.tasks
+                    onButtonEnable = ::onChangeButtonState,
+                    config.tasks
                 )
             )
 
-            is TextInputConfig -> TODO()
-            is TextInputWithVariantConfig -> TODO()
+            is TextInputConfig -> Child.TextInputChild(
+                component =
+                    TextInputTaskComponentImpl(
+                        context,
+                        onContinueClicked = ::onNextClick,
+                        inChecking = ::inCheck,
+                        onButtonEnable = ::onChangeButtonState,
+                        config.tasks
+                    )
+            )
+
+            is TextInputWithVariantConfig -> Child.TextInputWithVariantsChild(
+                component = TextInputTaskWithVariantComponentImpl(
+                    context,
+                    onContinueClicked = ::onNextClick,
+                    inChecking = ::inCheck,
+                    onButtonEnable = ::onChangeButtonState,
+                    config.tasks
+                )
+            )
 
         }
     }

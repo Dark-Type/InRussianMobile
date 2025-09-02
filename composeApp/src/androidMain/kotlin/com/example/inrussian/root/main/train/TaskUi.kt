@@ -21,6 +21,8 @@ import com.example.inrussian.components.main.train.TrainComponentCopy
 import com.example.inrussian.root.main.train.task.AudioConnect
 import com.example.inrussian.root.main.train.task.ImageConnectTask
 import com.example.inrussian.root.main.train.task.TextConnect
+import com.example.inrussian.root.main.train.task.TextInputTask
+import com.example.inrussian.root.main.train.task.TextInputWithVariantTask
 import com.example.inrussian.ui.theme.Black
 import com.example.inrussian.ui.theme.CommonButton
 import com.example.inrussian.ui.theme.LightGrey
@@ -78,6 +80,14 @@ fun TaskUi(component: TrainComponentCopy) {
                     )
 
                 is TrainComponentCopy.Child.AudioConnectChild -> AudioConnect(state.component) {
+                    onEvent = it
+                }
+
+                is TrainComponentCopy.Child.TextInputChild -> TextInputTask(state.component) {
+                    onEvent = it
+                }
+
+                is TrainComponentCopy.Child.TextInputWithVariantsChild -> TextInputWithVariantTask(state.component){
                     onEvent = it
                 }
             }

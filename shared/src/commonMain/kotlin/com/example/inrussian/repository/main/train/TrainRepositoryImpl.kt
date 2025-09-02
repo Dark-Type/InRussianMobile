@@ -7,16 +7,62 @@ import com.example.inrussian.components.main.train.TaskType
 import com.example.inrussian.components.main.train.ThemeMeta
 import com.example.inrussian.data.client.apis.DefaultApi
 import com.example.inrussian.models.models.FullTaskModel
+import com.example.inrussian.models.models.GapWithVariantModel
 import com.example.inrussian.models.models.TaskBody
 import com.example.inrussian.models.models.TaskModel
 import com.example.inrussian.models.models.TaskResponse
-import com.example.inrussian.models.models.task.AudioTask
+import com.example.inrussian.models.models.TextInputWithVariantModel
 import com.example.inrussian.utils.errorHandle
 import kotlin.math.abs
 import kotlin.random.Random
 
 class TrainRepositoryImpl(private val api: DefaultApi) : TrainRepository {
     private val tasks = listOf<TaskModel>(
+        TaskModel(
+            taskType = listOf(),
+            taskBody = TaskBody.TextInputWithVariantTask(
+                task = TextInputWithVariantModel(
+                    label = "Chertov spicker",
+                    text = "God, it's was really bad day",
+                    gaps = listOf(
+                        GapWithVariantModel(
+                            position = 0,
+                            variants = listOf("bad", "fucking", "oldest"),
+                            correctVariant = "fucking"
+                        ), GapWithVariantModel(
+                            position = 4,
+                            variants = listOf("bad", "fucking", "oldest"),
+                            correctVariant = "fucking"
+                        )
+                    )
+                )
+            ),
+            question = "тем временем был уже 4 час утра"
+        ),
+        /*TaskModel(
+            taskType = listOf(TaskType.LISTEN),
+            taskBody = TaskBody.TextInputTask(
+                task = listOf(
+                    TextInputModel(
+                        label = "Спикер 2",
+                        text = "greka ehal cherez reku widit sidit rak",
+                        gaps = listOf(Gap("Greka", 5))
+                    ),
+                    TextInputModel(
+                        label = "Спикер 1",
+                        text = "greka ehal cherez reku widit sidit rak",
+                        gaps = listOf(Gap("Greka", 5))
+                    ),
+                    TextInputModel(
+                        label = "Спикер 0",
+                        text = "greka ehal cherez reku widit sidit rak",
+                        gaps = listOf(Gap("Greka", 5))
+                    ),
+
+                    )
+            ),
+            question = "как же надоело писать этот проект"
+        ),*/
         TaskModel(
             taskType = listOf(TaskType.LISTEN),
             taskBody = TaskBody.AudioConnectTask(
@@ -102,7 +148,7 @@ class TrainRepositoryImpl(private val api: DefaultApi) : TrainRepository {
         )
     }
 
-    override suspend fun getNextTask(): TaskResponse {
+    override suspend fun getNextTask(sectionId: String): TaskResponse {
         val task = tasks.shuffled().first()
         return TaskResponse(
             abs(Random(1231).nextInt()) % 100 / 100f,

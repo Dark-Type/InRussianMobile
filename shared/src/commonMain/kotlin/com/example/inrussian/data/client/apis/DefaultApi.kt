@@ -26,6 +26,7 @@ import com.example.inrussian.data.client.models.PasswordResetResponse
 import com.example.inrussian.data.client.models.RecoveryCheckRequest
 import com.example.inrussian.data.client.models.RecoveryCheckResponse
 import com.example.inrussian.data.client.models.RecoveryEmailRequest
+import com.example.inrussian.models.models.AttemptRequest
 import com.example.inrussian.models.models.TaskCountRequest
 import com.example.inrussian.models.models.TaskModel
 import com.example.inrussian.platformInterfaces.UserConfigurationStorage
@@ -213,6 +214,55 @@ open class DefaultApi : ApiClient {
         ).wrap()
     }
 
+    open suspend fun getNextTask(sectionId: String): HttpResponse<TaskModel> {
+
+        val localVariableAuthNames = listOf<String>()
+
+        val localVariableBody =
+            EmptyContent
+
+        val localVariableQuery = mutableMapOf<String, List<String>>()
+        val localVariableHeaders = mutableMapOf<String, String>()
+
+        val localVariableConfig = RequestConfig<Any?>(
+            RequestMethod.GET,
+            "/sections/${sectionId}/tasks/next",
+            query = localVariableQuery,
+            headers = localVariableHeaders,
+            requiresAuthentication = false,
+        )
+
+        return request(
+            localVariableConfig,
+            localVariableBody,
+            localVariableAuthNames
+        ).wrap()
+    }
+
+    open suspend fun attempts(attempt: AttemptRequest): HttpResponse<TaskModel> {
+
+        val localVariableAuthNames = listOf<String>()
+
+        val localVariableBody =
+            attempt
+
+        val localVariableQuery = mutableMapOf<String, List<String>>()
+        val localVariableHeaders = mutableMapOf<String, String>()
+
+        val localVariableConfig = RequestConfig<Any?>(
+            RequestMethod.GET,
+            "/attempts",
+            query = localVariableQuery,
+            headers = localVariableHeaders,
+            requiresAuthentication = false,
+        )
+
+        return request(
+            localVariableConfig,
+            localVariableBody,
+            localVariableAuthNames
+        ).wrap()
+    }
 
     open suspend fun authRefreshPost(refreshTokenRequest: RefreshTokenRequest): HttpResponse<String> {
 

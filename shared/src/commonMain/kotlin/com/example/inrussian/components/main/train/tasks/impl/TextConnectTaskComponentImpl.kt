@@ -1,12 +1,13 @@
-package com.example.inrussian.components.main.train.tasks
+package com.example.inrussian.components.main.train.tasks.impl
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
-import com.example.inrussian.components.main.train.tasks.TextConnectTaskComponent.PointF
-import com.example.inrussian.components.main.train.tasks.TextConnectTaskComponent.RectF
-import com.example.inrussian.components.main.train.tasks.TextConnectTaskComponent.State
+import com.example.inrussian.components.main.train.tasks.interfaces.TextConnectTaskComponent
+import com.example.inrussian.components.main.train.tasks.interfaces.TextConnectTaskComponent.PointF
+import com.example.inrussian.components.main.train.tasks.interfaces.TextConnectTaskComponent.RectF
+import com.example.inrussian.components.main.train.tasks.interfaces.TextConnectTaskComponent.State
 import com.example.inrussian.models.models.TaskBody.TextConnectTask
 import com.example.inrussian.utils.DragSource
 import com.example.inrussian.utils.Piece

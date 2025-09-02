@@ -51,9 +51,9 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import coil.compose.AsyncImage
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.example.inrussian.components.main.train.tasks.AudioConnectTaskComponent
-import com.example.inrussian.components.main.train.tasks.AudioConnectTaskComponent.PointF
-import com.example.inrussian.components.main.train.tasks.AudioConnectTaskComponent.RectF
+import com.example.inrussian.components.main.train.tasks.interfaces.AudioConnectTaskComponent
+import com.example.inrussian.components.main.train.tasks.interfaces.AudioConnectTaskComponent.PointF
+import com.example.inrussian.components.main.train.tasks.interfaces.AudioConnectTaskComponent.RectF
 import com.example.inrussian.models.models.TaskState
 import com.example.inrussian.models.models.task.AudioTask
 import com.example.inrussian.models.models.task.TextTaskModel

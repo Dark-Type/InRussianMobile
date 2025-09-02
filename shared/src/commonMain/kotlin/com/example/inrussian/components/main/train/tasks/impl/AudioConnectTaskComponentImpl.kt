@@ -1,12 +1,13 @@
-package com.example.inrussian.components.main.train.tasks
+package com.example.inrussian.components.main.train.tasks.impl
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
-import com.example.inrussian.components.main.train.tasks.AudioConnectTaskComponent.PointF
-import com.example.inrussian.components.main.train.tasks.AudioConnectTaskComponent.RectF
-import com.example.inrussian.components.main.train.tasks.AudioConnectTaskComponent.State
+import com.example.inrussian.components.main.train.tasks.interfaces.AudioConnectTaskComponent
+import com.example.inrussian.components.main.train.tasks.interfaces.AudioConnectTaskComponent.PointF
+import com.example.inrussian.components.main.train.tasks.interfaces.AudioConnectTaskComponent.RectF
+import com.example.inrussian.components.main.train.tasks.interfaces.AudioConnectTaskComponent.State
 import com.example.inrussian.models.models.TaskBody
 import com.example.inrussian.utils.DragSource
 import com.example.inrussian.utils.Piece
