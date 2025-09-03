@@ -7,6 +7,7 @@ import com.example.inrussian.platformInterfaces.UserConfigurationStorage
 import com.example.inrussian.repository.auth.AuthRepository
 import com.example.inrussian.utils.errorHandle
 import org.openapitools.client.models.Course
+import org.openapitools.client.models.CourseProgressItem
 import org.openapitools.client.models.SectionProgressItem
 
 class HomeRepositoryImpl(
@@ -36,10 +37,17 @@ class HomeRepositoryImpl(
 
     override suspend fun courseSections(courseId: String): List<CourseSection> =
         api.contentSectionsByCourseCourseIdGet(courseId)
-            .errorHandle(userConfigurationStorage ,authRepository)
-            .map {
-                api.studentSectionsSectionIdProgressGet(it.courseId).errorHandle(userConfigurationStorage ,authRepository)
-                    .toCourseSection(it.name)
+            .errorHandle(userConfigurationStorage, authRepository)
+            .map { section ->
+                val progressResponse = api.studentSectionsSectionIdProgressGet(section.courseId)
+                    .errorHandle(userConfigurationStorage, authRepository)
+
+                progressResponse.toCourseSection(
+                    title = section.name,
+                    percent = progressResponse.percent,
+                    sectionId = section.id,
+                    completedTasks = progressResponse.solvedTasks,
+                )
             }
 
 
@@ -49,14 +57,18 @@ class HomeRepositoryImpl(
         val completed = sections.sumOf { it.completedLessons }
         return if (totalLessons == 0) 0 else (completed * 100 / totalLessons)
     }
+
+    override suspend fun courseProgress(courseId: String): CourseProgressItem =
+        api.studentCoursesCourseIdProgressGet(courseId).body()
 }
 
-fun SectionProgressItem.toCourseSection(title: String = ""): CourseSection {
+fun SectionProgressItem.toCourseSection(sectionId:String, title: String = "", percent: Double, completedTasks:Int): CourseSection {
     return CourseSection(
         id = sectionId,
         title = title,
         totalLessons = totalTasks,
-        completedLessons = completedTasks
+        completedLessons = completedTasks,
+        percent = percent
     )
 }
 

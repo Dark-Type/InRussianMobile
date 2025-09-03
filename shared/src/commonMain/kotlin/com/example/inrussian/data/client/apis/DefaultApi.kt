@@ -3204,7 +3204,7 @@ open class DefaultApi : ApiClient {
 
         val localVariableConfig = RequestConfig<Any?>(
             RequestMethod.GET,
-            "/student/sections/{sectionId}/progress".replace("{" + "sectionId" + "}", "$sectionId"),
+            "/sections/{sectionId}/progress".replace("{" + "sectionId" + "}", "$sectionId"),
             query = localVariableQuery,
             headers = localVariableHeaders,
             requiresAuthentication = false,

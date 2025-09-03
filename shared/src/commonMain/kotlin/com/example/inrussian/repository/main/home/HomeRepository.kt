@@ -2,6 +2,7 @@ package com.example.inrussian.repository.main.home
 
 import com.example.inrussian.components.main.home.CourseModel
 import com.example.inrussian.components.main.home.CourseSection
+import org.openapitools.client.models.CourseProgressItem
 
 interface HomeRepository {
     suspend fun enroll(courseId: String)
@@ -13,4 +14,6 @@ interface HomeRepository {
     suspend fun courseById(courseId: String): CourseModel?
     suspend fun courseSections(courseId: String): List<CourseSection>
     suspend fun courseProgressPercent(courseId: String): Int
+
+    suspend fun courseProgress(courseId : String) : CourseProgressItem
 }

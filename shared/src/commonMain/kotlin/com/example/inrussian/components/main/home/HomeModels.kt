@@ -22,7 +22,8 @@ data class CourseSection(
     val id: String,
     val title: String,
     val totalLessons: Int,
-    val completedLessons: Int
+    val completedLessons: Int,
+    val percent:Double
 )
 
 data class CoursesListState(

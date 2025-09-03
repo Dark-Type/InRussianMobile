@@ -19,6 +19,8 @@ package org.openapitools.client.models
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 /**
  * 
@@ -28,18 +30,16 @@ import kotlinx.serialization.encoding.*
  * @param completedTasks 
  * @param progressPercentage 
  */
+
 @Serializable
-
-data class SectionProgressItem (
-
-    @SerialName(value = "sectionId") @Required val sectionId: kotlin.String,
-
-    @SerialName(value = "totalTasks") @Required val totalTasks: kotlin.Int,
-
-    @SerialName(value = "completedTasks") @Required val completedTasks: kotlin.Int,
-
-    @SerialName(value = "progressPercentage") @Required val progressPercentage: kotlin.String
-
+data class SectionProgressItem constructor(
+    val userId: String,
+    val courseId: String,
+    val solvedTasks: Int,
+    val totalTasks: Int,
+    val percent: Double,
+    val averageTimeMs: Int,
+    val updatedAt: String
 ) {
 
 

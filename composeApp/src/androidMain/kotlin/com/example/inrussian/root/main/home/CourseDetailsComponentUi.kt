@@ -1,11 +1,14 @@
 package com.example.inrussian.root.main.home
 
+import android.graphics.Color
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -48,6 +52,7 @@ import inrussian.composeapp.generated.resources.post
 import inrussian.composeapp.generated.resources.profile
 import inrussian.composeapp.generated.resources.recommended_image_mock
 import inrussian.composeapp.generated.resources.y_enrolled
+import nekit.corporation.shift_app.ui.theme.LocalExtraColors
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -56,21 +61,24 @@ import org.jetbrains.compose.resources.vectorResource
 fun CourseDetailsComponentUi(component: CourseDetailsComponent) {
     val state by component.state.subscribeAsState()
     val course = state.course
+    val currentColors = LocalExtraColors.current
+
     LazyColumn(
         Modifier
-            .background(LightGrey)
+            .background(currentColors.baseBackground)
             .fillMaxSize()
     ) {
         item() {
-            Box(Modifier.fillMaxWidth()) {
+            Box(
+                Modifier
+                    .fillMaxWidth().aspectRatio(402f/331f),
+            ) {
                 Image(
                     painterResource(Res.drawable.recommended_image_mock),
                     "",
-                    Modifier
-                        .height(height = 350.dp)
-                        .fillMaxWidth(),
-
-                    )
+                    Modifier.fillMaxSize().clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp)),
+                    contentScale = ContentScale.FillBounds
+                )
                 IconButton(
                     component::onBack,
                     Modifier
@@ -81,7 +89,6 @@ fun CourseDetailsComponentUi(component: CourseDetailsComponent) {
                 ) {
                     Icon(
                         vectorResource(Res.drawable.back_arrow), "", tint = White
-
                     )
                 }
                 TextButton(
@@ -93,7 +100,12 @@ fun CourseDetailsComponentUi(component: CourseDetailsComponent) {
                         )
                         .padding(end = 20.dp, top = 32.dp)
 
-                ) { Text(stringResource(if (state.isEnrolled) Res.string.y_enrolled else Res.string.enroll)) }
+                ) {
+                    Text(
+                        stringResource(if (state.isEnrolled) Res.string.y_enrolled else Res.string.enroll),
+                        color = androidx.compose.ui.graphics.Color(0xFFFFFFFF)
+                    )
+                }
                 Text(
                     state.course?.name ?: "",
                     modifier = Modifier
@@ -103,16 +115,16 @@ fun CourseDetailsComponentUi(component: CourseDetailsComponent) {
                         .align(Alignment.BottomStart),
                     color = White,
                     fontSize = 32.sp,
+                    lineHeight = 40.sp
                 )
             }
         }
 
         item {
-            Row(Modifier.padding(horizontal = 16.dp)) {
+            Row(Modifier.padding(horizontal = 16.dp, vertical = 24.dp)) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-
                         .clip(
                             CircleShape
                         )
@@ -127,20 +139,22 @@ fun CourseDetailsComponentUi(component: CourseDetailsComponent) {
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        stringResource((Res.string.author)) + ": ${state.course?.authorUrl}",
-                        fontWeight = FontWeight.W500
+                        stringResource((Res.string.author)) + ": ${state.course?.authorId?.take(8)}",
+                        fontWeight = FontWeight.W500,
+                        fontSize = 12.sp
                     )
                 }
                 Spacer(Modifier.weight(1f))
                 Text(
-                    stringResource(Res.string.post) + " ${state.course?.createdAt}",
+                    stringResource(Res.string.post) + " ${state.course?.createdAt?.take(10)}",
                     modifier = Modifier
                         .clip(
                             CircleShape
                         )
                         .background(White)
                         .padding(horizontal = 14.dp, vertical = 9.dp),
-                    fontWeight = FontWeight.W500
+                    fontWeight = FontWeight.W500,
+                    fontSize = 12.sp
                 )
             }
         }
@@ -188,41 +202,4 @@ fun CourseItem(course: CourseSection, showProgress: Boolean) {
             )
         }
     }
-}
-
-
-class CourseDetailsComponentUi() : CourseDetailsComponent {
-    override val courseId: String = ""
-    override val state = MutableValue(
-        CourseDetailsState(
-            course = CourseModel(name = "通过工作考试的培训 / Курс на патент", authorId = "Ido"),
-            isEnrolled = true,
-            sections = listOf(CourseSection("", "Инструкция", 100, 50)),
-            progressPercent = 0,
-            isLoading = false
-        )
-    )
-
-    override fun toggleEnroll() {
-        TODO("Not yet implemented")
-    }
-
-    override fun onBack() {
-        TODO("Not yet implemented")
-    }
-
-    override fun showInfo() {
-        TODO("Not yet implemented")
-    }
-
-    override fun signUp() {
-        TODO("Not yet implemented")
-    }
-
-    @Preview(showBackground = true, showSystemUi = true)
-    @Composable
-    fun Preview() {
-        CourseDetailsComponentUi(this)
-    }
-
 }
