@@ -19,7 +19,7 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
-            implementation ("com.google.android.exoplayer:exoplayer:2.19.0")
+            implementation (libs.exoplayer)
             implementation(libs.ktor.client.okhttp)
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
@@ -27,6 +27,7 @@ kotlin {
             implementation(libs.decompose.compose)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.koin.core)
+            implementation(libs.androidx.security.crypto)
         }
         commonMain.dependencies {
             implementation(compose.runtime)

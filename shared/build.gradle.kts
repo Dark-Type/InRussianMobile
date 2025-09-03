@@ -36,7 +36,6 @@ kotlin {
                 export(libs.essenty.lifecycle)
                 export(libs.ktor.client.darwin)
                 export(libs.resources)
-//                export("dev.icerock.moko:graphics:0.10.0")
 
             }
         }
@@ -63,6 +62,12 @@ kotlin {
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.content.negotiation)
                 implementation(libs.ktor.serialization.kotlinx.json)
+            }
+        }
+        val androidMain by getting {
+            dependencies {
+                implementation(libs.androidx.security.crypto)
+                implementation("androidx.datastore:datastore-preferences:1.0.0")
             }
         }
         val iosMain by getting {
