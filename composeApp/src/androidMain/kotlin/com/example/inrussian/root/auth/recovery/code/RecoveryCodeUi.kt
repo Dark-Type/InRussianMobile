@@ -1,15 +1,12 @@
 package com.example.inrussian.root.auth.recovery.code
 
-import android.R.attr.text
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -40,18 +37,14 @@ import com.example.inrussian.ui.theme.LightGrey
 import com.example.inrussian.ui.theme.Orange
 import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.check_spam
-import inrussian.composeapp.generated.resources.email
 import inrussian.composeapp.generated.resources.is_no_got_mail
 import inrussian.composeapp.generated.resources.password_recovery
-import inrussian.composeapp.generated.resources.question
+import inrussian.composeapp.generated.resources.questionMark
 import inrussian.composeapp.generated.resources.repeat_send_code
-import inrussian.composeapp.generated.resources.send_code
 import inrussian.composeapp.generated.resources.sms_code
 import inrussian.composeapp.generated.resources.support_contact
 import inrussian.composeapp.generated.resources.write_code
-import inrussian.composeapp.generated.resources.write_email
 import nekit.corporation.shift_app.ui.theme.LocalExtraColors
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -120,7 +113,7 @@ fun EnterRecoveryCodeUi(component: EnterRecoveryCodeComponent) {
                 .align(Alignment.TopEnd)
                 .padding(28.dp)
         ) {
-            Icon(vectorResource(Res.drawable.question), "", tint = Orange)
+            Icon(vectorResource(Res.drawable.questionMark), "", tint = Orange)
         }
         if (state.questionShow) {
             Dialog(

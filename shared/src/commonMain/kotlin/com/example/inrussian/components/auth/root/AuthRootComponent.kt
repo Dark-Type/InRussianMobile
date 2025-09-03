@@ -7,6 +7,7 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.popToFirst
 import com.arkivanov.decompose.router.stack.pushNew
+import com.arkivanov.decompose.router.stack.replaceCurrent
 import com.arkivanov.decompose.value.Value
 import com.example.inrussian.components.auth.base.BaseAuthComponent
 import com.example.inrussian.components.auth.base.BaseAuthOutput
@@ -163,7 +164,7 @@ class DefaultAuthRootComponent(
 
     private fun onEnterEmailOutput(output: EnterEmailOutput): Unit =
         when (output) {
-            is EnterEmailOutput.NavigateToRecoveryCode -> navigation.pushNew(AuthConfiguration.EnterRecoveryCode)
+            is EnterEmailOutput.NavigateToRecoveryCode -> navigation.replaceCurrent(AuthConfiguration.EnterRecoveryCode)
             is EnterEmailOutput.NavigateBack -> navigation.pop()
         }
 

@@ -5,6 +5,10 @@ import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.example.inrussian.models.state.UpdatePasswordState
 import com.example.inrussian.repository.auth.AuthRepository
+import com.example.inrussian.stores.auth.recovery.RecoveryStore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlin.coroutines.EmptyCoroutineContext
 
 interface UpdatePasswordComponent {
     fun onPasswordUpdated()
@@ -24,13 +28,19 @@ sealed class UpdatePasswordOutput {
 class DefaultUpdatePasswordComponent(
     componentContext: ComponentContext,
     private val onOutput: (UpdatePasswordOutput) -> Unit,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val store: RecoveryStore
 ) : UpdatePasswordComponent, ComponentContext by componentContext {
 
+    private val scope = CoroutineScope(EmptyCoroutineContext)
     private val _state = MutableValue(UpdatePasswordState())
     override val state: Value<UpdatePasswordState> get() = _state
 
     override fun onPasswordUpdated() {
+        scope.launch {
+            authRepository.updatePassword(store.state.email, store.state.code, state.value.password)
+        }
+
         onOutput(UpdatePasswordOutput.PasswordUpdated)
     }
 
@@ -56,7 +66,6 @@ class DefaultUpdatePasswordComponent(
             confirmPasswordError = error,
             updateButtonEnable = enable
         )
-        onOutput(UpdatePasswordOutput.PasswordUpdated)
     }
     override fun onShowPasswordClick() {
         _state.value = _state.value.copy(showPassword = !_state.value.showPassword)

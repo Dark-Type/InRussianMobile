@@ -117,6 +117,8 @@ fun RegisterUi(component: RegisterComponent) {
                 text = stringResource(Res.string.sign_up),
                 enable = state.isButtonActive
             )
+
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }

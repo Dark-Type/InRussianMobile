@@ -93,7 +93,7 @@ fun UpdatePasswordUi(component: UpdatePasswordComponent) {
                         Res.drawable.eye_off
                     ),
                     onIconClick = component::onShowPasswordClick,
-                    visualTransformation = if (state.showPassword) PasswordVisualTransformation() else null
+                    visualTransformation = if (!state.showPassword) PasswordVisualTransformation() else null
                 )
 
                 CommonTextField(
@@ -104,7 +104,7 @@ fun UpdatePasswordUi(component: UpdatePasswordComponent) {
                         Res.drawable.eye_off
                     ),
                     onIconClick = component::onShowConfirmPasswordClick,
-                    visualTransformation = if (state.showConfirmPassword) PasswordVisualTransformation() else null
+                    visualTransformation = if (!state.showConfirmPassword) PasswordVisualTransformation() else null
                 )
             }
 

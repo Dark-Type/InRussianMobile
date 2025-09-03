@@ -5,8 +5,10 @@ import com.example.inrussian.data.client.apis.DefaultApi
 import com.example.inrussian.data.client.models.PasswordResetRequest
 import com.example.inrussian.data.client.models.PasswordResetResponse
 import com.example.inrussian.data.client.models.RecoveryCheckRequest
+import com.example.inrussian.data.client.models.RecoveryCheckResponse
 import com.example.inrussian.data.client.models.RecoveryEmailRequest
 import com.example.inrussian.models.models.AuthResponseModel
+import com.example.inrussian.models.models.CheckCodeResponse
 import com.example.inrussian.models.models.LoginModel
 import com.example.inrussian.models.models.RegisterModel
 import com.example.inrussian.platformInterfaces.UserConfigurationStorage
@@ -24,7 +26,7 @@ interface AuthRepository {
     suspend fun refreshToken(token: String): String
     suspend fun sendMail(email: String)
     suspend fun saveRefreshToken(token: String)
-    suspend fun sendCode(code: String, mail: String)
+    suspend fun sendCode(code: String, mail: String): Boolean
     suspend fun updatePassword(email: String, code: String, password: String)
     suspend fun setToken(token: String)
 }
@@ -55,10 +57,9 @@ class AuthRepositoryImpl(
         userConfigurationStorage.saveRefreshToken(token)
     }
 
-    override suspend fun sendCode(code: String, mail: String) {
-        api.recoveryCheck(RecoveryCheckRequest(mail, code))
+    override suspend fun sendCode(code: String, mail: String) : Boolean =
+        api.recoveryCheck(RecoveryCheckRequest(mail, code)).body().ok
 
-    }
 
     override suspend fun updatePassword(token: String, code: String, password: String) {
         api.recoveryReset(PasswordResetRequest(token,code,password))

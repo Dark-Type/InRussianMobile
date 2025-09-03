@@ -108,6 +108,8 @@ fun LoginUi(component: LoginComponent) {
             ) {
                 Text(stringResource(Res.string.forgot_password), color = currentColors.footnote)
             }
+
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }

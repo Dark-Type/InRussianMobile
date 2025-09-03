@@ -55,8 +55,13 @@ class DefaultEnterRecoveryCodeComponent(
     override fun onCodeEntered(code: String) {
         scope.launch {
             val result = authRepository.sendCode(code, state.value.email)
-            store.accept(Intent.ContinueClick)
-            onOutput(EnterRecoveryCodeOutput.NavigateToUpdatePassword)
+
+            if(result){
+                store.accept(Intent.ContinueClick)
+                onOutput(EnterRecoveryCodeOutput.NavigateToUpdatePassword)
+            }
+
+            //showError
         }
     }
 

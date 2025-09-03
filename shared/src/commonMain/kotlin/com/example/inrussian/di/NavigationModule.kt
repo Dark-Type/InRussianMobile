@@ -155,6 +155,7 @@ val navigationModule = module {
             DefaultUpdatePasswordComponent(
                 componentContext = componentContext,
                 onOutput = onOutput,
+                store = get(),
                 authRepository = get()
             )
         }

@@ -28,7 +28,7 @@ val storeModule = module {
         LoginStoreFactory(storeFactory = get(), errorDecoder = get(), repository = get()).create()
     }
 
-    factory<RecoveryStore> {
+    single<RecoveryStore> {
         RecoveryStoreFactory(
             storeFactory = get(),
             errorDecoder = get(),
