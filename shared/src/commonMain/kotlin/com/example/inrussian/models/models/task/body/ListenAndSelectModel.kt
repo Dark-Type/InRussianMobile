@@ -1,5 +1,6 @@
-package com.example.inrussian.models.models
+package com.example.inrussian.models.models.task.body
 
+import com.example.inrussian.models.models.task.support.AudioBlocks
 import kotlinx.serialization.Serializable
 
 @Serializable

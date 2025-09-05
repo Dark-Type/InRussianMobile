@@ -44,6 +44,7 @@ import com.example.inrussian.components.main.train.TaskContentItem
 import com.example.inrussian.components.main.train.TaskType
 import com.example.inrussian.components.main.train.TasksComponent
 import com.example.inrussian.components.main.train.TasksState
+import com.example.inrussian.root.main.train.task.SpeakerItem
 import com.example.inrussian.ui.theme.Orange
 import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.attention

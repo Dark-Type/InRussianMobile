@@ -8,7 +8,7 @@ import com.example.inrussian.components.main.train.tasks.interfaces.ImageConnect
 import com.example.inrussian.components.main.train.tasks.interfaces.ImageConnectTaskComponent.State
 import com.example.inrussian.components.main.train.tasks.interfaces.ImageConnectTaskComponent.PointF
 import com.example.inrussian.components.main.train.tasks.interfaces.ImageConnectTaskComponent.RectF
-import com.example.inrussian.models.models.TaskBody
+import com.example.inrussian.models.models.task.TaskBody
 import com.example.inrussian.utils.DragSource
 import com.example.inrussian.utils.Piece
 import kotlin.collections.component1

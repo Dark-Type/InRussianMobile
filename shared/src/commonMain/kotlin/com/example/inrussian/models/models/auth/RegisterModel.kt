@@ -1,4 +1,4 @@
-package com.example.inrussian.models.models
+package com.example.inrussian.models.models.auth
 
 data class RegisterModel(
     val email: String,

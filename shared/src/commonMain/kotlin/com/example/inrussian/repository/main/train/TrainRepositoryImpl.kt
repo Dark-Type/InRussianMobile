@@ -6,19 +6,19 @@ import com.example.inrussian.components.main.train.ShortCourse
 import com.example.inrussian.components.main.train.TaskType
 import com.example.inrussian.components.main.train.ThemeMeta
 import com.example.inrussian.data.client.apis.DefaultApi
-import com.example.inrussian.models.models.FullTaskModel
-import com.example.inrussian.models.models.GapWithVariantModel
-import com.example.inrussian.models.models.TaskBody
-import com.example.inrussian.models.models.TaskModel
-import com.example.inrussian.models.models.TaskResponse
-import com.example.inrussian.models.models.TextInputWithVariantModel
+import com.example.inrussian.models.models.task.FullTaskModel
+import com.example.inrussian.models.models.task.body.GapWithVariantModel
+import com.example.inrussian.models.models.task.TaskBody
+import com.example.inrussian.models.models.task.TaskModel
+import com.example.inrussian.models.models.task.TaskResponse
+import com.example.inrussian.models.models.task.body.TextInputWithVariantModel
 import com.example.inrussian.utils.errorHandle
 import kotlin.math.abs
 import kotlin.random.Random
 
 class TrainRepositoryImpl(private val api: DefaultApi) : TrainRepository {
     private val tasks = listOf<TaskModel>(
-        TaskModel(
+        /*TaskModel(
             taskType = listOf(),
             taskBody = TaskBody.TextInputWithVariantTask(
                 task = TextInputWithVariantModel(
@@ -38,7 +38,7 @@ class TrainRepositoryImpl(private val api: DefaultApi) : TrainRepository {
                 )
             ),
             question = "тем временем был уже 4 час утра"
-        ),
+        ),*/
         /*TaskModel(
             taskType = listOf(TaskType.LISTEN),
             taskBody = TaskBody.TextInputTask(

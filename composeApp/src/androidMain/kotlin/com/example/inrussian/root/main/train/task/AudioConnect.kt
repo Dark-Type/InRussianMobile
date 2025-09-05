@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -49,19 +50,12 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import coil.compose.AsyncImage
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.inrussian.components.main.train.tasks.interfaces.AudioConnectTaskComponent
 import com.example.inrussian.components.main.train.tasks.interfaces.AudioConnectTaskComponent.PointF
 import com.example.inrussian.components.main.train.tasks.interfaces.AudioConnectTaskComponent.RectF
-import com.example.inrussian.models.models.TaskState
-import com.example.inrussian.models.models.task.AudioTask
-import com.example.inrussian.models.models.task.TextTaskModel
-import com.example.inrussian.ui.theme.Black
+import com.example.inrussian.root.main.train.task.Colors.variantBackground
 import com.example.inrussian.ui.theme.DarkGrey
-import com.example.inrussian.ui.theme.Green
-import com.example.inrussian.ui.theme.Grid
-import com.example.inrussian.ui.theme.Orange
 import com.example.inrussian.ui.theme.PuzzleLayoutIn
 import com.example.inrussian.ui.theme.PuzzleLayoutOut
 import com.example.inrussian.ui.theme.TabSide
@@ -79,8 +73,7 @@ import org.jetbrains.compose.resources.vectorResource
 //@Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xFFEAEAEA)
 @Composable
 fun AudioConnect(
-    component: AudioConnectTaskComponent,
-    onContinueClick: (() -> Unit) -> Unit
+    component: AudioConnectTaskComponent, onContinueClick: (() -> Unit) -> Unit
 ) {
     val currentColors = LocalExtraColors.current
     val state by component.state.subscribeAsState()
@@ -130,8 +123,6 @@ fun AudioConnect(
                         UnmatchedRow(
                             left = r.left,
                             right = r.right,
-                            isRightHovered = r.right?.let { state.hoveredRightId == it.id } == true,
-                            isWrong = r.left?.let { state.invalidLeftIds.contains(it.id) } == true,
                             onLeftPositioned = { leftId, coords ->
                                 component.onLeftPositioned(leftId, coords.rectInRootToRectF())
                             },
@@ -150,6 +141,16 @@ fun AudioConnect(
                             },
                             onLeftDragCancel = {
                                 component.cancelDrag()
+                            },
+                            leftElement = @Composable { m ->
+                                AudioButtonExo(
+                                    r.left?.label, modifier = m.fillMaxHeight()
+                                )
+                            },
+                            rightElement = @Composable { m ->
+                                Text(
+                                    r.right?.label ?: "", modifier = m.fillMaxHeight()
+                                )
                             })
                     }
 
@@ -168,42 +169,35 @@ fun AudioConnect(
 private fun UnmatchedRow(
     left: Piece?,
     right: Piece?,
-    isRightHovered: Boolean,
-    isWrong: Boolean,
     onLeftPositioned: (leftId: String, coords: LayoutCoordinates) -> Unit,
     onRightPositioned: (rightId: String, coords: LayoutCoordinates) -> Unit,
     onLeftDragStart: (leftId: String) -> Unit,
     onLeftDragBy: (leftId: String, delta: Offset) -> Unit,
     onLeftDragEnd: () -> Unit,
-    onLeftDragCancel: () -> Unit
+    onLeftDragCancel: () -> Unit,
+    leftElement: @Composable (BoxScope.(Modifier) -> Unit),
+    rightElement: @Composable (BoxScope.(Modifier) -> Unit),
 ) {
     val shape = RoundedCornerShape(12.dp)
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .background(Colors.RowBg, shape)
             .border(1.dp, Colors.RowBorder, shape)
             .padding(horizontal = 10.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .padding(end = 6.dp)
-                .then(
-                    if (left != null) {
+        if (left != null) {
+            PuzzleLayoutIn(
+                TabSide.RIGHT,
+                onClick = {},
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .padding(end = 6.dp)
+                    .then(
                         Modifier
                             .onGloballyPositioned { onLeftPositioned(left.id, it) }
-                            .background(
-                                com.example.inrussian.root.main.train.task.Colors.Surface,
-                                RoundedCornerShape(10.dp)
-                            )
-                            .border(
-                                1.dp,
-                                com.example.inrussian.root.main.train.task.Colors.Outline,
-                                RoundedCornerShape(10.dp)
-                            )
                             .pointerInput(left.id) {
                                 detectDragGestures(
                                     onDragStart = { onLeftDragStart(left.id) },
@@ -213,79 +207,55 @@ private fun UnmatchedRow(
                                     },
                                     onDragEnd = { onLeftDragEnd() },
                                     onDragCancel = { onLeftDragCancel() })
-                            }
-                    } else {
-                        Modifier
-                            .background(
-                                com.example.inrussian.root.main.train.task.Colors.EmptyBg,
-                                RoundedCornerShape(10.dp)
-                            )
-                            .border(
-                                1.dp,
-                                com.example.inrussian.root.main.train.task.Colors.EmptyBorder,
-                                RoundedCornerShape(10.dp)
-                            )
-                    })
-                .padding(horizontal = 10.dp, vertical = 8.dp),
-            contentAlignment = Alignment.CenterStart) {
-            if (left != null) {
-                PuzzleLayoutIn(TabSide.RIGHT, onClick = {}) {
-                    AudioButtonExo(left.label)
-                }
-            } else {
-                PuzzleLayoutIn(TabSide.RIGHT, onClick = {}) {
-                    TextSmall("—")
-                }
-            }
-        }
+                            })
+                    .padding(horizontal = 10.dp, vertical = 8.dp),
+                contentAlignment = Alignment.CenterStart,
+                background = variantBackground
+            ) {
+                this.leftElement(it)
 
-        val rightBorder = when {
-            right == null -> com.example.inrussian.root.main.train.task.Colors.EmptyBorder
-            isWrong -> Red
-            isRightHovered -> com.example.inrussian.root.main.train.task.Colors.Accent
-            else -> com.example.inrussian.root.main.train.task.Colors.Outline
-        }
-        val rightBg = when {
-            right == null -> com.example.inrussian.root.main.train.task.Colors.EmptyBg
-            isWrong -> Red
-            isRightHovered -> com.example.inrussian.root.main.train.task.Colors.HoverBg
-            else -> Colors.Surface
-        }
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 6.dp)
-                .then(
-                    if (right != null) {
-                        Modifier
-                            .onGloballyPositioned { onRightPositioned(right.id, it) }
-                            .background(rightBg, RoundedCornerShape(10.dp))
-                            .border(1.dp, rightBorder, RoundedCornerShape(10.dp))
-                    } else {
-                        Modifier
-                            .background(rightBg, RoundedCornerShape(10.dp))
-                            .border(1.dp, rightBorder, RoundedCornerShape(10.dp))
-                    })
-                .padding(horizontal = 10.dp, vertical = 8.dp),
-            contentAlignment = Alignment.CenterStart) {
-            if (right != null) {
-                PuzzleLayoutOut(onClick = {}) {
-                    Text(right.label, modifier = it.height(98.dp))
-                }
-            } else {
-                PuzzleLayoutOut(onClick = {}) {
-                    TextSmall("—")
-                }
             }
+        } else {
+            PuzzleLayoutIn(
+                TabSide.RIGHT,
+                onClick = {},
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .padding(end = 6.dp)
+                    .padding(horizontal = 10.dp, vertical = 8.dp),
+                background = variantBackground
+            ) {
+                TextSmall("—")
+            }
+        }
+        if (right != null) {
+            PuzzleLayoutOut(
+                onClick = {},
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .padding(start = 6.dp)
+                    .then(Modifier.onGloballyPositioned { onRightPositioned(right.id, it) }
+                    )
+                    .padding(horizontal = 10.dp, vertical = 8.dp),
+                borderWidth = 1.5.dp,
+                color = variantBackground) {
+                this.rightElement(it.align(Alignment.Center))
+
+            }
+
+        } else PuzzleLayoutOut(
+            onClick = {}, color = variantBackground
+        ) {
+            TextSmall("—")
         }
     }
 }
 
 @Composable
 fun AudioButtonExo(
-    audioUrl: String?,
-    modifier: Modifier = Modifier,
-    onError: ((Throwable) -> Unit)? = null
+    audioUrl: String?, modifier: Modifier = Modifier, onError: ((Throwable) -> Unit)? = null
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -311,9 +281,17 @@ fun AudioButtonExo(
         player.addListener(listener)
 
         val observer = object : DefaultLifecycleObserver {
-            override fun onPause(owner: LifecycleOwner) { player.playWhenReady = false }
-            override fun onStop(owner: LifecycleOwner) { player.pause() }
-            override fun onDestroy(owner: LifecycleOwner) { player.release() }
+            override fun onPause(owner: LifecycleOwner) {
+                player.playWhenReady = false
+            }
+
+            override fun onStop(owner: LifecycleOwner) {
+                player.pause()
+            }
+
+            override fun onDestroy(owner: LifecycleOwner) {
+                player.release()
+            }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
 
@@ -354,6 +332,7 @@ fun AudioButtonExo(
         )
     }
 }
+
 @Composable
 private fun PairRow(
     left: Piece,
@@ -389,7 +368,6 @@ private fun PairRow(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()
-                .padding(end = 6.dp)
                 .onGloballyPositioned { onLeftHandlePositioned(it) }
                 .background(White.copy(alpha = 0.0f))
                 .pointerInput(left.id) {
@@ -402,7 +380,8 @@ private fun PairRow(
                         onDragEnd = { onLeftDragEnd() },
                         onDragCancel = { onLeftDragCancel() })
                 }
-                .padding(horizontal = 10.dp, vertical = 8.dp),
+                .padding(vertical = 8.dp),
+            background = if (isWrong) Red.copy(0.1f) else Colors.MatchedBg
         ) {
             AudioButtonExo(left.label)
         }
@@ -411,15 +390,18 @@ private fun PairRow(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()
-                .padding(start = 6.dp)
                 .onGloballyPositioned { onRightPositioned(it) }
-                .background(if (isWrong) Red.copy(0.1f) else Colors.MatchedBg, shape)
-                .padding(horizontal = 10.dp, vertical = 8.dp), onClick = {}) {
-            Text(
-                right.label, modifier = it
-                    .fillMaxHeight()
-                    .align(Alignment.Center)
-            )
+                .padding(vertical = 8.dp), onClick = {},
+            borderColor = Color.Black,
+            borderWidth = 1.5.dp,
+            color = if (isWrong) Red.copy(0.1f) else Colors.MatchedBg
+        ) {
+            Box(Modifier.fillMaxHeight()) {
+                Text(
+                    right.label, modifier = it.align(Alignment.Center),
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }

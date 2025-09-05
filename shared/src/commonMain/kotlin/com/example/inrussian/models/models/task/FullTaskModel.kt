@@ -1,4 +1,4 @@
-package com.example.inrussian.models.models
+package com.example.inrussian.models.models.task
 
 import com.example.inrussian.components.main.train.TaskType
 
@@ -8,4 +8,3 @@ data class FullTaskModel(
     val taskType: List<TaskType>,
     val taskBody: TaskBody
 )
-

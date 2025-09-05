@@ -1,4 +1,6 @@
-package com.example.inrussian.models.models
+package com.example.inrussian.models.models.auth
+
+import com.example.inrussian.models.models.auth.UserModel
 
 data class AuthResponseModel(
     val success: Boolean,

@@ -28,7 +28,7 @@ import com.example.inrussian.data.client.models.RecoveryCheckResponse
 import com.example.inrussian.data.client.models.RecoveryEmailRequest
 import com.example.inrussian.models.models.AttemptRequest
 import com.example.inrussian.models.models.TaskCountRequest
-import com.example.inrussian.models.models.TaskModel
+import com.example.inrussian.models.models.task.TaskModel
 import com.example.inrussian.platformInterfaces.UserConfigurationStorage
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig

@@ -1,5 +1,11 @@
-package com.example.inrussian.models.models
+package com.example.inrussian.models.models.task
 
+import com.example.inrussian.models.models.task.SelectWordsModel
+import com.example.inrussian.models.models.task.body.TextInputWithVariantModel
+import com.example.inrussian.models.models.task.body.ConstructSentenceModel
+import com.example.inrussian.models.models.task.body.ImageAndSelectModel
+import com.example.inrussian.models.models.task.body.ListenAndSelectModel
+import com.example.inrussian.models.models.task.body.TextInputModel
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -33,12 +39,3 @@ sealed interface TaskBody {
     @Serializable
     data class SelectWordsTask(val task: SelectWordsModel) : TaskBody
 }
-
-@Serializable
-data class TextInputModel(
-    val label: String,
-    val text: String,
-    val gaps: List<Gap>
-)
-
-

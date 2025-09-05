@@ -9,7 +9,7 @@ import com.example.inrussian.components.main.train.tasks.interfaces.TextInputTas
 import com.example.inrussian.components.main.train.tasks.interfaces.TextInputTaskComponent.InputBlock
 import com.example.inrussian.components.main.train.tasks.interfaces.TextInputTaskComponent.InputGap
 import com.example.inrussian.components.main.train.tasks.interfaces.TextInputTaskComponent.State
-import com.example.inrussian.models.models.TaskBody
+import com.example.inrussian.models.models.task.TaskBody
 
 class TextInputTaskComponentImpl(
     component: ComponentContext,

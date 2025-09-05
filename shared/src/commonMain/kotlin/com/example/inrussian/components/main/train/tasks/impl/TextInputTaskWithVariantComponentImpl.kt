@@ -5,7 +5,7 @@ import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import com.example.inrussian.components.main.train.tasks.interfaces.TextInputTaskWithVariantComponent
-import com.example.inrussian.models.models.TaskBody
+import com.example.inrussian.models.models.task.TaskBody
 
 class TextInputTaskWithVariantComponentImpl(
     component: ComponentContext,

@@ -8,7 +8,7 @@ import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.example.inrussian.models.ErrorType
 import com.example.inrussian.models.LoginError
-import com.example.inrussian.models.models.LoginModel
+import com.example.inrussian.models.models.auth.LoginModel
 import com.example.inrussian.repository.auth.AuthRepository
 import com.example.inrussian.utils.ErrorDecoder
 import kotlinx.coroutines.launch

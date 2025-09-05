@@ -8,7 +8,7 @@ import com.example.inrussian.components.main.train.tasks.interfaces.AudioConnect
 import com.example.inrussian.components.main.train.tasks.interfaces.AudioConnectTaskComponent.PointF
 import com.example.inrussian.components.main.train.tasks.interfaces.AudioConnectTaskComponent.RectF
 import com.example.inrussian.components.main.train.tasks.interfaces.AudioConnectTaskComponent.State
-import com.example.inrussian.models.models.TaskBody
+import com.example.inrussian.models.models.task.TaskBody
 import com.example.inrussian.utils.DragSource
 import com.example.inrussian.utils.Piece
 import kotlin.collections.component1

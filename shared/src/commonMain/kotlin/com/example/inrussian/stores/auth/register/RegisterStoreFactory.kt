@@ -12,9 +12,9 @@ import com.example.inrussian.components.main.profile.UserProfile
 import com.example.inrussian.domain.Validator
 import com.example.inrussian.models.ErrorType
 import com.example.inrussian.models.RegisterError
-import com.example.inrussian.models.models.LoginModel
-import com.example.inrussian.models.models.RegisterModel
-import com.example.inrussian.models.models.SystemLanguage
+import com.example.inrussian.models.models.auth.LoginModel
+import com.example.inrussian.models.models.auth.RegisterModel
+import com.example.inrussian.models.models.auth.SystemLanguage
 import com.example.inrussian.repository.auth.AuthRepository
 import com.example.inrussian.repository.main.user.UserRepository
 import com.example.inrussian.stores.auth.register.RegisterStore.Action

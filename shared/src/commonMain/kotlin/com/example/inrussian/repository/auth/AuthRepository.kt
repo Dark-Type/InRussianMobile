@@ -7,10 +7,9 @@ import com.example.inrussian.data.client.models.PasswordResetResponse
 import com.example.inrussian.data.client.models.RecoveryCheckRequest
 import com.example.inrussian.data.client.models.RecoveryCheckResponse
 import com.example.inrussian.data.client.models.RecoveryEmailRequest
-import com.example.inrussian.models.models.AuthResponseModel
-import com.example.inrussian.models.models.CheckCodeResponse
-import com.example.inrussian.models.models.LoginModel
-import com.example.inrussian.models.models.RegisterModel
+import com.example.inrussian.models.models.auth.AuthResponseModel
+import com.example.inrussian.models.models.auth.LoginModel
+import com.example.inrussian.models.models.auth.RegisterModel
 import com.example.inrussian.platformInterfaces.UserConfigurationStorage
 import com.example.inrussian.repository.toAuthResponseModel
 import com.example.inrussian.repository.toLoginRequest

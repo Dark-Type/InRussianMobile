@@ -1,5 +1,6 @@
-package com.example.inrussian.models.models
+package com.example.inrussian.models.models.task.body
 
+import com.example.inrussian.models.models.task.body.ImageBlocks
 import kotlinx.serialization.Serializable
 
 @Serializable

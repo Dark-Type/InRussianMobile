@@ -42,6 +42,7 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.inrussian.components.main.train.tasks.interfaces.ImageConnectTaskComponent
 import com.example.inrussian.components.main.train.tasks.interfaces.ImageConnectTaskComponent.PointF
 import com.example.inrussian.components.main.train.tasks.interfaces.ImageConnectTaskComponent.RectF
+import com.example.inrussian.root.main.train.task.Colors.variantBackground
 import com.example.inrussian.ui.theme.PuzzleLayoutIn
 import com.example.inrussian.ui.theme.PuzzleLayoutOut
 import com.example.inrussian.ui.theme.TabSide
@@ -154,7 +155,7 @@ private fun UnmatchedRow(
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .background(Colors.RowBg, shape)
+            // .background(Colors.RowBg, shape)
             .border(1.dp, Colors.RowBorder, shape)
             .padding(horizontal = 10.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -168,12 +169,7 @@ private fun UnmatchedRow(
                         Modifier
                             .onGloballyPositioned { onLeftPositioned(left.id, it) }
                             .background(
-                                com.example.inrussian.root.main.train.task.Colors.Surface,
-                                RoundedCornerShape(10.dp)
-                            )
-                            .border(
-                                1.dp,
-                                com.example.inrussian.root.main.train.task.Colors.Outline,
+                                Colors.Surface,
                                 RoundedCornerShape(10.dp)
                             )
                             .pointerInput(left.id) {
@@ -189,39 +185,33 @@ private fun UnmatchedRow(
                     } else {
                         Modifier
                             .background(
-                                com.example.inrussian.root.main.train.task.Colors.EmptyBg,
-                                RoundedCornerShape(10.dp)
-                            )
-                            .border(
-                                1.dp,
-                                com.example.inrussian.root.main.train.task.Colors.EmptyBorder,
+                                Colors.EmptyBg,
                                 RoundedCornerShape(10.dp)
                             )
                     })
                 .padding(horizontal = 10.dp, vertical = 8.dp),
             contentAlignment = Alignment.CenterStart) {
             if (left != null) {
-                PuzzleLayoutIn(TabSide.RIGHT, onClick = {}) {
+                PuzzleLayoutIn(
+                    TabSide.RIGHT,
+                    onClick = {},
+                    modifier = Modifier.fillMaxHeight(),
+                    background = variantBackground
+                ) {
                     AsyncImage(left.label, "", modifier = it.height(98.dp))
 
                 }
             } else {
-                PuzzleLayoutIn(TabSide.RIGHT, onClick = {}) {
+                PuzzleLayoutIn(TabSide.RIGHT, onClick = {}, background = variantBackground) {
                     TextSmall("—")
                 }
             }
         }
 
-        val rightBorder = when {
-            right == null -> com.example.inrussian.root.main.train.task.Colors.EmptyBorder
-            isWrong -> Red
-            isRightHovered -> com.example.inrussian.root.main.train.task.Colors.Accent
-            else -> com.example.inrussian.root.main.train.task.Colors.Outline
-        }
         val rightBg = when {
-            right == null -> com.example.inrussian.root.main.train.task.Colors.EmptyBg
+            right == null -> Colors.EmptyBg
             isWrong -> Red
-            isRightHovered -> com.example.inrussian.root.main.train.task.Colors.HoverBg
+            isRightHovered -> Colors.HoverBg
             else -> Colors.Surface
         }
         Box(
@@ -233,20 +223,22 @@ private fun UnmatchedRow(
                         Modifier
                             .onGloballyPositioned { onRightPositioned(right.id, it) }
                             .background(rightBg, RoundedCornerShape(10.dp))
-                            .border(1.dp, rightBorder, RoundedCornerShape(10.dp))
                     } else {
                         Modifier
                             .background(rightBg, RoundedCornerShape(10.dp))
-                            .border(1.dp, rightBorder, RoundedCornerShape(10.dp))
                     })
                 .padding(horizontal = 10.dp, vertical = 8.dp),
             contentAlignment = Alignment.CenterStart) {
             if (right != null) {
-                PuzzleLayoutOut(onClick = {}) {
+                PuzzleLayoutOut(
+                    onClick = {},
+                    modifier = Modifier.fillMaxHeight(),
+                    color = variantBackground
+                ) {
                     Text(right.label, modifier = it.height(98.dp))
                 }
             } else {
-                PuzzleLayoutOut(onClick = {}) {
+                PuzzleLayoutOut(onClick = {}, color = variantBackground) {
                     TextSmall("—")
                 }
             }
@@ -275,7 +267,7 @@ private fun PairRow(
             .height(IntrinsicSize.Min)
             .background(if (isWrong) Red.copy(0.1f) else Colors.MatchedBg, shape)
             .border(
-                1.dp, when {
+                4.dp, when {
                     isWrong -> Red
                     isRightHovered -> Colors.Accent
                     else -> Colors.Primary
@@ -290,7 +282,6 @@ private fun PairRow(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()
-                .padding(end = 6.dp)
                 .onGloballyPositioned { onLeftHandlePositioned(it) }
                 .background(White.copy(alpha = 0.0f))
                 .pointerInput(left.id) {
@@ -303,7 +294,7 @@ private fun PairRow(
                         onDragEnd = { onLeftDragEnd() },
                         onDragCancel = { onLeftDragCancel() })
                 }
-                .padding(horizontal = 10.dp, vertical = 8.dp),
+                .padding( vertical = 8.dp),
         ) {
             Text(
                 left.label, modifier = it
@@ -317,11 +308,10 @@ private fun PairRow(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()
-                .padding(start = 6.dp)
                 .onGloballyPositioned { onRightPositioned(it) }
                 .background(if (isWrong) Red.copy(0.1f) else Colors.MatchedBg, shape)
 
-                .padding(horizontal = 10.dp, vertical = 8.dp), onClick = {}) {
+                .padding( vertical = 8.dp), onClick = {}) {
             Text(
                 right.label, modifier = it
                     .fillMaxHeight()
@@ -352,10 +342,11 @@ private fun TextSmall(text: String, color: Color = Colors.TextSecondary) {
 private fun Rect.toRectF(): RectF = RectF(left, top, right, bottom)
 
 object Colors {
-    val RowBg = Color(0xFFFDFDFD)
-    val RowBorder = Color(0xFFE5E5E5)
+    val variantBackground = Color(0xFFA2DDFF)
+    val RowBg = Color(0x0FFFFFFF)
+    val RowBorder = Color(0xFFFFFFFF)
 
-    val Surface = Color(0xFFFFFFFF)
+    val Surface = Color(0xFFA2DDFF)
     val Outline = Color(0xFFBDBDBD)
     val Primary = Color(0xFF2962FF)
     val Accent = Color(0xFF00BFA5)

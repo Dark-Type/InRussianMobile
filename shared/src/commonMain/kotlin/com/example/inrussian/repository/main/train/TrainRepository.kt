@@ -2,9 +2,9 @@ package com.example.inrussian.repository.main.train
 
 import com.example.inrussian.components.main.train.SectionModel
 import com.example.inrussian.components.main.train.ShortCourse
-import com.example.inrussian.models.models.FullTaskModel
-import com.example.inrussian.models.models.TaskModel
-import com.example.inrussian.models.models.TaskResponse
+import com.example.inrussian.models.models.task.FullTaskModel
+import com.example.inrussian.models.models.task.TaskModel
+import com.example.inrussian.models.models.task.TaskResponse
 
 interface TrainRepository {
     suspend fun userCourses(): List<ShortCourse>
