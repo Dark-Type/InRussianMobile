@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AudioBlocks(
     val name: String,
-    val description: String?,
+    val description: String? = null,
     val audio: String,
-    val descriptionTranslate: String?,
+    val descriptionTranslate: String? = null,
 )

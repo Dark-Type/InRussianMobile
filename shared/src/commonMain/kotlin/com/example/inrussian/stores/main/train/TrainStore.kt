@@ -6,19 +6,17 @@ import com.example.inrussian.models.models.task.TaskResponse
 import com.example.inrussian.stores.main.train.TrainStore.Intent
 import com.example.inrussian.stores.main.train.TrainStore.Label
 import com.example.inrussian.stores.main.train.TrainStore.State
-import com.example.inrussian.utils.SuspendingQueue
-import com.example.inrussian.utils.queueOf
 
 interface TrainStore : Store<Intent, State, Label> {
     sealed interface Intent {
-        data class ContinueClick(val isPass: Boolean) : Intent
+        data class ButtonClick(val isPass: Boolean) : Intent
         data class OnButtonStateChange(val isEnable: Boolean) : Intent
         data class InCheckStateChange(val inCheck: Boolean) : Intent
     }
 
     data class State(
         val showedTask: FullTaskModel? = null,
-        val isChecking: Boolean = true,
+        val isCorrect: Boolean? = null,
         val isButtonEnable: Boolean = false,
         val isLoading: Boolean = true,
         val percent: Float? = null,
@@ -31,7 +29,7 @@ interface TrainStore : Store<Intent, State, Label> {
     sealed interface Msg {
         data class UpdateTasks(val tasks: TaskResponse) : Msg
         data class UpdateButtonState(val isEnable: Boolean) : Msg
-        data class UpdateCheckState(val inCheck: Boolean) : Msg
+        data class UpdateCheckState(val inCheck: Boolean?) : Msg
     }
 
     sealed interface Label {

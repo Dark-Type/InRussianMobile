@@ -11,6 +11,7 @@ import com.example.inrussian.models.models.task.body.GapWithVariantModel
 import com.example.inrussian.models.models.task.TaskBody
 import com.example.inrussian.models.models.task.TaskModel
 import com.example.inrussian.models.models.task.TaskResponse
+import com.example.inrussian.models.models.task.body.ListenAndSelectModel
 import com.example.inrussian.models.models.task.body.TextInputWithVariantModel
 import com.example.inrussian.utils.errorHandle
 import kotlin.math.abs
@@ -63,13 +64,24 @@ class TrainRepositoryImpl(private val api: DefaultApi) : TrainRepository {
             ),
             question = "как же надоело писать этот проект"
         ),*/
-        TaskModel(
+        /*TaskModel(
             taskType = listOf(TaskType.LISTEN),
             taskBody = TaskBody.AudioConnectTask(
                 variant = listOf("https://ru-d1.drivemusic.me/dl/aUXUtDqRsTEr0AyF_pBYhA/1756874921/download_music/2019/11/the-weeknd-blinding-lights.mp3" to "Гойда")
             ),
             question = "как же надоело писать этот проект"
-        ),
+        ),*/
+        
+        /*TaskModel(
+            taskType = listOf(TaskType.SELECT, TaskType.LISTEN),
+            taskBody = TaskBody.ListenAndSelect(
+                task = ListenAndSelectModel(
+                    audioBlocks = listOf(),
+                    variants = listOf()
+                )
+            ),
+            question = "Послушайте и скажите, что курил автор"
+        )*/
         /*TaskModel(
             taskType = listOf(TaskType.READ, TaskType.READ),
             taskBody = TaskBody.TextConnectTask(

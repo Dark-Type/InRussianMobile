@@ -1,6 +1,5 @@
 package com.example.inrussian.stores.main.train
 
-import co.touchlab.kermit.Logger
 import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.SimpleBootstrapper
 import com.arkivanov.mvikotlin.core.store.Store
@@ -12,6 +11,7 @@ import com.example.inrussian.stores.main.train.TrainStore.Intent
 import com.example.inrussian.stores.main.train.TrainStore.Label
 import com.example.inrussian.stores.main.train.TrainStore.Msg
 import com.example.inrussian.stores.main.train.TrainStore.Msg.UpdateButtonState
+import com.example.inrussian.stores.main.train.TrainStore.Msg.UpdateCheckState
 import com.example.inrussian.stores.main.train.TrainStore.State
 import com.example.inrussian.utils.ErrorDecoder
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +22,7 @@ class TrainStoreFactory(
     private val errorDecoder: ErrorDecoder,
     private val repository: TrainRepository
 ) {
+    
     fun create(courseId: String): TrainStore =
         object : TrainStore, Store<Intent, State, Label> by storeFactory.create(
             name = "TrainStore",
@@ -30,59 +31,65 @@ class TrainStoreFactory(
             executorFactory = ::ExecutorImpl,
             reducer = ReducerImpl,
         ) {}
-
+    
     private var sectionId: String = ""
-
+    
     private inner class ExecutorImpl : CoroutineExecutor<Intent, Action, State, Msg, Label>() {
-
+        
         override fun executeAction(action: Action) {
             when (action) {
                 is Action.LoadTasks -> {
                     scope.launch(Dispatchers.Main) {
                         sectionId = action.themeId
-                        Logger.i { "sectionId $sectionId" }
                         dispatch(Msg.UpdateTasks(repository.getNextTask(sectionId = action.themeId)))
                     }
                 }
             }
         }
-
+        
         override fun executeIntent(intent: Intent) {
             scope.launch {
                 when (intent) {
-                    is Intent.ContinueClick -> {
+                    is Intent.ButtonClick -> {
                         repository.sendResultAndGetNextTask()
-                        dispatch(Msg.UpdateTasks(repository.getNextTask(sectionId)))
+                        if (intent.isPass && state().isCorrect == true) {
+                            dispatch(Msg.UpdateTasks(repository.getNextTask(sectionId)))
+                            dispatch(UpdateCheckState(null))
+                        } else {
+                            dispatch(UpdateCheckState(intent.isPass))
+                        }
+                        dispatch(UpdateButtonState(intent.isPass == true))
                     }
-
+                    
                     is Intent.OnButtonStateChange -> dispatch(UpdateButtonState(intent.isEnable))
-                    is Intent.InCheckStateChange -> dispatch(Msg.UpdateCheckState(intent.inCheck))
+                    is Intent.InCheckStateChange -> dispatch(UpdateCheckState(intent.inCheck))
                 }
             }
-
+            
         }
     }
-
+    
     private object ReducerImpl : Reducer<State, Msg> {
+        
         override fun State.reduce(msg: Msg): State = when (msg) {
-
-
+            
+            
             is Msg.UpdateTasks -> {
-                Logger.i { "update" }
                 copy(
                     showedTask = msg.tasks.task,
                     percent = msg.tasks.percent
                 )
             }
-
+            
             is UpdateButtonState -> copy(isButtonEnable = msg.isEnable)
-            is Msg.UpdateCheckState -> copy(isChecking = msg.inCheck)
-
+            is UpdateCheckState -> copy(isCorrect = msg.inCheck)
+            
         }
     }
-
-
+    
+    
     companion object {
+        
         private const val TAG = "AuthStoreFactory"
     }
 }

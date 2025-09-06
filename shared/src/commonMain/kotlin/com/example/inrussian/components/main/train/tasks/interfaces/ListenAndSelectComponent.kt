@@ -5,12 +5,13 @@ import com.example.inrussian.models.models.task.support.AudioBlocks
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 interface ListenAndSelectComponent {
     
     val state: Value<State>
     
-    data class State(
-        val selectedElementId: String? = null,
+    data class State  (
+        val selectedElementId: Uuid? = null,
         val audioBlocks: List<AudioBlocks> = listOf(),
         val variants: List<Variant> = listOf()
     )
@@ -22,10 +23,13 @@ interface ListenAndSelectComponent {
         data object Incorrect : VariantState
     }
     
-    data class Variant @OptIn(ExperimentalUuidApi::class) constructor(
-        val id: Uuid,
-        val isCorrect: Boolean,
-        val text: String,
-        val state: VariantState
+    data class Variant (
+        val id: Uuid = Uuid.random(),
+        val isCorrect: Boolean = false,
+        val text: String = "",
+        val state: VariantState = VariantState.NotSelected
     )
+    
+    fun onSelect(variantId: Uuid)
+    fun onContinueClick()
 }

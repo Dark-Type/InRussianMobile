@@ -20,6 +20,7 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.inrussian.components.main.train.TrainComponentCopy
 import com.example.inrussian.root.main.train.task.AudioConnect
 import com.example.inrussian.root.main.train.task.ImageConnectTask
+import com.example.inrussian.root.main.train.task.ListenAndSelectTaskUi
 import com.example.inrussian.root.main.train.task.TextConnect
 import com.example.inrussian.root.main.train.task.TextInputTask
 import com.example.inrussian.root.main.train.task.TextInputWithVariantTask
@@ -30,6 +31,7 @@ import com.example.inrussian.ui.theme.Orange
 import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.check
 import inrussian.composeapp.generated.resources.`continue`
+import inrussian.composeapp.generated.resources.try_again
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -66,11 +68,11 @@ fun TaskUi(component: TrainComponentCopy) {
                 is TrainComponentCopy.Child.ImageConnectChild -> ImageConnectTask(state.component) {
                     onEvent = it
                 }
-
+                
                 is TrainComponentCopy.Child.TextConnectChild -> TextConnect(state.component) {
                     onEvent = it
                 }
-
+                
                 null ->
                     Text(
                         "тут совсем пусто",
@@ -78,29 +80,39 @@ fun TaskUi(component: TrainComponentCopy) {
                         color = Black,
                         fontSize = 38.sp
                     )
-
+                
                 is TrainComponentCopy.Child.AudioConnectChild -> AudioConnect(state.component) {
                     onEvent = it
                 }
-
+                
                 is TrainComponentCopy.Child.TextInputChild -> TextInputTask(state.component) {
                     onEvent = it
                 }
-
-                is TrainComponentCopy.Child.TextInputWithVariantsChild -> TextInputWithVariantTask(state.component){
+                
+                is TrainComponentCopy.Child.TextInputWithVariantsChild -> TextInputWithVariantTask(
+                    state.component
+                ) {
+                    onEvent = it
+                }
+                
+                is TrainComponentCopy.Child.ListenAndSelectChild -> ListenAndSelectTaskUi(state.component) {
                     onEvent = it
                 }
             }
         }
         Spacer(Modifier.height(16.dp))
-
+        
         CommonButton(
-            if (state.isChecking) stringResource(Res.string.check) else stringResource(Res.string.`continue`),
+            when (state.isCorrect) {
+                true -> stringResource(Res.string.`continue`)
+                false -> stringResource(Res.string.try_again)
+                null -> stringResource(Res.string.check)
+            },
             state.isButtonEnable,
             { onEvent?.invoke() })
         Spacer(Modifier.height(16.dp))
-
-
+        
+        
     }
 }
 

@@ -110,4 +110,6 @@
 
 
     <string name="empty_task">Больше задач нет</string>
+
+    <string name="try_again">Попробуйте еще раз</string>
 </resources>
