@@ -81,9 +81,9 @@ fun ListenAndSelectTaskUi(
 fun SpeakerElement(audioBlock: AudioBlocks) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    
+
     val isInPreview = LocalInspectionMode.current
-    
+
     val player: ExoPlayer? = remember {
         if (isInPreview) {
             null
@@ -93,9 +93,9 @@ fun SpeakerElement(audioBlock: AudioBlocks) {
             }
         }
     }
-    
+
     val isPlayingState = remember { mutableStateOf(player?.isPlaying == true) }
-    
+
     DisposableEffect(player, lifecycleOwner) {
         if (player == null) {
             onDispose { }
@@ -106,22 +106,22 @@ fun SpeakerElement(audioBlock: AudioBlocks) {
                 }
             }
             player.addListener(listener)
-            
+
             val observer = object : DefaultLifecycleObserver {
                 override fun onPause(owner: LifecycleOwner) {
                     player.playWhenReady = false
                 }
-                
+
                 override fun onStop(owner: LifecycleOwner) {
                     player.pause()
                 }
-                
+
                 override fun onDestroy(owner: LifecycleOwner) {
                     player.release()
                 }
             }
             lifecycleOwner.lifecycle.addObserver(observer)
-            
+
             onDispose {
                 lifecycleOwner.lifecycle.removeObserver(observer)
                 player.removeListener(listener)
@@ -129,10 +129,10 @@ fun SpeakerElement(audioBlock: AudioBlocks) {
             }
         }
     }
-    
+
     LaunchedEffect(audioBlock.audio, player) {
         if (player == null) return@LaunchedEffect
-        
+
         if (audioBlock.audio.isNotBlank()) {
             try {
                 val mediaItem = MediaItem.fromUri(audioBlock.audio)
@@ -150,7 +150,7 @@ fun SpeakerElement(audioBlock: AudioBlocks) {
             }
         }
     }
-    
+
     Column(
         Modifier
             .clip(RoundedCornerShape(12.dp))
@@ -191,7 +191,7 @@ fun ChoiceElement(variants: List<Variant>, onSelect: (Uuid) -> Unit) {
                     variants[i].text,
                     Modifier.weight(1f)
                 )
-                
+
                 if (i + 1 < variants.size) {
                     Spacer(Modifier.width(15.dp))
                     ChoiceItem(
@@ -203,7 +203,7 @@ fun ChoiceElement(variants: List<Variant>, onSelect: (Uuid) -> Unit) {
                             .weight(1f)
                     )
                 }
-                
+
             }
             Spacer(Modifier.height(16.dp))
         }
@@ -223,9 +223,9 @@ fun ChoiceItem(
     Button(
         onSelect, modifier, colors = when (state) {
             VariantState.Selected -> ButtonDefaults.textButtonColors().copy(containerColor = Orange)
-            
+
             VariantState.Correct -> ButtonDefaults.textButtonColors().copy(containerColor = Green)
-            
+
             VariantState.Incorrect -> ButtonDefaults.textButtonColors()
             VariantState.NotSelected -> ButtonDefaults.textButtonColors()
         }, shape = RoundedCornerShape(10.dp)
@@ -276,7 +276,7 @@ fun SpeakerItem(
 
 @OptIn(ExperimentalUuidApi::class)
 class ListenAndSelectTaskUi : ListenAndSelectComponent {
-    
+
     override val state = MutableValue(
         ListenAndSelectComponent.State(
             audioBlocks = listOf(
@@ -303,20 +303,20 @@ class ListenAndSelectTaskUi : ListenAndSelectComponent {
             ),
         )
     )
-    
+
     override fun onSelect(variantId: Uuid) {
         TODO("Not yet implemented")
     }
-    
+
     override fun onContinueClick() {
         TODO("Not yet implemented")
     }
-    
+
     @Composable
     @Preview(showBackground = true, showSystemUi = true)
     fun Preview() {
         ListenAndSelectTaskUi(this) {
-        
+
         }
     }
 }

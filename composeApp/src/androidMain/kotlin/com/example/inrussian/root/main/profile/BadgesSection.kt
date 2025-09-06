@@ -63,8 +63,12 @@ fun AchievementItem(badge: Badge) {
             color = DarkGrey.copy(alpha = 0.8f),
             fontSize = 10.sp
         )
-        badge.description?.let { Text(it,maxLines = 1,
-            color = DarkGrey,
-            fontSize = 10.sp) }
+        badge.description?.let {
+            Text(
+                it, maxLines = 1,
+                color = DarkGrey,
+                fontSize = 10.sp
+            )
+        }
     }
 }

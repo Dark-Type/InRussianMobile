@@ -913,7 +913,7 @@ private struct ImageConnectTaskView: View {
 
     var body: some View {
         ZStack {
-            AppColors.baseBackground.color.ignoresSafeArea()
+            AppColors.Palette.baseBackground.color.ignoresSafeArea()
 
             ScrollView {
                 LazyVStack(spacing: 10) {

@@ -393,7 +393,7 @@ fun EditProfileScreen(component: EditProfileComponent) {
             item { Spacer(Modifier.height(86.dp)) }
         }
 
-            DataPickerSimple(state.isDateOpen,component::updateDob)
+        DataPickerSimple(state.isDateOpen, component::updateDob)
         if (state.isGenderOpen)
             Column(
                 Modifier

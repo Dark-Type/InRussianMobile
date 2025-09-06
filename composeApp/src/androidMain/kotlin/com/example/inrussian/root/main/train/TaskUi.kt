@@ -68,11 +68,11 @@ fun TaskUi(component: TrainComponentCopy) {
                 is TrainComponentCopy.Child.ImageConnectChild -> ImageConnectTask(state.component) {
                     onEvent = it
                 }
-                
+
                 is TrainComponentCopy.Child.TextConnectChild -> TextConnect(state.component) {
                     onEvent = it
                 }
-                
+
                 null ->
                     Text(
                         "тут совсем пусто",
@@ -80,28 +80,28 @@ fun TaskUi(component: TrainComponentCopy) {
                         color = Black,
                         fontSize = 38.sp
                     )
-                
+
                 is TrainComponentCopy.Child.AudioConnectChild -> AudioConnect(state.component) {
                     onEvent = it
                 }
-                
+
                 is TrainComponentCopy.Child.TextInputChild -> TextInputTask(state.component) {
                     onEvent = it
                 }
-                
+
                 is TrainComponentCopy.Child.TextInputWithVariantsChild -> TextInputWithVariantTask(
                     state.component
                 ) {
                     onEvent = it
                 }
-                
+
                 is TrainComponentCopy.Child.ListenAndSelectChild -> ListenAndSelectTaskUi(state.component) {
                     onEvent = it
                 }
             }
         }
         Spacer(Modifier.height(16.dp))
-        
+
         CommonButton(
             when (state.isCorrect) {
                 true -> stringResource(Res.string.`continue`)
@@ -111,8 +111,8 @@ fun TaskUi(component: TrainComponentCopy) {
             state.isButtonEnable,
             { onEvent?.invoke() })
         Spacer(Modifier.height(16.dp))
-        
-        
+
+
     }
 }
 

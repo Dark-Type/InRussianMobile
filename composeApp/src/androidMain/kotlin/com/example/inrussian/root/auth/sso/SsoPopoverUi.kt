@@ -23,7 +23,7 @@ fun SsoPopoverUi(component: SsoPopoverComponent) {
         Text("Войти через SSO", style = MaterialTheme.typography.bodySmall)
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = {  component.onAuthenticationSuccess() },
+            onClick = { component.onAuthenticationSuccess() },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Войти")

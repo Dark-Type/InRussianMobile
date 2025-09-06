@@ -90,5 +90,10 @@ fun HeaderSection(
 @Composable
 fun LabelText(text: String) {
     val currentColors = LocalExtraColors.current
-    Text(text = text, fontSize = 35.sp, fontWeight = FontWeight.W600, color = currentColors.fontCaptive)
+    Text(
+        text = text,
+        fontSize = 35.sp,
+        fontWeight = FontWeight.W600,
+        color = currentColors.fontCaptive
+    )
 }

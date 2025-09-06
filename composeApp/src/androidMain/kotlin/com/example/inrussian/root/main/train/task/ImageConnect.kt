@@ -294,7 +294,7 @@ private fun PairRow(
                         onDragEnd = { onLeftDragEnd() },
                         onDragCancel = { onLeftDragCancel() })
                 }
-                .padding( vertical = 8.dp),
+                .padding(vertical = 8.dp),
         ) {
             Text(
                 left.label, modifier = it
@@ -311,7 +311,7 @@ private fun PairRow(
                 .onGloballyPositioned { onRightPositioned(it) }
                 .background(if (isWrong) Red.copy(0.1f) else Colors.MatchedBg, shape)
 
-                .padding( vertical = 8.dp), onClick = {}) {
+                .padding(vertical = 8.dp), onClick = {}) {
             Text(
                 right.label, modifier = it
                     .fillMaxHeight()
@@ -357,6 +357,5 @@ object Colors {
     val HoverBg = Accent.copy(alpha = 0.16f)
     val MatchedBg = Color(0xFFE3F2FD)
 
-    val TextPrimary = Color(0xFF1E1E1E)
     val TextSecondary = Color(0xFF424242)
 }

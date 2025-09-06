@@ -1,6 +1,5 @@
 package com.example.inrussian.ui.theme
 
-import android.R.attr.textStyle
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.size
@@ -35,8 +34,15 @@ fun CommonTextField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(label, color = if(error != null) extraColors.errorColor else extraColors.fontCaptive) },
-        modifier = Modifier.fillMaxWidth().imePadding(),
+        label = {
+            Text(
+                label,
+                color = if (error != null) extraColors.errorColor else extraColors.fontCaptive
+            )
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .imePadding(),
         shape = RoundedCornerShape(10.dp),
         visualTransformation = visualTransformation ?: VisualTransformation.None,
         trailingIcon = if (icon != null) (@Composable {
@@ -51,8 +57,8 @@ fun CommonTextField(
             if (error != null) Text(error, color = extraColors.errorColor)
         },
         colors = TextFieldDefaults.colors(
-            focusedIndicatorColor = if(error != null) extraColors.errorColor else extraColors.stroke,
-            unfocusedIndicatorColor = if(error != null) extraColors.errorColor else extraColors.stroke,
+            focusedIndicatorColor = if (error != null) extraColors.errorColor else extraColors.stroke,
+            unfocusedIndicatorColor = if (error != null) extraColors.errorColor else extraColors.stroke,
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
             focusedLabelColor = extraColors.stroke,

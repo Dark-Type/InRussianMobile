@@ -1,6 +1,5 @@
 package com.example.inrussian.root.main.home
 
-import android.graphics.Color
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -33,16 +31,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.arkivanov.decompose.value.MutableValue
-import com.example.inrussian.components.main.home.CourseModel
 import com.example.inrussian.components.main.home.CourseDetailsComponent
-import com.example.inrussian.components.main.home.CourseDetailsState
 import com.example.inrussian.components.main.home.CourseSection
-import com.example.inrussian.ui.theme.LightGrey
 import com.example.inrussian.ui.theme.Orange
 import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.author
@@ -71,12 +64,15 @@ fun CourseDetailsComponentUi(component: CourseDetailsComponent) {
         item() {
             Box(
                 Modifier
-                    .fillMaxWidth().aspectRatio(402f/331f),
+                    .fillMaxWidth()
+                    .aspectRatio(402f / 331f),
             ) {
                 Image(
                     painterResource(Res.drawable.recommended_image_mock),
                     "",
-                    Modifier.fillMaxSize().clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp)),
+                    Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp)),
                     contentScale = ContentScale.FillBounds
                 )
                 IconButton(

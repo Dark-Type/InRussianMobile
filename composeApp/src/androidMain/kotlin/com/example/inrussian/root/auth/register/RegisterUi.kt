@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -33,10 +31,8 @@ import inrussian.composeapp.generated.resources.confirm_password
 import inrussian.composeapp.generated.resources.email
 import inrussian.composeapp.generated.resources.eye_off
 import inrussian.composeapp.generated.resources.eye_show
-import inrussian.composeapp.generated.resources.forgot_password
 import inrussian.composeapp.generated.resources.password
 import inrussian.composeapp.generated.resources.placeholder
-import inrussian.composeapp.generated.resources.sign_in
 import inrussian.composeapp.generated.resources.sign_up
 import nekit.corporation.shift_app.ui.theme.LocalExtraColors
 import org.jetbrains.compose.resources.painterResource
@@ -49,9 +45,11 @@ fun RegisterUi(component: RegisterComponent) {
     val context = LocalContext.current
     val currentColors = LocalExtraColors.current
 
-    Column(modifier = Modifier
-        .background(currentColors.baseBackground)
-        .padding(horizontal = 16.dp)) {
+    Column(
+        modifier = Modifier
+            .background(currentColors.baseBackground)
+            .padding(horizontal = 16.dp)
+    ) {
         Row(modifier = Modifier.padding(top = 32.dp)) {
             BackButton(enable = true, onClick = component::onBackClicked)
         }
@@ -72,7 +70,7 @@ fun RegisterUi(component: RegisterComponent) {
             verticalArrangement = Arrangement.Bottom,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Column{
+            Column {
                 CommonTextField(
                     value = state.email,
                     onValueChange = component::changeEmail,

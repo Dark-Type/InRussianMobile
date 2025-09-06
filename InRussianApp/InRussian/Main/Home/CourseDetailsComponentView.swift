@@ -10,101 +10,63 @@ import SwiftUI
 struct CourseDetailsComponentView: View {
     let component: CourseDetailsComponent
     @StateValue private var state: CourseDetailsState
-    @State private var showInfoSheet = false
 
     private let screenBG = Color(uiColor: .secondarySystemBackground)
-    private let cardBG   = Color(uiColor: .systemBackground)
-
-    
     private let basePosterHeight: CGFloat = 220
 
     init(component: CourseDetailsComponent) {
         self.component = component
-        _state = StateValue(component.state)
+        _state = StateValue(component.state) // mirror subscribeAsState() from Compose
     }
 
     var body: some View {
         GeometryReader { rootGeo in
-            
             let topInset = rootGeo.safeAreaInsets.top
+
             ZStack {
                 screenBG.ignoresSafeArea()
 
-                ScrollView(showsIndicators: false) {
-                    VStack(alignment: .leading, spacing: 24) {
-                        if state.isLoading || state.course == nil {
-                            ProgressView("Загрузка...")
-                                .padding(.top, 80)
-                                .frame(maxWidth: .infinity)
-                        } else if let course = state.course {
-                            posterHeader(course: course, topInset: topInset)
+                if state.isLoading || state.course == nil {
+                    ProgressView("Загрузка...")
+                        .padding(.top, 80)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else if let course = state.course {
+                    ScrollView(showsIndicators: false) {
+                        VStack(alignment: .leading, spacing: 24) {
+                            header(course: course, topInset: topInset)
+
                             descriptionBlock(course: course)
-                            enrollButton
+
                             sectionsList(course: course)
+
+                            Color.clear.frame(height: 24)
                         }
-                    }
-                    .padding(.bottom, 40)
-                    
-                    .padding(.top, -topInset)
-                }
-            }
-            .sheet(isPresented: $showInfoSheet) {
-                if let course = state.course {
-                    CourseInfoSheet(course: course, dismiss: { showInfoSheet = false })
-                        .presentationDetents([.medium, .large])
-                }
-            }
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        showInfoSheet = true
-                    } label: {
-                        Image(systemName: "info.circle")
-                            .symbolRenderingMode(.hierarchical)
-                            .foregroundColor(.accentColor)
-                            .accessibilityLabel("Информация")
-                    }
-                }
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        component.onBack()
-                    } label: {
-                        Image(systemName: "xmark")
-                            .font(.system(size: 14, weight: .bold))
-                            .foregroundColor(.white)
-                            .padding(6)
-                            .background(
-                                Circle()
-                                    .fill(Color( AppColors.Palette.accent.rawValue))
-                            )
-                            .accessibilityLabel("Закрыть")
+                        .padding(.top, -topInset)
+                        .padding(.bottom, 40)
                     }
                 }
             }
-            .toolbarBackground(.hidden, for: .navigationBar)
-            .toolbarBackground(.hidden, for: .automatic)
         }
     }
 
-    // MARK: - Poster Header (Safe + Full-Bleed)
+    // MARK: - Poster Header (keeps same component usage: onBack + toggleEnroll)
     @ViewBuilder
-    private func posterHeader(course: Course, topInset: CGFloat) -> some View {
+    private func header(course: CourseModel, topInset: CGFloat) -> some View {
         let totalHeight = basePosterHeight + topInset
 
         ZStack(alignment: .bottomLeading) {
-            
             AppImages.image(for: AppImages.Mock.mock)
                 .resizable()
                 .scaledToFill()
                 .frame(height: totalHeight)
                 .frame(maxWidth: .infinity)
                 .clipped()
-                
                 .clipShape(
                     RoundedCornerShape(radius: 24, corners: [.bottomLeft, .bottomRight])
                 )
                 .ignoresSafeArea(edges: .top)
 
+            // Course title banner
             ZStack(alignment: .leading) {
                 Rectangle()
                     .fill(Color.accentColor)
@@ -122,13 +84,44 @@ struct CourseDetailsComponentView: View {
             }
             .padding(.leading, -8)
             .padding(.bottom, 64)
+
+            // Top controls mirrored from Compose: onBack + toggleEnroll
+            HStack {
+                Button(action: { component.onBack() }) {
+                    Image(systemName: "chevron.backward")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(.white)
+                        .padding(8)
+                        .background(
+                            Circle().fill(Color( AppColors.Palette.accent.rawValue))
+                        )
+                }
+                .accessibilityLabel("Назад")
+
+                Spacer()
+
+                Button(action: { component.toggleEnroll() }) {
+                    Text(state.isEnrolled ? "Вы записаны" : "Записаться")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                        .background(
+                            Capsule().fill(Color( AppColors.Palette.accent.rawValue))
+                        )
+                }
+                .accessibilityLabel(state.isEnrolled ? "Вы записаны" : "Записаться")
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, topInset + 8)
+            .frame(maxHeight: .infinity, alignment: .top)
         }
         .frame(height: totalHeight)
     }
 
     // MARK: - Description
     @ViewBuilder
-    private func descriptionBlock(course: Course) -> some View {
+    private func descriptionBlock(course: CourseModel) -> some View {
         VStack(alignment: .leading, spacing: 14) {
             Text(course.description_ ?? "Описание не добавлено")
                 .font(.footnote)
@@ -146,23 +139,9 @@ struct CourseDetailsComponentView: View {
         .padding(.horizontal, 16)
     }
 
-    // MARK: - Enroll Button
-    private var enrollButton: some View {
-        CustomButton(
-            text: state.isEnrolled ? "Отписаться" : "Записаться",
-            color: .accentColor,
-            isActive: true,
-            action: {
-                component.toggleEnroll()
-            }
-        )
-        .font(.footnote.weight(.semibold))
-        .padding(.horizontal, 16)
-    }
-
     // MARK: - Sections
     @ViewBuilder
-    private func sectionsList(course: Course) -> some View {
+    private func sectionsList(course: CourseModel) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Секции")
                 .font(.footnote.weight(.semibold))
@@ -178,6 +157,9 @@ struct CourseDetailsComponentView: View {
                             section: section,
                             showProgress: state.isEnrolled
                         )
+                        // If your component exposes a section open action, wire it here:
+                        // .contentShape(Rectangle())
+                        // .onTapGesture { component.openSection(section.id) }
                     }
                 }
             }

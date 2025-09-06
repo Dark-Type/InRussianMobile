@@ -31,7 +31,9 @@ import org.jetbrains.compose.resources.vectorResource
 @Composable
 fun FormSaveUi(component: ConfirmationComponent) {
     val currentColors = LocalExtraColors.current
-    Column(Modifier.background(currentColors.secondaryBackground).padding(horizontal = 28.dp)) {
+    Column(Modifier
+        .background(currentColors.secondaryBackground)
+        .padding(horizontal = 28.dp)) {
         Column(
             Modifier
                 .weight(1f)

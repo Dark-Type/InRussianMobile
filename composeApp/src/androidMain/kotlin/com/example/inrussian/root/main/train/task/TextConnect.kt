@@ -165,33 +165,39 @@ private fun UnmatchedRow(
                 .padding(end = 6.dp)
                 .then(
                     if (left != null) {
-                    Modifier.onGloballyPositioned { onLeftPositioned(left.id, it) }.background(
-                            com.example.inrussian.root.main.train.task.Colors.Surface,
-                            RoundedCornerShape(10.dp)
-                        ).border(
-                            1.dp,
-                            com.example.inrussian.root.main.train.task.Colors.Outline,
-                            RoundedCornerShape(10.dp)
-                        ).pointerInput(left.id) {
-                            detectDragGestures(
-                                onDragStart = { onLeftDragStart(left.id) },
-                                onDrag = { change, amount ->
-                                    onLeftDragBy(left.id, amount)
-                                    change.consume()
-                                },
-                                onDragEnd = { onLeftDragEnd() },
-                                onDragCancel = { onLeftDragCancel() })
-                        }
-                } else {
-                    Modifier.background(
-                            com.example.inrussian.root.main.train.task.Colors.EmptyBg,
-                            RoundedCornerShape(10.dp)
-                        ).border(
-                            1.dp,
-                            com.example.inrussian.root.main.train.task.Colors.EmptyBorder,
-                            RoundedCornerShape(10.dp)
-                        )
-                })
+                        Modifier
+                            .onGloballyPositioned { onLeftPositioned(left.id, it) }
+                            .background(
+                                Colors.Surface,
+                                RoundedCornerShape(10.dp)
+                            )
+                            .border(
+                                1.dp,
+                                Colors.Outline,
+                                RoundedCornerShape(10.dp)
+                            )
+                            .pointerInput(left.id) {
+                                detectDragGestures(
+                                    onDragStart = { onLeftDragStart(left.id) },
+                                    onDrag = { change, amount ->
+                                        onLeftDragBy(left.id, amount)
+                                        change.consume()
+                                    },
+                                    onDragEnd = { onLeftDragEnd() },
+                                    onDragCancel = { onLeftDragCancel() })
+                            }
+                    } else {
+                        Modifier
+                            .background(
+                                Colors.EmptyBg,
+                                RoundedCornerShape(10.dp)
+                            )
+                            .border(
+                                1.dp,
+                                Colors.EmptyBorder,
+                                RoundedCornerShape(10.dp)
+                            )
+                    })
                 .padding(horizontal = 10.dp, vertical = 8.dp),
             contentAlignment = Alignment.CenterStart) {
             if (left != null) {
@@ -207,15 +213,15 @@ private fun UnmatchedRow(
         }
 
         val rightBorder = when {
-            right == null -> com.example.inrussian.root.main.train.task.Colors.EmptyBorder
+            right == null -> Colors.EmptyBorder
             isWrong -> Red
-            isRightHovered -> com.example.inrussian.root.main.train.task.Colors.Accent
-            else -> com.example.inrussian.root.main.train.task.Colors.Outline
+            isRightHovered -> Colors.Accent
+            else -> Colors.Outline
         }
         val rightBg = when {
-            right == null -> com.example.inrussian.root.main.train.task.Colors.EmptyBg
+            right == null -> Colors.EmptyBg
             isWrong -> Red
-            isRightHovered -> com.example.inrussian.root.main.train.task.Colors.HoverBg
+            isRightHovered -> Colors.HoverBg
             else -> Colors.Surface
         }
         Box(
@@ -224,13 +230,15 @@ private fun UnmatchedRow(
                 .padding(start = 6.dp)
                 .then(
                     if (right != null) {
-                    Modifier.onGloballyPositioned { onRightPositioned(right.id, it) }
-                        .background(rightBg, RoundedCornerShape(10.dp))
-                        .border(1.dp, rightBorder, RoundedCornerShape(10.dp))
-                } else {
-                    Modifier.background(rightBg, RoundedCornerShape(10.dp))
-                        .border(1.dp, rightBorder, RoundedCornerShape(10.dp))
-                })
+                        Modifier
+                            .onGloballyPositioned { onRightPositioned(right.id, it) }
+                            .background(rightBg, RoundedCornerShape(10.dp))
+                            .border(1.dp, rightBorder, RoundedCornerShape(10.dp))
+                    } else {
+                        Modifier
+                            .background(rightBg, RoundedCornerShape(10.dp))
+                            .border(1.dp, rightBorder, RoundedCornerShape(10.dp))
+                    })
                 .padding(horizontal = 10.dp, vertical = 8.dp),
             contentAlignment = Alignment.CenterStart) {
             if (right != null) {
@@ -264,7 +272,7 @@ private fun PairRow(
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .background(if(isWrong)Red.copy(0.1f) else Colors.MatchedBg, shape)
+            .background(if (isWrong) Red.copy(0.1f) else Colors.MatchedBg, shape)
             .border(
                 1.dp, when {
                     isWrong -> Red
@@ -311,7 +319,7 @@ private fun PairRow(
                 .fillMaxHeight()
                 .padding(start = 6.dp)
                 .onGloballyPositioned { onRightPositioned(it) }
-                .background(if(isWrong)Red.copy(0.1f) else Colors.MatchedBg, shape)
+                .background(if (isWrong) Red.copy(0.1f) else Colors.MatchedBg, shape)
 
                 .padding(horizontal = 10.dp, vertical = 8.dp), onClick = {}) {
             Text(

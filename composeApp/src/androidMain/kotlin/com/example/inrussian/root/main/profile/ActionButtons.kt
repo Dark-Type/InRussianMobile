@@ -65,7 +65,10 @@ fun ActionButtons(component: ProfileMainComponent) {
             .background(White)
             .padding(horizontal = 16.dp)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.offset(y = (6).dp)) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.offset(y = (6).dp)
+        ) {
             Text(stringResource(Res.string.send_notification))
             Spacer(Modifier.weight(1f))
             Switch(

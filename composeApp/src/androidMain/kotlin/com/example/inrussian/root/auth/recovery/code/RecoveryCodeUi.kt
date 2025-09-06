@@ -55,7 +55,11 @@ fun EnterRecoveryCodeUi(component: EnterRecoveryCodeComponent) {
     val currentColors = LocalExtraColors.current
 
     Box() {
-        Column(modifier = Modifier.background(currentColors.baseBackground).padding(horizontal = 28.dp)) {
+        Column(
+            modifier = Modifier
+                .background(currentColors.baseBackground)
+                .padding(horizontal = 28.dp)
+        ) {
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -101,8 +105,8 @@ fun EnterRecoveryCodeUi(component: EnterRecoveryCodeComponent) {
                 Spacer(modifier = Modifier.height(100.dp))
 
                 CommonButton(
-                    onClick = {component.onCodeEntered(state.code)},
-                    text = if(state.isButtonActive) "Далее" else stringResource(Res.string.repeat_send_code) + " " + state.timerString,
+                    onClick = { component.onCodeEntered(state.code) },
+                    text = if (state.isButtonActive) "Далее" else stringResource(Res.string.repeat_send_code) + " " + state.timerString,
                     enable = state.isButtonActive,
                     modifier = Modifier.padding(bottom = 24.dp)
                 )

@@ -13,7 +13,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 
 @Composable
- fun Avatar(avatarId: String?) {
+fun Avatar(avatarId: String?) {
     Box(
         modifier = Modifier
             .size(116.dp)

@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.example.inrussian.components.main.profile.Gender
 
 @Composable
- fun GenderSelector(selected: Gender, onSelect: (Gender) -> Unit) {
+fun GenderSelector(selected: Gender, onSelect: (Gender) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text("Пол", style = MaterialTheme.typography.labelLarge)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

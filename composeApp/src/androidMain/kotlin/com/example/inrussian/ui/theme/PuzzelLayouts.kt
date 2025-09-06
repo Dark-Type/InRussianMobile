@@ -2,7 +2,6 @@ package com.example.inrussian.ui.theme
 
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,10 +16,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.PathFillType
-import androidx.compose.ui.graphics.PathOperation
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -207,6 +202,7 @@ fun PuzzleLayoutOut(
                             lineTo(halfStroke, h - halfStroke)
                             close()
                         }
+
                         TabSide.LEFT -> {
                             moveTo(halfStroke, halfStroke)
                             lineTo(w - halfStroke, halfStroke)
@@ -217,6 +213,7 @@ fun PuzzleLayoutOut(
                             lineTo(halfStroke, halfStroke)
                             close()
                         }
+
                         else -> {
                             addRect(Rect(halfStroke, halfStroke, w - halfStroke, h - halfStroke))
                         }

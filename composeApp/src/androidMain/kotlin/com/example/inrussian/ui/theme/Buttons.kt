@@ -1,7 +1,6 @@
 package com.example.inrussian.ui.theme
 
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,7 +41,7 @@ fun CommonButton(
 
 @Composable
 fun BackButton(enable: Boolean, onClick: () -> Unit) {
-    IconButton({if(enable) onClick() }) {
+    IconButton({ if (enable) onClick() }) {
         Icon(
             vectorResource(Res.drawable.back_arrow),
             "",
@@ -55,7 +54,7 @@ fun BackButton(enable: Boolean, onClick: () -> Unit) {
 @Composable
 fun RowScope.ContinueButton(enable: Boolean, onClick: () -> Unit) {
 
-    IconButton({if(enable) onClick() }) {
+    IconButton({ if (enable) onClick() }) {
         Icon(
             vectorResource(Res.drawable.front_arror),
             "",
