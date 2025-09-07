@@ -24,4 +24,5 @@ interface UserConfigurationStorage {
     fun getNotificationsEnabled(): Boolean?
     fun saveTheme(theme: AppTheme)
     fun getTheme(): AppTheme?
+    fun clearAll()
 }

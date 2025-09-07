@@ -216,4 +216,13 @@ class UserConfigurationStorageImpl(
             else -> null
         }
     }
+
+    override fun clearAll() {
+        defaults.removeObjectForKey(key)
+        defaults.removeObjectForKey(tokenKey)
+        defaults.removeObjectForKey(refreshTokenKey)
+        defaults.removeObjectForKey(notificationsKey)
+        defaults.removeObjectForKey(themeKey)
+        deleteCreds()
+    }
 }

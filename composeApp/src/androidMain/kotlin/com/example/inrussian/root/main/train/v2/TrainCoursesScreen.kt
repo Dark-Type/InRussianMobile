@@ -366,6 +366,7 @@ private fun ThemeNode(
     val path = remember(theme.id, parentPath) { parentPath + theme.id }
     val pathKey = remember(path) { path.joinToString(">") }
     val isExpanded = expandedThemes[pathKey] == true
+    val currentColors = LocalExtraColors.current
     val hasChildren = theme.childThemes.isNotEmpty()
     val accent = when {
         theme.completionFraction >= 0.95f -> lightCircleGreen
@@ -387,7 +388,7 @@ private fun ThemeNode(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .clip(RoundedCornerShape(12.dp))
-                .background(Color(0xFFFDFDFE))
+                .background(currentColors.componentBackground)
                 .border(
                     1.dp,
                     if (theme.completionFraction >= 1f) accent.copy(0.6f) else Color(0xFFE3E4E8),
@@ -426,13 +427,14 @@ private fun ThemeNode(
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Medium,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    color = currentColors.fontCaptive
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         "${theme.solvedTasks}/${theme.totalTasks}",
                         fontSize = 11.sp,
-                        color = Color(0xFF6A6F76)
+                        color = currentColors.fontInactive
                     )
                     Text(
                         " • ${(theme.completionFraction * 100).roundToInt()}%",

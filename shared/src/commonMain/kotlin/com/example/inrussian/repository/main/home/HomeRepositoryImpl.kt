@@ -35,20 +35,20 @@ class HomeRepositoryImpl(
     override suspend fun courseById(courseId: String): CourseModel? =
         api.contentCoursesCourseIdGet(courseId).errorHandle(userConfigurationStorage ,authRepository).toDomain()
 
-    override suspend fun courseSections(courseId: String): List<CourseSection> =
-        api.contentSectionsByCourseCourseIdGet(courseId)
-            .errorHandle(userConfigurationStorage, authRepository)
-            .map { section ->
-                val progressResponse = api.studentSectionsSectionIdProgressGet(section.courseId)
-                    .errorHandle(userConfigurationStorage, authRepository)
-
-                progressResponse.toCourseSection(
-                    title = section.name,
-                    percent = progressResponse.percent,
-                    sectionId = section.id,
-                    completedTasks = progressResponse.solvedTasks,
-                )
-            }
+    override suspend fun courseSections(courseId: String): List<CourseSection> = emptyList()
+//        api.contentSectionsByCourseCourseIdGet(courseId)
+//            .errorHandle(userConfigurationStorage, authRepository)
+//            .map { section ->
+//                val progressResponse = api.studentSectionsSectionIdProgressGet(section.courseId)
+//                    .errorHandle(userConfigurationStorage, authRepository)
+//
+//                progressResponse.toCourseSection(
+//                    title = section.name,
+//                    percent = progressResponse.percent,
+//                    sectionId = section.id,
+//                    completedTasks = progressResponse.solvedTasks,
+//                )
+//            }
 
 
     override suspend fun courseProgressPercent(courseId: String): Int {
