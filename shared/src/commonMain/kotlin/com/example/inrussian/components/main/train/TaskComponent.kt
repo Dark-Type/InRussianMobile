@@ -8,6 +8,7 @@ import com.arkivanov.decompose.router.slot.activate
 import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.value.Value
 import com.example.inrussian.components.main.train.TrainComponentCopy.Child
+import com.example.inrussian.components.main.train.TrainComponentCopy.Child.*
 import com.example.inrussian.components.main.train.TrainComponentCopy.Child.AudioConnectChild
 import com.example.inrussian.components.main.train.TrainComponentCopy.Child.ImageConnectChild
 import com.example.inrussian.components.main.train.TrainComponentCopy.Child.TextConnectChild
@@ -20,12 +21,14 @@ import com.example.inrussian.components.main.train.TrainComponentCopy.Config.Tex
 import com.example.inrussian.components.main.train.TrainComponentCopy.Config.TextInputConfig
 import com.example.inrussian.components.main.train.TrainComponentCopy.Config.TextInputWithVariantConfig
 import com.example.inrussian.components.main.train.tasks.impl.AudioConnectTaskComponentImpl
+import com.example.inrussian.components.main.train.tasks.impl.ImageAndSelectComponentImpl
 import com.example.inrussian.components.main.train.tasks.impl.ImageConnectTaskComponentImpl
 import com.example.inrussian.components.main.train.tasks.impl.ListenAndSelectComponentImpl
 import com.example.inrussian.components.main.train.tasks.impl.TextConnectTaskComponentImpl
 import com.example.inrussian.components.main.train.tasks.impl.TextInputTaskComponentImpl
 import com.example.inrussian.components.main.train.tasks.impl.TextInputTaskWithVariantComponentImpl
 import com.example.inrussian.components.main.train.tasks.interfaces.AudioConnectTaskComponent
+import com.example.inrussian.components.main.train.tasks.interfaces.ImageAndSelectComponent
 import com.example.inrussian.components.main.train.tasks.interfaces.ImageConnectTaskComponent
 import com.example.inrussian.components.main.train.tasks.interfaces.ListenAndSelectComponent
 import com.example.inrussian.components.main.train.tasks.interfaces.TextConnectTaskComponent
@@ -33,6 +36,7 @@ import com.example.inrussian.components.main.train.tasks.interfaces.TextInputTas
 import com.example.inrussian.components.main.train.tasks.interfaces.TextInputTaskWithVariantComponent
 import com.example.inrussian.models.models.task.TaskBody
 import com.example.inrussian.models.models.task.TaskBody.AudioConnectTask
+import com.example.inrussian.models.models.task.TaskBody.ImageAndSelect
 import com.example.inrussian.models.models.task.TaskBody.ImageConnectTask
 import com.example.inrussian.models.models.task.TaskBody.ListenAndSelect
 import com.example.inrussian.models.models.task.TaskBody.TextConnectTask
@@ -61,6 +65,8 @@ interface TrainComponentCopy {
         data class TextInputChild(val component: TextInputTaskComponent) : Child
         data class TextInputWithVariantsChild(val component: TextInputTaskWithVariantComponent) :
             Child
+        
+        data class ImageAndSelectChild(val component: ImageAndSelectComponent) : Child
         
         data class ListenAndSelectChild(val component: ListenAndSelectComponent) : Child
         data object EmptyChild : Child
@@ -92,6 +98,11 @@ interface TrainComponentCopy {
         @Serializable
         @SerialName("ListenSelect")
         data class ListenSelectConfig(val task: ListenAndSelect) : Config
+        
+        @Serializable
+        @SerialName("ListenSelect")
+        data class ImageSelectConfig(val task: ImageAndSelect) : Config
+        
         
         @Serializable
         @SerialName("Empty")
@@ -137,9 +148,9 @@ class TrainComponentImpl(
                         is TextInputWithVariantTask -> TextInputWithVariantConfig(it.showedTask.taskBody)
                         is TextConnectTask -> TextConnectConfig(it.showedTask.taskBody)
                         null -> Config.EmptyTaskConfig
-                        is TaskBody.ListenAndSelect -> Config.ListenSelectConfig(it.showedTask.taskBody)
+                        is ListenAndSelect -> Config.ListenSelectConfig(it.showedTask.taskBody)
                         is TaskBody.ConstructSentenceTask -> TODO()
-                        is TaskBody.ImageAndSelect -> TODO()
+                        is ImageAndSelect -> Config.ImageSelectConfig(it.showedTask.taskBody)
                         is TaskBody.SelectWordsTask -> TODO()
                     }
                 )
@@ -211,8 +222,17 @@ class TrainComponentImpl(
                 )
             )
             
-            is Config.ListenSelectConfig -> Child.ListenAndSelectChild(
+            is Config.ListenSelectConfig -> ListenAndSelectChild(
                 component = ListenAndSelectComponentImpl(
+                    context,
+                    onContinueClicked = ::onButtonClick,
+                    onButtonEnable = ::onChangeButtonState,
+                    config.task
+                )
+            )
+            
+            is Config.ImageSelectConfig -> ImageAndSelectChild(
+                component = ImageAndSelectComponentImpl(
                     context,
                     onContinueClicked = ::onButtonClick,
                     onButtonEnable = ::onChangeButtonState,

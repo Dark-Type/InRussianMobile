@@ -4,27 +4,27 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
-import com.example.inrussian.components.main.train.tasks.interfaces.ListenAndSelectComponent
-import com.example.inrussian.components.main.train.tasks.interfaces.ListenAndSelectComponent.State
+import com.example.inrussian.components.main.train.tasks.interfaces.ImageAndSelectComponent
+import com.example.inrussian.components.main.train.tasks.interfaces.ImageAndSelectComponent.State
 import com.example.inrussian.data.client.models.Variant
 import com.example.inrussian.data.client.models.VariantState
-import com.example.inrussian.models.models.task.TaskBody.ListenAndSelect
+import com.example.inrussian.models.models.task.TaskBody.ImageAndSelect
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
-class ListenAndSelectComponentImpl(
+class ImageAndSelectComponentImpl(
     component: ComponentContext,
     private val onContinueClicked: (Boolean) -> Unit,
     private val onButtonEnable: (Boolean) -> Unit,
-    listenAndSelectTask: ListenAndSelect,
-) : ListenAndSelectComponent, ComponentContext by component {
+    imageAndSelectTask: ImageAndSelect,
+) : ImageAndSelectComponent, ComponentContext by component {
     
     private val _state = MutableValue<State>(
         State(
-            audioBlocks = listenAndSelectTask.task.audioBlocks,
-            variants = listenAndSelectTask.task.variants.map {
-               Variant(
+            imageBlocks = imageAndSelectTask.task.imageBlocks,
+            variants = imageAndSelectTask.task.variants.map {
+                Variant(
                     isCorrect = it.second, text = it.first
                 )
             })
@@ -40,13 +40,13 @@ class ListenAndSelectComponentImpl(
     override val state: Value<State> = _state
     
     override fun onSelect(variantId: Uuid) {
-        updateState(variantId,  VariantState.Selected)
+        updateState(variantId, VariantState.Selected)
         _state.update {
             it.copy(selectedElementId = variantId)
         }
     }
     
-    private fun updateState(id: Uuid, state:  VariantState) {
+    private fun updateState(id: Uuid, state: VariantState) {
         _state.update { s ->
             val variants = s.variants.toMutableList()
             
