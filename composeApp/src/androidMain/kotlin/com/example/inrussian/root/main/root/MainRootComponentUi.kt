@@ -47,16 +47,20 @@ fun MainRootComponentUi(component: MainRootComponent) {
     val currentColors = LocalExtraColors.current
 
     Box(modifier = Modifier.fillMaxSize()) {
-        when (current) {
-            is MainRootComponent.Child.HomeChild -> HomeComponentUi(current.component)
-            is MainRootComponent.Child.TrainChild -> TrainComponentUi(current.component)
-            is MainRootComponent.Child.ProfileChild -> ProfileComponentUi(current.component)
-        }
+        
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
         ) {
+            Box(Modifier.weight(1f)){
+                when (current) {
+                    is MainRootComponent.Child.HomeChild -> HomeComponentUi(current.component)
+                    is MainRootComponent.Child.TrainChild -> TrainComponentUi(current.component)
+                    is MainRootComponent.Child.ProfileChild -> ProfileComponentUi(current.component)
+                }
+            }
+            
             HorizontalDivider(
                 thickness = 1.dp,
                 color = Color.Black.copy(alpha = 0.1f)

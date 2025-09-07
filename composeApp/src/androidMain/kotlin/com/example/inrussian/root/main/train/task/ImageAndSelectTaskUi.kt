@@ -2,6 +2,7 @@ package com.example.inrussian.root.main.train.task
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -10,21 +11,28 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.value.MutableValue
 import com.example.inrussian.components.main.train.tasks.interfaces.ImageAndSelectComponent
 import com.example.inrussian.data.client.models.Variant
 import com.example.inrussian.data.client.models.VariantState
-import com.example.inrussian.models.models.task.body.ImageBlock
+import com.example.inrussian.repository.main.train.ImageBlocks
 import com.example.inrussian.ui.theme.FontInactiveLight
 import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.placeholder_coil
@@ -44,7 +52,7 @@ fun ImageAndSelectTaskUi(
             Spacer(Modifier.height(24.dp))
         }
         item {
-            ChoiceElement(state.variants, {})
+            ChoiceElement(state.variants, component::onSelect)
         }
     }
     onContinueClick {
@@ -54,11 +62,21 @@ fun ImageAndSelectTaskUi(
 
 @Composable
 fun ImageBlock(
-    imageBlock: ImageBlock
+    imageBlock: ImageBlocks
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        val painter = rememberAsyncImagePainter(model = imageBlock.image)
+        var aspect by remember { mutableFloatStateOf(1f) }
+        
+        LaunchedEffect(painter) {
+            val size: Size = painter.intrinsicSize
+            if (size.width > 0f && size.height > 0f) {
+                aspect = size.width / size.height
+            }
+        }
+        
         Text(
             imageBlock.name,
             modifier = Modifier
@@ -72,7 +90,9 @@ fun ImageBlock(
             contentDescription = "",
             modifier = Modifier
                 .fillMaxWidth(0.8f)
+                .aspectRatio(aspect)
                 .clip(RoundedCornerShape(12.dp)),
+            contentScale = ContentScale.Crop,
             placeholder = painterResource(Res.drawable.placeholder_coil),
             error = painterResource(Res.drawable.placeholder_coil)
         )
@@ -104,17 +124,17 @@ fun ImageBlock(
 
 
 @OptIn(ExperimentalUuidApi::class)
-class ImageAndSelectTaskUi : ImageAndSelectComponent {
+class ImageAndSelectTask : ImageAndSelectComponent {
     
     override val state = MutableValue(
         ImageAndSelectComponent.State(
             imageBlocks = listOf(
-                ImageBlock(
+                ImageBlocks(
                     name = "Спикер 1",
                     image = "",
-                ), ImageBlock(
+                ), ImageBlocks(
                     name = "Спикер 3", image = "", description = "Вася ,ты когда читать научишься"
-                ), ImageBlock(
+                ), ImageBlocks(
                     name = "Спикер 2",
                     image = "",
                     description = "Я подумаю над твоим предложением",

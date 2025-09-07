@@ -6,8 +6,8 @@ import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.example.inrussian.models.models.task.TaskModel
+import com.example.inrussian.models.models.task.body.FullTaskModel
 import com.example.inrussian.repository.main.train.AttemptRequest
-import com.example.inrussian.repository.main.train.FullTaskModel
 import com.example.inrussian.repository.main.train.TaskResponse
 import com.example.inrussian.repository.main.train.TrainRepository
 

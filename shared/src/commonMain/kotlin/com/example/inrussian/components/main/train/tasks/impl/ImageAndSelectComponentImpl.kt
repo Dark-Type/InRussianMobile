@@ -1,5 +1,6 @@
 package com.example.inrussian.components.main.train.tasks.impl
 
+import co.touchlab.kermit.Logger
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
@@ -8,7 +9,7 @@ import com.example.inrussian.components.main.train.tasks.interfaces.ImageAndSele
 import com.example.inrussian.components.main.train.tasks.interfaces.ImageAndSelectComponent.State
 import com.example.inrussian.data.client.models.Variant
 import com.example.inrussian.data.client.models.VariantState
-import com.example.inrussian.models.models.task.TaskBody.ImageAndSelect
+import com.example.inrussian.repository.main.train.TaskBody.ImageAndSelect
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -34,6 +35,8 @@ class ImageAndSelectComponentImpl(
     init {
         _state.subscribe {
             onButtonEnable(it.selectedElementId != null)
+            Logger.d { it.toString() }
+            
         }
     }
     
@@ -48,15 +51,12 @@ class ImageAndSelectComponentImpl(
     
     private fun updateState(id: Uuid, state: VariantState) {
         _state.update { s ->
-            val variants = s.variants.toMutableList()
-            
-            variants.map { v ->
-                if (v.id == id)  Variant(v.id, v.isCorrect, v.text, state)
-                else  Variant(
-                    v.id, v.isCorrect, v.text,  VariantState.NotSelected
+            s.copy(variants = s.variants.toMutableList().map { v ->
+                if (v.id == id) Variant(v.id, v.isCorrect, v.text, state)
+                else Variant(
+                    v.id, v.isCorrect, v.text, VariantState.NotSelected
                 )
-            }
-            s.copy()
+            })
         }
     }
     
@@ -67,10 +67,10 @@ class ImageAndSelectComponentImpl(
             
             updateState(
                 state.value.selectedElementId!!,
-                if (isCorrectAnswer)  VariantState.Correct else  VariantState.Incorrect
+                if (isCorrectAnswer) VariantState.Correct else VariantState.Incorrect
             )
             onContinueClicked(_state.value.variants.all {
-                (it.isCorrect && it.state is  VariantState.Selected) || !it.isCorrect
+                (it.isCorrect && it.state is VariantState.Selected) || !it.isCorrect
             })
         }
         

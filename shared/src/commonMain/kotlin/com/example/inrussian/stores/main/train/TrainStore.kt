@@ -2,7 +2,7 @@ package com.example.inrussian.stores.main.train
 
 import com.arkivanov.mvikotlin.core.store.Store
 import com.example.inrussian.models.models.task.TaskResponse
-import com.example.inrussian.repository.main.train.FullTaskModel
+import com.example.inrussian.models.models.task.body.FullTaskModel
 import com.example.inrussian.stores.main.train.TrainStore.Intent
 import com.example.inrussian.stores.main.train.TrainStore.Label
 import com.example.inrussian.stores.main.train.TrainStore.State

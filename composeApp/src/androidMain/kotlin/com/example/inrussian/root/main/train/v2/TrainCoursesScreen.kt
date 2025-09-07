@@ -164,7 +164,7 @@ fun TrainCoursesScreen(component: TrainCoursesListComponent) {
 
             state.error != null && state.courses.isEmpty() ->
                 ErrorState(
-                    error = state.error as String?,
+                    error = state.error,
                     onRetry = component::onRefresh,
                     modifier = Modifier.padding(padding).fillMaxSize()
                 )
@@ -193,7 +193,6 @@ fun TrainCoursesScreen(component: TrainCoursesListComponent) {
                                 if (theme.childThemes.isNotEmpty()) {
                                     expandedThemes[key] = !(expandedThemes[key] ?: false)
                                 } else {
-                                    // leaf -> navigate directly
                                     component.onThemeClick(course.id, path)
                                 }
                             },

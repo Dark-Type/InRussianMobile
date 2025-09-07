@@ -12,12 +12,12 @@ import kotlin.uuid.Uuid
 class MockTrainRepository(
     private val seed: Int = 77
 ) : TrainRepository {
-
+    
     private val rnd = Random(seed)
     private val themesByCourse = mutableMapOf<String, List<ThemeTreeNode>>()
     private val tasksPerTheme = mutableMapOf<String, MutableList<TaskModel>>()
     private val solvedPerTheme = mutableMapOf<String, MutableSet<String>>()
-
+    
     override suspend fun userCourseEnrollments(): List<UserCourseEnrollmentItem> =
         withContext(Dispatchers.IO) {
             delay(80)
@@ -31,7 +31,7 @@ class MockTrainRepository(
                 )
             }
         }
-
+    
     override suspend fun course(courseId: String): Course = withContext(Dispatchers.IO) {
         delay(50)
         Course(
@@ -47,7 +47,7 @@ class MockTrainRepository(
             updatedAt = "2024-01-01T00:00:00Z"
         )
     }
-
+    
     override suspend fun themeTree(courseId: String): List<ThemeTreeNode> =
         withContext(Dispatchers.IO) {
             delay(70)
@@ -55,7 +55,7 @@ class MockTrainRepository(
                 generateThemeTree(courseId)
             }
         }
-
+    
     override suspend fun themeContents(themeId: String): ThemeContents =
         withContext(Dispatchers.IO) {
             delay(60)
@@ -78,7 +78,7 @@ class MockTrainRepository(
                 tasks = tasks
             )
         }
-
+    
     override suspend fun nextTask(themeId: String): TaskModel? =
         withContext(Dispatchers.IO) {
             delay(40)
@@ -88,11 +88,11 @@ class MockTrainRepository(
             val solved = solvedPerTheme[themeId] ?: emptySet()
             tasks.firstOrNull { it.id !in solved }
         }
-
+    
     override suspend fun refresh() {
         TODO("Not yet implemented")
     }
-
+    
     @OptIn(ExperimentalUuidApi::class)
     override suspend fun submitAttempt(request: AttemptRequest): AttemptProgressResult =
         withContext(Dispatchers.IO) {
@@ -109,7 +109,7 @@ class MockTrainRepository(
                 total = total
             )
         }
-
+    
     @OptIn(ExperimentalUuidApi::class)
     override suspend fun attemptsHistory(themeId: String): List<UserAttemptDTO> =
         withContext(Dispatchers.IO) {
@@ -127,7 +127,7 @@ class MockTrainRepository(
                 )
             }
         }
-
+    
     @OptIn(ExperimentalUuidApi::class)
     override suspend fun courseAverageStats(courseId: String): CourseAverageStatsDTO =
         withContext(Dispatchers.IO) {
@@ -145,14 +145,14 @@ class MockTrainRepository(
                 themesAverage = emptyList()
             )
         }
-
+    
     /* ---------------- Internal helpers ---------------- */
-
+    
     private fun generateThemeTree(courseId: String): List<ThemeTreeNode> =
         List(rnd.nextInt(3, 5)) { idx ->
             buildNode(courseId, depth = 0, index = idx)
         }
-
+    
     private fun buildNode(courseId: String, depth: Int, index: Int): ThemeTreeNode {
         val id = "${courseId}_theme_${depth}_$index"
         val hasChildren = depth < 2 && rnd.nextFloat() < 0.5f
@@ -172,18 +172,34 @@ class MockTrainRepository(
             children = children
         )
     }
-
+    
     @OptIn(ExperimentalUuidApi::class)
     private fun mockTask(themeId: String, index: Int): TaskModel =
         TaskModel(
             id = Uuid.random().toString(),
             taskType = listOf(TaskType.SELECT),
-            taskBody = TaskBody.TextInputTask(emptyList()),
+            taskBody = TaskBody.ImageAndSelect(
+                ImageAndSelectModel(
+                    imageBlocks = listOf(
+                        ImageBlocks(
+                            name = "Olega",
+                            image = "https://a.d-cd.net/9e05ae6s-1920.jpg"
+                        ),
+                        ImageBlocks(
+                            name = "Мой ахуй если это заведется",
+                            description = "работает, сука",
+                            descriptionTranslate = "It's working, bitch",
+                            image = "https://www.meme-arsenal.com/memes/25e19667a7d1520cde867701f9e80fc9.jpg"
+                        )
+                    ),
+                    variants = listOf("Blu" to false, "bitch" to false, "yesss" to true)
+                )
+            ),
             question = "Question #$index of $themeId",
             createdAt = "2024-01-01T00:00:00Z",
             updatedAt = "2024-01-01T00:00:00Z"
         )
-
+    
     @OptIn(ExperimentalUuidApi::class)
     private fun findThemeIdByTask(taskId: Uuid): String {
         tasksPerTheme.forEach { (themeId, list) ->

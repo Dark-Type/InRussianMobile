@@ -1,5 +1,6 @@
 package com.example.inrussian.root.main.train.v2
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,8 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
@@ -20,20 +21,33 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.inrussian.components.main.train.TaskBodyChild
 import com.example.inrussian.components.main.train.ThemeTasksComponent
+import com.example.inrussian.root.main.train.task.AudioConnect
+import com.example.inrussian.root.main.train.task.ImageAndSelectTaskUi
+import com.example.inrussian.root.main.train.task.ImageConnectTask
+import com.example.inrussian.root.main.train.task.ListenAndSelectTaskUi
+import com.example.inrussian.root.main.train.task.TextConnect
+import com.example.inrussian.root.main.train.task.TextInputTask
+import com.example.inrussian.root.main.train.task.TextInputWithVariantTask
 import com.example.inrussian.stores.main.train.TrainStore
+import inrussian.composeapp.generated.resources.Res
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun ThemeTasksScreen(component: ThemeTasksComponent) {
     val state by component.state.subscribeAsState()
     val slot by component.childSlot.subscribeAsState()
-
+    
     when {
         state.isLoading && state.showedTask == null -> Loading()
         state.showedTask == null -> EmptyOrFinished(state, component)
@@ -43,18 +57,14 @@ fun ThemeTasksScreen(component: ThemeTasksComponent) {
 
 @Composable
 private fun ActiveTask(
-    state: TrainStore.State,
-    component: ThemeTasksComponent,
-    bodyChild: TaskBodyChild?
+    state: TrainStore.State, component: ThemeTasksComponent, bodyChild: TaskBodyChild?
 ) {
     val progress = (state.percent ?: 0f).coerceIn(0f, 1f)
-
+    var onEventState by remember { mutableStateOf<(() -> Unit)?>(null) }
     Column(
         Modifier
             .fillMaxSize()
-            .padding(horizontal = 20.dp, vertical = 24.dp)
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.Start
+            .padding(horizontal = 20.dp, vertical = 24.dp), horizontalAlignment = Alignment.Start
     ) {
         LinearProgressIndicator(
             progress = { progress },
@@ -65,67 +75,85 @@ private fun ActiveTask(
             trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
         )
         Spacer(Modifier.height(16.dp))
-
-        Text("Theme: ${state.showedTask?.themeId ?: component.themeId}",
-            style = MaterialTheme.typography.labelMedium)
-        Spacer(Modifier.height(6.dp))
-        Text("Progress: ${(progress * 100).toInt()}%",
-            style = MaterialTheme.typography.labelSmall)
-        Spacer(Modifier.height(20.dp))
+        
         Text(
-            state.showedTask?.question ?: "No task",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold
+            "Theme: ${state.showedTask?.themeId ?: component.themeId}",
+            style = MaterialTheme.typography.labelMedium
+        )
+        Spacer(Modifier.height(6.dp))
+        Text(
+            "Progress: ${(progress * 100).toInt()}%", style = MaterialTheme.typography.labelSmall
+        )
+        Spacer(Modifier.height(20.dp))
+        TaskDescription(
+            {},
+            state.showedTask?.question ?: "",
+            state.showedTask?.types ?: listOf()
         )
         Spacer(Modifier.height(24.dp))
-
-        TaskBodyChildRenderer(bodyChild)
-
+        
+        TaskBodyChildRenderer(bodyChild) { callback ->
+            onEventState = callback
+        }
+        
         Spacer(Modifier.height(32.dp))
-
+        
         when (state.isCorrect) {
             null -> {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     Button(
-                        onClick = { component.markCorrectAndSubmit() },
+                        onClick = { component.markCorrectAndSubmit();onEventState?.invoke() },
                         modifier = Modifier.weight(1f)
                     ) { Text("Check (Mock Correct)") }
                     OutlinedButton(
-                        onClick = { component.markIncorrectAttempt() },
+                        onClick = { component.markIncorrectAttempt();onEventState?.invoke() },
                         modifier = Modifier.weight(1f)
                     ) { Text("Mark Wrong") }
                 }
             }
+            
             true -> {
-                Text("Correct!", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
+                Text(
+                    "Correct!",
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.SemiBold
+                )
                 Spacer(Modifier.height(12.dp))
-                Button(onClick = { component.continueAfterCorrect() }, modifier = Modifier.fillMaxWidth()) {
+                Button(onClick = {
+                    component.continueAfterCorrect()
+                    onEventState?.invoke()
+                }, modifier = Modifier.fillMaxWidth()) {
                     Text("Continue")
                 }
             }
+            
             false -> {
-                Text("Incorrect, try again.", color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.SemiBold)
+                Text(
+                    "Incorrect, try again.",
+                    color = MaterialTheme.colorScheme.error,
+                    fontWeight = FontWeight.SemiBold
+                )
                 Spacer(Modifier.height(12.dp))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     Button(
-                        onClick = { component.markCorrectAndSubmit() },
+                        onClick = { component.markCorrectAndSubmit();onEventState?.invoke() },
                         modifier = Modifier.weight(1f)
                     ) { Text("Force Correct") }
                     OutlinedButton(
-                        onClick = { component.markIncorrectAttempt() },
+                        onClick = { component.markIncorrectAttempt();onEventState?.invoke() },
                         modifier = Modifier.weight(1f)
                     ) { Text("Retry Wrong") }
                 }
             }
         }
-
+        
         Spacer(Modifier.height(40.dp))
         OutlinedButton(onClick = component::onBack) { Text("Back") }
     }
 }
 
 @Composable
-private fun TaskBodyChildRenderer(child: TaskBodyChild?) {
+private fun TaskBodyChildRenderer(child: TaskBodyChild?, onSetOnEvent: ((() -> Unit)?) -> Unit) {
     Surface(
         color = MaterialTheme.colorScheme.surfaceVariant,
         tonalElevation = 2.dp,
@@ -134,13 +162,29 @@ private fun TaskBodyChildRenderer(child: TaskBodyChild?) {
     ) {
         Column(Modifier.padding(16.dp)) {
             when (child) {
-                is TaskBodyChild.TextConnect -> Text("TextConnect Task UI (stub)")
-                is TaskBodyChild.AudioConnect -> Text("AudioConnect Task UI (stub)")
-                is TaskBodyChild.ImageConnect -> Text("ImageConnect Task UI (stub)")
-                is TaskBodyChild.TextInput -> Text("TextInput Task UI (stub)")
-                is TaskBodyChild.TextInputWithVariant -> Text("TextInputWithVariant Task UI (stub)")
-                is TaskBodyChild.ListenAndSelect -> Text("ListenAndSelect Task UI (stub)")
+                is TaskBodyChild.TextConnect -> TextConnect(child.component) {
+                    onSetOnEvent(it)
+                }
+                
+                is TaskBodyChild.AudioConnect -> AudioConnect(child.component) { onSetOnEvent(it) }
+                is TaskBodyChild.ImageConnect -> ImageConnectTask(child.component) { onSetOnEvent(it) }
+                is TaskBodyChild.TextInput -> TextInputTask(child.component) { onSetOnEvent(it) }
+                is TaskBodyChild.TextInputWithVariant -> TextInputWithVariantTask(child.component) {
+                    onSetOnEvent(
+                        it
+                    )
+                }
+                
+                is TaskBodyChild.ListenAndSelect -> ListenAndSelectTaskUi(child.component) {
+                    onSetOnEvent(
+                        it
+                    )
+                }
+                
                 TaskBodyChild.Empty, null -> Text("No specific body renderer")
+                is TaskBodyChild.ImageAndSelect -> ImageAndSelectTaskUi(child.component) {
+                    onSetOnEvent(it)
+                }
             }
         }
     }

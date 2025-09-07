@@ -12,7 +12,7 @@ import kotlin.uuid.Uuid
 data class TaskModel @OptIn(ExperimentalTime::class, ExperimentalUuidApi::class) constructor(
     val id: String = Uuid.random().toString(),
     val taskType: List<TaskType>,
-    val taskBody: TaskBody.TextInputTask,
+    val taskBody: TaskBody,
     val question: String?,
     val createdAt: String = Clock.System.now().toString(),
     val updatedAt: String = Clock.System.now().toString()

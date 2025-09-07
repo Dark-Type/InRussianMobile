@@ -2,6 +2,7 @@ package com.example.inrussian.repository.main.train
 
 
 import com.example.inrussian.models.models.task.TaskModel
+import com.example.inrussian.models.models.task.body.FullTaskModel
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import kotlinx.serialization.Serializable
@@ -152,9 +153,9 @@ data class ListenAndSelectModel(
 @Serializable
 data class AudioBlocks(
     val name: String,
-    val description: String?,
+    val description: String? = null,
     val audio: String,
-    val descriptionTranslate: String?,
+    val descriptionTranslate: String? = null,
 )
 
 @Serializable
@@ -172,9 +173,9 @@ data class SelectWordsModel(val audio: String, val variants: List<Pair<String, B
 @Serializable
 data class ImageBlocks(
     val name: String,
-    val description: String?,
+    val description: String? = null,
     val image: String,
-    val descriptionTranslate: String?,
+    val descriptionTranslate: String? = null,
 )
 
 @Serializable
@@ -207,15 +208,7 @@ data class UserAttemptDTO @OptIn(ExperimentalUuidApi::class) constructor(
    Keep shape consistent with existing TrainStore usage.
    ============================================================ */
 
-data class FullTaskModel(
-    val id: String,
-    val themeId: String,
-    val question: String?,
-    val body: TaskBody,
-    val types: List<TaskType>,
-    val createdAt: String,
-    val updatedAt: String
-)
+
 
 data class TaskResponse(
     val percent: Float,
