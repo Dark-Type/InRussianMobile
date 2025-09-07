@@ -24,7 +24,7 @@ data class UserProfile(
     val surname: String = "",
     val name: String = "",
     val patronymic: String? = null,
-    val gender: Gender = Gender.MALE,
+    val gender: org.openapitools.client.models.UserProfileModel.Gender = org.openapitools.client.models.UserProfileModel.Gender.MALE,
     val dob: String = "",
     val dor: String = "",
     val citizenship: List<String>? = null,
@@ -32,7 +32,7 @@ data class UserProfile(
     val countryOfResidence: String? = null,
     val cityOfResidence: String? = null,
     val countryDuringEducation: String? = null,
-    val periodSpent: PeriodSpent? = null,
+    val periodSpent: org.openapitools.client.models.UserProfileModel.PeriodSpent? = null,
     val kindOfActivity: String? = null,
     val education: String? = null,
     val purposeOfRegister: String? = null,
@@ -81,7 +81,7 @@ enum class AppTheme { SYSTEM, LIGHT, DARK }
 data class ProfileMainState(
     val isLoading: Boolean = true,
     val user: User? = null,
-    val profile: UserProfile? = null,
+    val profile: org.openapitools.client.models.UserProfileModel? = null,
     val badges: List<Badge> = emptyList(),
     val notificationsEnabled: Boolean = false,
     val theme: AppTheme = AppTheme.SYSTEM,
@@ -95,8 +95,8 @@ data class ProfileMainState(
 
 data class EditProfileState(
     val isLoading: Boolean = true,
-    val original: UserProfile? = null,
-    val workingCopy: UserProfile? = null,
+    val original: org.openapitools.client.models.UserProfileModel? = null,
+    val workingCopy: org.openapitools.client.models.UserProfileModel? = null,
     val canSave: Boolean = false,
     val isSaving: Boolean = false,
     val isGenderOpen: Boolean = false,

@@ -159,7 +159,7 @@ fun EditProfileScreen(component: EditProfileComponent) {
                         fontWeight = FontWeight.W400
                     )
                     Spacer(Modifier.weight(1f))
-                    state.workingCopy?.language?.let {
+                    state.workingCopy?.systemLanguage?.let {
                         Text(
                             it.name, fontSize = 16.sp, fontWeight = FontWeight.W400
                         )
@@ -266,7 +266,7 @@ fun EditProfileScreen(component: EditProfileComponent) {
                             "Russia",
                             "Kyrgiztan"
                         ),
-                        active = state.workingCopy?.citizenship ?: listOf(),
+                        active = (listOf(state.workingCopy?.citizenship) ?: listOf()) as List<String>,
                         onClick = component::deleteCountry,
                         onChangeExpanded = component::openCitizenship,
                         onAddClick = component::selectCountry,
@@ -336,7 +336,7 @@ fun EditProfileScreen(component: EditProfileComponent) {
                     ClipsContainer(
                         isOpen = state.isLanguageOpen,
                         variants = listOf("Russ", "NeRuss", "Japan"),
-                        active = state.workingCopy?.languages ?: listOf(),
+                        active = state.workingCopy?.languageSkills?.map { it.language } ?: listOf(),
                         onClick = component::deleteLanguage,
                         onChangeExpanded = component::onChangeExpanded,
                         onAddClick = component::selectLanguage,
@@ -419,157 +419,157 @@ fun EditProfileScreen(component: EditProfileComponent) {
 }
 
 
-class EditProfileScreen : EditProfileComponent {
-    override val state =
-        MutableValue(EditProfileState(isLoading = false, workingCopy = UserProfile()))
-
-    override fun updateSurname(value: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun updateName(value: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun updatePatronymic(value: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun updateGender(value: Gender) {
-        TODO("Not yet implemented")
-    }
-
-    override fun updateDob(value: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun updateDor(value: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun updateEmail(value: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun updateCitizenship(value: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun updateNationality(value: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun updateCountryOfResidence(value: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun updateCityOfResidence(value: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun updateEducation(value: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun updatePurpose(value: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun openLanguage() {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeGender(gender: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeGenderChoose(isOpen: Boolean) {
-        TODO("Not yet implemented")
-    }
-
-    override fun openDate() {
-        TODO("Not yet implemented")
-    }
-
-    override fun openCitizenship(isOpen: Boolean) {
-        TODO("Not yet implemented")
-    }
-
-    override fun openTime() {
-        TODO("Not yet implemented")
-    }
-
-    override fun save() {
-        TODO("Not yet implemented")
-    }
-
-    override fun onBack() {
-        TODO("Not yet implemented")
-    }
-
-    override fun deleteCountry(country: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun deleteLanguage(language: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun selectCountry(country: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun deleteNationality(nationality: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun selectNationality(nationality: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun openNationality(isOpen: Boolean) {
-        TODO("Not yet implemented")
-    }
-
-    override fun countryLiveUpdate(county: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun cityLiveUpdate(county: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun studyCountryUpdate(county: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun deleteTime(time: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onChangeExpanded(boolean: Boolean) {
-        TODO("Not yet implemented")
-    }
-
-    override fun selectLanguage(language: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeActivity(activity: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeEducation(education: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun changePurpose(purpose: String) {
-        TODO("Not yet implemented")
-    }
-
-    @Composable
-    @Preview(showBackground = true, showSystemUi = true)
-    fun Preview() {
-        EditProfileScreen(this)
-    }
-}
+//class EditProfileScreen : EditProfileComponent {
+//    override val state =
+//        MutableValue(EditProfileState(isLoading = false, workingCopy = UserProfile()))
+//
+//    override fun updateSurname(value: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun updateName(value: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun updatePatronymic(value: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun updateGender(value: Gender) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun updateDob(value: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun updateDor(value: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun updateEmail(value: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun updateCitizenship(value: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun updateNationality(value: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun updateCountryOfResidence(value: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun updateCityOfResidence(value: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun updateEducation(value: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun updatePurpose(value: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun openLanguage() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun changeGender(gender: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun changeGenderChoose(isOpen: Boolean) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun openDate() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun openCitizenship(isOpen: Boolean) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun openTime() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun save() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun onBack() {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun deleteCountry(country: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun deleteLanguage(language: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun selectCountry(country: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun deleteNationality(nationality: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun selectNationality(nationality: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun openNationality(isOpen: Boolean) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun countryLiveUpdate(county: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun cityLiveUpdate(county: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun studyCountryUpdate(county: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun deleteTime(time: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun onChangeExpanded(boolean: Boolean) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun selectLanguage(language: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun changeActivity(activity: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun changeEducation(education: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun changePurpose(purpose: String) {
+//        TODO("Not yet implemented")
+//    }
+//
+//    @Composable
+//    @Preview(showBackground = true, showSystemUi = true)
+//    fun Preview() {
+//        EditProfileScreen(this)
+//    }
+//}

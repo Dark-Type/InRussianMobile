@@ -16,9 +16,8 @@
 package org.openapitools.client.models
 
 
+import com.example.inrussian.components.main.profile.SystemLanguage
 import kotlinx.serialization.*
-import kotlinx.serialization.descriptors.*
-import kotlinx.serialization.encoding.*
 
 /**
  * 
@@ -42,40 +41,28 @@ import kotlinx.serialization.encoding.*
  */
 @Serializable
 
-data class UserProfile (
-
-    @SerialName(value = "userId") @Required val userId: kotlin.String,
-
-    @SerialName(value = "surname") @Required val surname: kotlin.String,
-
-    @SerialName(value = "name") @Required val name: kotlin.String,
-
-    @SerialName(value = "gender") @Required val gender: UserProfile.Gender,
-
-    @SerialName(value = "dob") @Required val dob: kotlin.String,
-
-    @SerialName(value = "dor") @Required val dor: kotlin.String,
-
-    @SerialName(value = "patronymic") val patronymic: kotlin.String? = null,
-
-    @SerialName(value = "citizenship") val citizenship: kotlin.String? = null,
-
-    @SerialName(value = "nationality") val nationality: kotlin.String? = null,
-
-    @SerialName(value = "countryOfResidence") val countryOfResidence: kotlin.String? = null,
-
-    @SerialName(value = "cityOfResidence") val cityOfResidence: kotlin.String? = null,
-
-    @SerialName(value = "countryDuringEducation") val countryDuringEducation: kotlin.String? = null,
-
-    @SerialName(value = "periodSpent") val periodSpent: UserProfile.PeriodSpent? = null,
-
-    @SerialName(value = "kindOfActivity") val kindOfActivity: kotlin.String? = null,
-
-    @SerialName(value = "education") val education: kotlin.String? = null,
-
-    @SerialName(value = "purposeOfRegister") val purposeOfRegister: kotlin.String? = null
-
+data class UserProfileModel (
+    val userId: String,
+    val surname: String,
+    val name: String,
+    val patronymic: String? = null,
+    val gender: Gender,
+    val dob: String,
+    val dor: String,
+    val citizenship: String? = null,
+    val nationality: String? = null,
+    val countryOfResidence: String? = null,
+    val cityOfResidence: String? = null,
+    val countryDuringEducation: String? = null,
+    val periodSpent: PeriodSpent? = null,
+    val kindOfActivity: String? = null,
+    val education: String? = null,
+    val purposeOfRegister: String? = null,
+    val avatarId: String? = null,
+    val email: String,
+    val systemLanguage: SystemLanguage,
+    val phone: String? = null,
+    val languageSkills: List<UserLanguageSkill> = emptyList()
 ) {
 
     /**
@@ -105,6 +92,15 @@ data class UserProfile (
         @SerialName(value = "FIVE_YEARS_PLUS") FIVE_YEARS_PLUS("FIVE_YEARS_PLUS"),
         @SerialName(value = "NEVER") NEVER("NEVER");
     }
-
 }
+
+@Serializable
+data class UserLanguageSkill(
+    val userId: String,
+    val language: String,
+    val understands: Boolean = false,
+    val speaks: Boolean = false,
+    val reads: Boolean = false,
+    val writes: Boolean = false
+)
 

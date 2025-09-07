@@ -269,7 +269,7 @@ open class ApiClient(
                     }
                 } catch (e: Throwable) {
                     // refresh закончился ошибкой — очистим auth и пробросим для внешней логики
-                    throw e
+                    //throw e
                 }
             }
         }

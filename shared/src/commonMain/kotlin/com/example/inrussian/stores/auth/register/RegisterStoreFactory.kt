@@ -6,8 +6,6 @@ import com.arkivanov.mvikotlin.core.store.SimpleBootstrapper
 import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
-import com.example.inrussian.components.main.profile.Gender
-import com.example.inrussian.components.main.profile.PeriodSpent
 import com.example.inrussian.components.main.profile.UserProfile
 import com.example.inrussian.domain.Validator
 import com.example.inrussian.models.ErrorType
@@ -39,6 +37,7 @@ import com.example.inrussian.stores.auth.register.RegisterStore.Msg.UpdatePerson
 import com.example.inrussian.stores.auth.register.RegisterStore.State
 import com.example.inrussian.utils.ErrorDecoder
 import kotlinx.coroutines.launch
+import org.openapitools.client.models.UserProfileModel
 import kotlin.time.Clock.System.now
 import kotlin.time.ExperimentalTime
 
@@ -173,27 +172,22 @@ class RegisterStoreFactory(
                                         surname = state.personalDataState?.surname ?: "",
                                         name = state.personalDataState?.name ?: "",
                                         patronymic = state.personalDataState?.patronymic,
-                                        gender = Gender.valueOf(
+                                        gender = UserProfileModel.Gender.valueOf(
                                             state.personalDataState?.gender ?: ""
                                         ),
                                         dob = state.personalDataState?.birthDate ?: "",
                                         dor = now().toString(),
-                                        citizenship = state.citizenshipState?.citizenship,
+                                        citizenship = state.citizenshipState?.citizenship as String? as List<String>?,
                                         nationality = state.citizenshipState?.nationality,
                                         countryOfResidence = state.citizenshipState?.countryOfResidence,
                                         cityOfResidence = state.citizenshipState?.cityOfResidence,
                                         countryDuringEducation = state.citizenshipState?.countryDuringEducation,
-                                        periodSpent = PeriodSpent.valueOf(
+                                        periodSpent = UserProfileModel.PeriodSpent.valueOf(
                                             state.citizenshipState?.timeSpentInRussia ?: ""
                                         ),
                                         kindOfActivity = state.educationState?.kindOfActivity,
                                         education = state.educationState?.education,
                                         purposeOfRegister = state.educationState?.purposeOfRegistration,
-                                        languages = state.educationState?.languages ?: listOf(),
-                                        language = com.example.inrussian.components.main.profile.SystemLanguage.valueOf(
-                                            (state.languageState?.selectedLanguage
-                                                ?: SystemLanguage.RUSSIAN) as String
-                                        ),
                                         email = state.email
                                     )
                                 )

@@ -24,9 +24,11 @@ import com.example.inrussian.components.main.profile.Badge
 import com.example.inrussian.components.main.profile.BadgeType
 import com.example.inrussian.components.main.profile.ProfileMainComponent
 import com.example.inrussian.components.main.profile.ProfileMainState
+import com.example.inrussian.components.main.profile.SystemLanguage
 import com.example.inrussian.components.main.profile.User
 import com.example.inrussian.components.main.profile.UserProfile
 import com.example.inrussian.ui.theme.reallyLightGrey
+import org.openapitools.client.models.UserProfileModel
 
 
 @Composable
@@ -67,7 +69,17 @@ class ProfileMainScreen : ProfileMainComponent {
         ProfileMainState(
             user = User(),
             isLoading = false,
-            profile = UserProfile(surname = "Иванов", name = "Иван", patronymic = "Иванович"),
+            profile = UserProfileModel(
+                surname = "Иванов",
+                name = "Иван",
+                patronymic = "Иванович",
+                userId = "",
+                gender = UserProfileModel.Gender.MALE,
+                dob = "",
+                dor = "",
+                email = "",
+                systemLanguage = SystemLanguage.RUSSIAN
+            ),
             badges = listOf(
                 Badge(
                     id = "",

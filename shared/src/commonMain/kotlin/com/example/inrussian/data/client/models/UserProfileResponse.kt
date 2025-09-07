@@ -15,31 +15,26 @@
 
 package org.openapitools.client.models
 
-import org.openapitools.client.models.UserProfile
-
 import kotlinx.serialization.*
-import kotlinx.serialization.descriptors.*
-import kotlinx.serialization.encoding.*
 
 /**
  * 
  *
  * @param success 
  * @param profile 
- * @param timestamp 
- * @param message 
+ * @param timestamp
+ * @param error
  */
 @Serializable
-
 data class UserProfileResponse (
 
     @SerialName(value = "success") @Required val success: kotlin.Boolean,
 
-    @SerialName(value = "profile") @Required val profile: UserProfile,
+    @SerialName(value = "profile") val profile: UserProfileModel? = null,
+
+    @SerialName(value = "error") val error : String? = null,
 
     @SerialName(value = "timestamp") @Required val timestamp: kotlin.Long,
-
-    @SerialName(value = "message") val message: kotlin.String? = null
 
 ) {
 

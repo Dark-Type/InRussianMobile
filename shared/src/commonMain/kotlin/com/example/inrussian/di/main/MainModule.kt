@@ -31,7 +31,7 @@ val mainModule = module {
         )
     }
     single<BadgeRepository> { MockBadgeRepository(scope = get(QAppScope)) }
-    single<SettingsRepository> { SettingsRepositoryImpl() }
+    single<SettingsRepository> { SettingsRepositoryImpl(get()) }
 
     single<TrainRepository> {
         val appScope: CoroutineScope = get(named("AppScope"))

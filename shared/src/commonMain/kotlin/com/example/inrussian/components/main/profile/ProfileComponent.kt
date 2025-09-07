@@ -171,25 +171,24 @@ class DefaultProfileMainComponent(
 
     init {
         scope.launch {
-           /* combine(
+            userRepository.getProfile()
+
+           combine(
                 userRepository.userFlow,
-                userRepository.userProfileFlow,
                 settingsRepository.notificationsEnabled,
                 settingsRepository.theme
-            ) { user, profile, notifications, theme ->
-                Triple(user, profile, notifications to theme)
-            }.collect { (user, profile, pair) ->
-                val (notifications, theme) = pair
-                val badges = badgeRepository.badgesForUser(user.id).first()
+            ) { profile, notifications, theme ->
+                Triple(profile, notifications, theme)
+            }.collect { (profile, notifications, theme) ->
+                val badges = badgeRepository.badgesForUser(profile.userId).first()
                 _state.value = _state.value.copy(
                     isLoading = false,
-                    user = user,
                     profile = profile,
                     badges = badges,
                     notificationsEnabled = notifications,
                     theme = theme
                 )
-            }*/
+            }
         }
     }
 
@@ -243,7 +242,7 @@ interface EditProfileComponent {
     fun updateSurname(value: String)
     fun updateName(value: String)
     fun updatePatronymic(value: String)
-    fun updateGender(value: Gender)
+    fun updateGender(value: org.openapitools.client.models.UserProfileModel.Gender)
     fun updateDob(value: String)
     fun updateDor(value: String)
     fun updateEmail(value: String)
@@ -315,7 +314,7 @@ class DefaultEditProfileComponent(
         }
     }
 
-    private fun update(copy: (UserProfile) -> UserProfile) {
+    private fun update(copy: (org.openapitools.client.models.UserProfileModel) -> org.openapitools.client.models.UserProfileModel) {
         val working = _state.value.workingCopy ?: return
         val newWorking = copy(working)
         val canSave = newWorking != _state.value.original
@@ -330,7 +329,10 @@ class DefaultEditProfileComponent(
     override fun updatePatronymic(value: String) =
         update { it.copy(patronymic = value.ifBlank { null }) }
 
-    override fun updateGender(value: Gender) = update { it.copy(gender = value) }
+    override fun updateGender(value: org.openapitools.client.models.UserProfileModel.Gender) {
+        update { it.copy(gender = value) }
+    }
+
     override fun updateDob(value: String) = update { it.copy(dob = value) }
     override fun updateDor(value: String) {
         TODO("Not yet implemented")
@@ -341,7 +343,7 @@ class DefaultEditProfileComponent(
     }
 
     override fun updateCitizenship(value: String) =
-        update { it.copy(citizenship = listOf(value).ifEmpty { null }) }
+        update { it.copy(citizenship = listOf(value).ifEmpty { null } as String?)}
 
     override fun updateNationality(value: String) =
         update { it.copy(nationality = value.ifBlank { null }) }
