@@ -19,63 +19,46 @@ struct HomeComponentView: View {
 
     var body: some View {
         NavigationStack {
-            let active = childStack.active.instance
             ZStack {
                 Color(uiColor: .secondarySystemBackground)
                     .ignoresSafeArea()
 
-                Group {
-                    if let courses = active as? HomeComponentChildCoursesChild {
-                        CoursesListComponentView(component: courses.component)
-                            .background(Color.clear)
-                            .modifier(HomeNavTitleModifier(showTitle: true))
-                    } else if let details = active as? HomeComponentChildCourseDetailsChild {
-                        CourseDetailsComponentView(component: details.component)
-                            .background(Color.clear)
-                            .modifier(HomeNavTitleModifier(showTitle: false))
-                    } else {
-                        EmptyView()
-                            .modifier(HomeNavTitleModifier(showTitle: true))
-                    }
-                }
+                activeChildView
+                    .transition(.opacity.combined(with: .scale))
             }
-            .animation(.default, value: childStack.active.instance.hashObject())
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarBackground(Color(uiColor: .secondarySystemBackground), for: .navigationBar)
+            .navigationBarTitleDisplayMode(usesLargeTitle(for: childStack.active.instance) ? .large : .inline)
+            .navigationTitle(title(for: childStack.active.instance))
+            .animation(.easeInOut(duration: 0.25), value: activeIdentity)
         }
     }
-}
 
-// MARK: - Navigation Title Control
-private struct HomeNavTitleModifier: ViewModifier {
-    let showTitle: Bool
-    func body(content: Content) -> some View {
-        content
-            .if(showTitle) { view in
-                view
-                    .navigationTitle("Курсы")
-                    .navigationBarTitleDisplayMode(.large)
-            }
-            .if(!showTitle) { view in
-                view
-                    .navigationTitle("") 
-                    .navigationBarTitleDisplayMode(.inline)
-            }
+    private var activeIdentity: ObjectIdentifier {
+        ObjectIdentifier(childStack.active.instance as AnyObject)
     }
-}
 
-// MARK: - Helpers
-private extension HomeComponentChild {
-    func hashObject() -> Int {
-        (self as AnyObject).hash
-    }
-}
-
-private extension View {
     @ViewBuilder
-    func `if`<ContentOut: View>(_ condition: Bool, transform: (Self) -> ContentOut) -> some View {
-        if condition {
-            transform(self)
+    private var activeChildView: some View {
+        let active = childStack.active.instance
+        if let courses = active as? HomeComponentChildCoursesChild {
+            CoursesListComponentView(component: courses.component)
+        } else if let details = active as? HomeComponentChildCourseDetailsChild {
+            CourseDetailsComponentView(component: details.component)
         } else {
-            self
+            EmptyView()
+        }
+    }
+
+    private func usesLargeTitle(for child: any HomeComponentChild) -> Bool {
+        child is HomeComponentChildCoursesChild
+    }
+
+    private func title(for child: any HomeComponentChild) -> String {
+        if child is HomeComponentChildCoursesChild {
+            return "Главная"
+        } else {
+            return ""
         }
     }
 }

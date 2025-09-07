@@ -169,4 +169,14 @@ class UserConfigurationStorageImpl(private val context: Context) : UserConfigura
             }
         }
     }
+
+    override fun clearAll() {
+        runBlocking {
+            context.dataStore.edit { prefs ->
+                prefs.clear()
+            }
+        }
+        val prefs = getEncryptedPrefs(context)
+        prefs.edit().clear().apply()
+    }
 }

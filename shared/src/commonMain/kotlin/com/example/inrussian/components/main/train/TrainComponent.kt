@@ -377,7 +377,6 @@ class DefaultThemeTasksComponent(
     }
 
     override fun continueAfterCorrect() {
-        // If already correct, pressing continue triggers next
         store.accept(TrainStore.Intent.ButtonClick(isPass = true))
     }
 
