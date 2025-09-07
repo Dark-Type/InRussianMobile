@@ -34,6 +34,7 @@ import com.example.inrussian.data.client.models.Variant
 import com.example.inrussian.data.client.models.VariantState
 import com.example.inrussian.repository.main.train.ImageBlocks
 import com.example.inrussian.ui.theme.FontInactiveLight
+import com.example.inrussian.ui.theme.LocalExtraColors
 import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.placeholder_coil
 import org.jetbrains.compose.resources.painterResource
@@ -45,6 +46,7 @@ import kotlin.uuid.Uuid
 fun ImageAndSelectTaskUi(
     component: ImageAndSelectComponent, onContinueClick: (() -> Unit) -> Unit
 ) {
+    val currentColor = LocalExtraColors.current
     val state by component.state.subscribeAsState()
     LazyColumn {
         items(state.imageBlocks) {
@@ -64,6 +66,7 @@ fun ImageAndSelectTaskUi(
 fun ImageBlock(
     imageBlock: ImageBlocks
 ) {
+    val currentColor = LocalExtraColors.current
     Column(
         modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -83,6 +86,7 @@ fun ImageBlock(
                 .align(Alignment.Start)
                 .padding(top = 28.dp, start = 16.dp, end = 16.dp, bottom = 8.dp),
             fontSize = 22.sp,
+            color = currentColor.fontCaptive,
             fontWeight = FontWeight.SemiBold
         )
         AsyncImage(
@@ -103,6 +107,7 @@ fun ImageBlock(
                     .fillMaxWidth(0.8f)
                     .padding(top = 6.dp, bottom = 12.dp),
                 fontSize = 22.sp,
+                color = currentColor.fontCaptive,
                 fontWeight = FontWeight.SemiBold
             )
         }
@@ -115,7 +120,7 @@ fun ImageBlock(
                     .padding(top = 4.dp),
                 fontSize = 22.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = FontInactiveLight
+                color = currentColor.fontInactive,
             )
         }
         Spacer(Modifier.height(28.dp))

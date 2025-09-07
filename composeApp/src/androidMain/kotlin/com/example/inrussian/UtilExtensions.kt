@@ -1,6 +1,6 @@
 package com.example.inrussian
 
-import com.example.inrussian.components.main.train.TaskType
+import com.example.inrussian.repository.main.train.TaskType
 import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.check_correct
 import inrussian.composeapp.generated.resources.conncet_audio

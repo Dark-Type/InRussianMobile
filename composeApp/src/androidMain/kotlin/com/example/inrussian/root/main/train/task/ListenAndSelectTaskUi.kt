@@ -179,10 +179,10 @@ fun SpeakerElement(audioBlock: AudioBlocks) {
 @OptIn(ExperimentalUuidApi::class)
 @Composable
 fun ChoiceElement(variants: List<Variant>, onSelect: (Uuid) -> Unit) {
+    
     Column(
         Modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(White)
             .padding(10.dp)
     ) {
         for (i in 0 until variants.size step 2) {
