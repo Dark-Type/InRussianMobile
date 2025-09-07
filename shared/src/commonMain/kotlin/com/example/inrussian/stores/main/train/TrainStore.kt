@@ -1,13 +1,15 @@
 package com.example.inrussian.stores.main.train
 
 import com.arkivanov.mvikotlin.core.store.Store
-import com.example.inrussian.models.models.task.FullTaskModel
 import com.example.inrussian.models.models.task.TaskResponse
+import com.example.inrussian.models.models.task.body.FullTaskModel
 import com.example.inrussian.stores.main.train.TrainStore.Intent
 import com.example.inrussian.stores.main.train.TrainStore.Label
 import com.example.inrussian.stores.main.train.TrainStore.State
 
-interface TrainStore : Store<Intent, State, Label> {
+interface TrainStore :
+    Store<Intent, State, Label> {
+
     sealed interface Intent {
         data class ButtonClick(val isPass: Boolean) : Intent
         data class OnButtonStateChange(val isEnable: Boolean) : Intent
@@ -22,8 +24,8 @@ interface TrainStore : Store<Intent, State, Label> {
         val percent: Float? = null,
     )
 
-    sealed interface Action {
-        data class LoadTasks(val themeId: String) : Action
+    sealed interface Label {
+        data class ChangeTask(val task: FullTaskModel?) : Label
     }
 
     sealed interface Msg {
@@ -31,9 +33,5 @@ interface TrainStore : Store<Intent, State, Label> {
         data class UpdateButtonState(val isEnable: Boolean) : Msg
         data class UpdateCheckState(val inCheck: Boolean?) : Msg
     }
-
-    sealed interface Label {
-        data class ChangeTask(val task: FullTaskModel?) : Label
-    }
-
 }
+

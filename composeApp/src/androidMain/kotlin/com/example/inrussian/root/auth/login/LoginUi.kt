@@ -36,7 +36,7 @@ import inrussian.composeapp.generated.resources.sign_in
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
-import nekit.corporation.shift_app.ui.theme.LocalExtraColors
+import com.example.inrussian.ui.theme.LocalExtraColors
 
 @Composable
 fun LoginUi(component: LoginComponent) {

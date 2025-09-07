@@ -16,7 +16,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import nekit.corporation.shift_app.ui.theme.LocalExtraColors
 
 @Composable
 fun CommonTextField(

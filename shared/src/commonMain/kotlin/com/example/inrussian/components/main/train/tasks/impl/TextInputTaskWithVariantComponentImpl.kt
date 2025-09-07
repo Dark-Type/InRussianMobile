@@ -5,7 +5,7 @@ import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import com.example.inrussian.components.main.train.tasks.interfaces.TextInputTaskWithVariantComponent
-import com.example.inrussian.models.models.task.TaskBody
+import com.example.inrussian.repository.main.train.TaskBody
 
 class TextInputTaskWithVariantComponentImpl(
     component: ComponentContext,
@@ -23,7 +23,7 @@ class TextInputTaskWithVariantComponentImpl(
                     TextInputTaskWithVariantComponent.InputGap(
                         variants = gap.variants,
                         answer = gap.correctVariant,
-                        pos = gap.position
+                        pos = gap.indexWord
                     )
                 }.sortedBy { it.pos }
             )

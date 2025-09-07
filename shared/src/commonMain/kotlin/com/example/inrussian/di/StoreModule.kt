@@ -37,12 +37,11 @@ val storeModule = module {
         ).create()
     }
 
-    single<TrainStore> { (themeId: String) ->
+    factory<TrainStoreFactory>(QTrainStoreFactory) {
         TrainStoreFactory(
             storeFactory = get(),
-            errorDecoder = get(),
-            repository = get(),
-        ).create(themeId)
+            repository = get()
+        )
     }
 
     single<RegisterStore> {

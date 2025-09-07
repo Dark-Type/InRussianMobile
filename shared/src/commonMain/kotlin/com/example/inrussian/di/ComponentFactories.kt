@@ -31,13 +31,9 @@ import com.example.inrussian.components.main.profile.ProfileComponent
 import com.example.inrussian.components.main.profile.ProfileOutput
 import com.example.inrussian.components.main.root.MainOutput
 import com.example.inrussian.components.main.root.MainRootComponent
-import com.example.inrussian.components.main.train.SectionDetailComponent
-import com.example.inrussian.components.main.train.SectionDetailOutput
-import com.example.inrussian.components.main.train.TasksOption
-import com.example.inrussian.components.main.train.TasksOutput
+import com.example.inrussian.components.main.train.ThemeTasksComponent
 import com.example.inrussian.components.main.train.TrainComponent
-import com.example.inrussian.components.main.train.TrainComponentCopy
-import com.example.inrussian.components.main.train.TrainComponentImpl
+import com.example.inrussian.components.main.train.TrainCoursesListComponent
 import com.example.inrussian.components.main.train.TrainOutput
 import com.example.inrussian.components.onboarding.citizenship.CitizenshipComponent
 import com.example.inrussian.components.onboarding.citizenship.CitizenshipOutput
@@ -120,30 +116,8 @@ typealias CourseDetailsComponentFactory = (
 
 val QCourseDetailsComponentFactory = named("CourseDetailsComponentFactory")
 
-typealias SectionDetailComponentFactory =
-            (
-            componentContext: ComponentContext,
-            sectionId: String,
-            onOutput: (SectionDetailOutput) -> Unit
-        ) -> SectionDetailComponent
-
 val QSectionDetailComponentFactory = named("SectionDetailComponentFactory")
 
-typealias TrainComponentFactory =
-            (
-            componentContext: ComponentContext,
-            sectionId: String,
-            onOutput: (SectionDetailOutput) -> Unit
-        ) -> TrainComponentCopy
-
-val QTrainComponentFactory = named("TrainComponentFactory")
-
-typealias TrainStoreFactory =
-            (
-            componentContext: ComponentContext,
-            sectionId: String,
-            onOutput: (SectionDetailOutput) -> Unit
-        ) -> TrainComponentImpl
 
 val QTrainStoreFactory = named("TrainStoreFactory")
 
@@ -175,4 +149,12 @@ val QAboutComponentFactory = named("AboutComponentFactory")
 val QPrivacyPolicyComponentFactory = named("PrivacyPolicyComponentFactory")
 
 
+val QTrainCoursesListFactory = named("TrainCoursesListFactory")
+val QThemeTasksFactory = named("ThemeTasksFactory")
 
+typealias TrainCoursesListFactory = (ComponentContext, (String, List<String>) -> Unit) -> TrainCoursesListComponent
+typealias ThemeTasksFactory = (ComponentContext, String, () -> Unit, () -> Unit) -> ThemeTasksComponent
+
+val QTrainComponentFactory = named("TrainComponentFactory")
+val QTrainCoursesListComponentFactory = named("TrainCoursesListComponentFactory")
+val QThemeTasksComponentFactory = named("ThemeTasksComponentFactory")

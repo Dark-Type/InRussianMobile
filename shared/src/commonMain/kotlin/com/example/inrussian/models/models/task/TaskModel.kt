@@ -1,6 +1,7 @@
 package com.example.inrussian.models.models.task
 
-import com.example.inrussian.components.main.train.TaskType
+import com.example.inrussian.repository.main.train.TaskBody
+import com.example.inrussian.repository.main.train.TaskType
 import kotlinx.serialization.Serializable
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -9,7 +10,7 @@ import kotlin.uuid.Uuid
 
 @Serializable
 data class TaskModel @OptIn(ExperimentalTime::class, ExperimentalUuidApi::class) constructor(
-    val id: String = Uuid.Companion.random().toString(),
+    val id: String = Uuid.random().toString(),
     val taskType: List<TaskType>,
     val taskBody: TaskBody,
     val question: String?,

@@ -7,6 +7,7 @@ import androidx.security.crypto.MasterKey
 import com.example.inrussian.navigation.configurations.Configuration
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.inrussian.components.main.profile.AppTheme
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
@@ -16,6 +17,9 @@ class UserConfigurationStorageImpl(private val context: Context) : UserConfigura
     private val key = stringPreferencesKey("last_configuration")
     private val tokenKey = stringPreferencesKey("user_token")
     private val refreshTokenKey = stringPreferencesKey("refresh_token")
+
+    private val notificationsKey = stringPreferencesKey("notifications_enabled")
+    private val themeKey = stringPreferencesKey("app_theme")
 
     // --------------------------
     // App configuration (DataStore)
@@ -129,5 +133,50 @@ class UserConfigurationStorageImpl(private val context: Context) : UserConfigura
     override fun deleteCreds() {
         val prefs = getEncryptedPrefs(context)
         prefs.edit().remove("user_email").remove("user_password").apply()
+    }
+    override fun saveNotificationsEnabled(enabled: Boolean){
+        runBlocking {
+            context.dataStore.edit { prefs ->
+                prefs[notificationsKey] = enabled.toString()
+            }
+        }
+    }
+    override fun getNotificationsEnabled(): Boolean? {
+        return runBlocking {
+            val prefs = context.dataStore.data.first()
+            prefs[notificationsKey]?.toBoolean()
+        }
+    }
+    override fun saveTheme(theme: AppTheme){
+        runBlocking {
+            context.dataStore.edit { prefs ->
+                prefs[themeKey] = when(theme){
+                    AppTheme.SYSTEM -> "SYSTEM"
+                    AppTheme.LIGHT -> "LIGHT"
+                    AppTheme.DARK -> "DARK"
+                }
+            }
+        }
+    }
+    override fun getTheme(): AppTheme?{
+        return runBlocking {
+            val prefs = context.dataStore.data.first()
+            when(prefs[themeKey]){
+                "SYSTEM" -> AppTheme.SYSTEM
+                "LIGHT" -> AppTheme.LIGHT
+                "DARK" -> AppTheme.DARK
+                else -> null
+            }
+        }
+    }
+
+    override fun clearAll() {
+        runBlocking {
+            context.dataStore.edit { prefs ->
+                prefs.clear()
+            }
+        }
+        val prefs = getEncryptedPrefs(context)
+        prefs.edit().clear().apply()
     }
 }

@@ -1,6 +1,5 @@
 package com.example.inrussian.components.main.train.tasks.impl
 
-import co.touchlab.kermit.Logger
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
@@ -9,7 +8,7 @@ import com.example.inrussian.components.main.train.tasks.interfaces.TextInputTas
 import com.example.inrussian.components.main.train.tasks.interfaces.TextInputTaskComponent.InputBlock
 import com.example.inrussian.components.main.train.tasks.interfaces.TextInputTaskComponent.InputGap
 import com.example.inrussian.components.main.train.tasks.interfaces.TextInputTaskComponent.State
-import com.example.inrussian.models.models.task.TaskBody
+import com.example.inrussian.repository.main.train.TaskBody
 
 class TextInputTaskComponentImpl(
     component: ComponentContext,
@@ -22,7 +21,7 @@ class TextInputTaskComponentImpl(
         InputBlock(
             words = m.text.split(" ").filter { it != " " },
             label = m.label,
-            gaps = m.gaps.map { InputGap(pos = it.index, answer = it.correctWord) }
+            gaps = m.gaps.map { InputGap(pos = it.indexWord, answer = it.correctWord) }
                 .sortedBy { it.pos })
     }))
     override val state: Value<State> = _state

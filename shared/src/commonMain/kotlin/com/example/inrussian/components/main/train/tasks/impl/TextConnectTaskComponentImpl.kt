@@ -8,7 +8,7 @@ import com.example.inrussian.components.main.train.tasks.interfaces.TextConnectT
 import com.example.inrussian.components.main.train.tasks.interfaces.TextConnectTaskComponent.PointF
 import com.example.inrussian.components.main.train.tasks.interfaces.TextConnectTaskComponent.RectF
 import com.example.inrussian.components.main.train.tasks.interfaces.TextConnectTaskComponent.State
-import com.example.inrussian.models.models.task.TaskBody.TextConnectTask
+import com.example.inrussian.repository.main.train.TaskBody
 import com.example.inrussian.utils.DragSource
 import com.example.inrussian.utils.Piece
 import kotlin.math.abs
@@ -22,7 +22,7 @@ class TextConnectTaskComponentImpl(
     private val onContinueClicked: (Boolean) -> Unit,
     private val inChecking: (Boolean) -> Unit,
     private val onButtonEnable: (Boolean) -> Unit,
-    listTextTasks: TextConnectTask,
+    listTextTasks: TaskBody.TextConnectTask,
 
     ) : TextConnectTaskComponent, ComponentContext by component {
     private val _state = MutableValue(

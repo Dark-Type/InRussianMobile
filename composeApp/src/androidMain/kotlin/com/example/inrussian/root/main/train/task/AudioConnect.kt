@@ -67,7 +67,7 @@ import com.google.android.exoplayer2.Player
 import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.pause
 import inrussian.composeapp.generated.resources.play_button
-import nekit.corporation.shift_app.ui.theme.LocalExtraColors
+import com.example.inrussian.ui.theme.LocalExtraColors
 import org.jetbrains.compose.resources.vectorResource
 
 //@Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xFFEAEAEA)

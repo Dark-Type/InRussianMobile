@@ -5,9 +5,9 @@
 //  Created by dark type on 16.08.2025.
 //
 
+import AVFoundation
 import Shared
 import SwiftUI
-import AVFoundation
 
 // Root host that mirrors the Android TrainComponentUi
 struct TrainComponentView: View {
@@ -181,244 +181,6 @@ private struct ProgressRing: View {
 }
 
 // MARK: - Section detail host (mirrors SectionDetailHost)
-
-private struct SectionDetailHostView: View {
-    let component: SectionDetailComponent
-    @StateValue private var state: SectionDetailState
-    @StateValue private var innerStack: ChildStack<any DefaultSectionDetailComponentInnerConfig, any DefaultSectionDetailComponentInnerChild>
-
-    init(component: SectionDetailComponent) {
-        self.component = component
-        _state = StateValue(component.state)
-        if let defaultComponent = component as? DefaultSectionDetailComponent {
-            _innerStack = StateValue(defaultComponent.childStack)
-        } else {
-            fatalError("Unsupported SectionDetailComponent type")
-        }
-    }
-
-    var body: some View {
-        ZStack {
-            if let _ = component as? DefaultSectionDetailComponent {
-                let inner = innerStack.active.instance
-                if inner is DefaultSectionDetailComponentInnerChildDetailsChild {
-                    SectionDetailsView(component: component, state: state)
-                } else if let tasksChild = inner as? DefaultSectionDetailComponentInnerChildTasksChild {
-                    TrainTasksView(component: tasksChild.component)
-                } else {
-                    Text("Unsupported child").foregroundStyle(.secondary)
-                }
-            } else {
-                Text("Unsupported SectionDetailComponent type")
-            }
-        }
-        .overlay {
-            if state.showCompletionDialog {
-                CompletionDialog { component.onBack() }
-            }
-        }
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button(action: { component.onBack() }) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "chevron.left")
-                        Text("Назад")
-                    }
-                }
-            }
-        }
-    }
-}
-
-// MARK: - Section details screen (mirrors SectionDetailsScreen)
-
-private struct SectionDetailsView: View {
-    let component: SectionDetailComponent
-    let state: SectionDetailState
-
-    var body: some View {
-        if state.isLoading || state.section == nil {
-            ProgressCentered()
-        } else if let section = state.section {
-            ZStack {
-                // Full-screen background
-                Color(uiColor: .secondarySystemBackground)
-                    .ignoresSafeArea()
-
-                // Content
-                GeometryReader { _ in
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 28) {
-                            // Stats card
-                            HStack(spacing: 16) {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("Освоено: \(section.completedTasks)")
-                                        .foregroundColor(.secondary)
-                                    Text("К освоению: \(section.completedTasks)")
-                                        .foregroundColor(.secondary)
-                                    Text("Не пройдено: \(section.completedTasks)")
-                                        .foregroundColor(.secondary)
-                                }
-                                Spacer()
-                                let p = Int(section.progressPercent)
-                                ProgressRing(
-                                    percent: p,
-                                    color: percentColor(p),
-                                    size: 110,
-                                    lineWidth: 6
-                                )
-                            }
-                            .padding(18)
-                            .background(
-                                RoundedRectangle(cornerRadius: 14)
-                                    .fill(AppColors.Palette.componentBackground.color)
-                            )
-
-                            Spacer()
-                            HStack(spacing: 16) {
-                                Button {
-                                    component.openTasks(option: .theory)
-                                } label: {
-                                    Text("Теория")
-                                        .font(.title3.bold())
-                                        .foregroundColor(.white)
-                                        .frame(maxWidth: .infinity)
-                                        .frame(height: 250) // double/triple height
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 14)
-                                                .fill(AppColors.Palette.secondary.color)
-                                        )
-                                }
-                                .buttonStyle(.plain)
-
-                                Button {
-                                    component.openTasks(option: .practice)
-                                } label: {
-                                    Text("Практика")
-                                        .font(.title3.bold())
-                                        .foregroundColor(.white)
-                                        .frame(maxWidth: .infinity)
-                                        .frame(height: 250) // double/triple height
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 14)
-                                                .fill(AppColors.Palette.secondary.color)
-                                        )
-                                }
-                                .buttonStyle(.plain)
-                            }
-                            Spacer(minLength: 120)
-                            CustomButton(text: "Продолжить обучение", color: .accent) {
-                                component.openTasks(option: .continue_)
-                            }
-                            .padding(.top, 8)
-                            .padding(.bottom, 24)
-                        }
-                        .padding(.horizontal, 20)
-                        .padding(.top, 12)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                }
-            }
-            // Navigation title at top
-            .navigationTitle(section.title)
-            .navigationBarTitleDisplayMode(.large)
-            .navigationBarBackButtonHidden(true)
-            .toolbar {
-                ToolbarItemGroup(placement: .topBarTrailing) {
-                    Button(action: { component.onBack() }) {
-                        ZStack {
-                            Circle()
-                                .fill(Color.gray.opacity(0.6))
-                                .frame(width: 44, height: 44)
-                            Image(systemName: "chevron.left")
-                                .foregroundColor(.white)
-                                .font(.system(size: 14, weight: .semibold))
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private func percentColor(_ percent: Int) -> Color {
-        if percent < 35 { return .orange }
-        if percent < 85 { return .yellow }
-        return Color(red: 0.25, green: 0.70, blue: 0.40)
-    }
-}
-
-// MARK: - Train tasks UI (mirrors TaskUi with TrainComponentCopy)
-
-private struct TrainTasksView: View {
-    let component: TrainComponentCopy
-    @StateValue private var slot: ChildSlot<AnyObject, any TrainComponentCopyChild>
-    @StateValue private var state: TrainStoreState
-
-    @State private var pendingAction: (() -> Void)?
-
-    init(component: TrainComponentCopy) {
-        self.component = component
-        _slot = StateValue(component.childSlot as! Value<ChildSlot<AnyObject, any TrainComponentCopyChild>>)
-        _state = StateValue(component.state)
-    }
-
-    var body: some View {
-        VStack(spacing: 16) {
-            ProgressView(value: Double(truncating: state.percent ?? 0), total: 1)
-                .tint(.orange)
-                .frame(maxWidth: .infinity)
-
-            TaskDescriptionView(
-                text: state.showedTask?.taskText ?? "",
-                onInfo: {} // later
-            )
-
-            // Task area
-            ZStack {
-                let current = slot.child?.instance
-                if current == nil {
-                    Text("тут совсем пусто")
-                        .font(.title)
-                        .foregroundColor(.primary)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                        .padding(.vertical, 40)
-                } else if current is TrainComponentCopyChildEmptyChild {
-                    EmptyTaskPlaceholderView()
-                } else if let image = current as? TrainComponentCopyChildImageConnectChild {
-                    ImageConnectTaskView(component: image.component) { action in
-                        pendingAction = action
-                    }
-                } else if let textConnect = current as? TrainComponentCopyChildTextConnectChild {
-                    TextConnectTaskView(component: textConnect.component) { action in
-                        pendingAction = action
-                    }
-                } else if let audio = current as? TrainComponentCopyChildAudioConnectChild {
-                    AudioConnectTaskView(component: audio.component) { action in
-                        pendingAction = action
-                    }
-                } else {
-                    Text("Unsupported task")
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .frame(maxWidth: .infinity, minHeight: 220, alignment: .topLeading)
-
-            Button(action: { pendingAction?() }) {
-                Text(state.isChecking ? "Проверить" : "Продолжить")
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-            }
-            .buttonStyle(.borderedProminent)
-            .tint(.orange)
-            .disabled(!(state.isButtonEnable))
-
-            Spacer().frame(height: 8)
-        }
-        .padding(.horizontal, 28)
-        .padding(.bottom, 102)
-        .background(Color(UIColor.secondarySystemBackground))
-    }
-}
 
 // MARK: - Actual task implementations
 
@@ -783,9 +545,9 @@ private struct AudioButtonAV: View {
                 .padding(11)
                 .frame(width: 50, height: 50)
         }
-        .onChange(of: urlString) {
-            preparePlayer()
-        }
+//        .onChange(of: urlString) {
+//            preparePlayer()
+//        }
         .onAppear {
             preparePlayer()
         }
@@ -917,276 +679,244 @@ private struct ImageConnectTaskView: View {
 
             ScrollView {
                 LazyVStack(spacing: 10) {
-                    ForEach(Array(state.rows.enumerated()), id: \.element.key) { _, r in
-                        if let pair = r as? PairRow {
-                            PairRowView(
-                                left: pair.left,
-                                right: pair.right,
-                                isRightHovered: state.hoveredRightId == pair.right.id,
-                                isWrong: state.invalidLeftIds.contains(pair.left.id),
-                                onLeftHandlePositioned: { rect in
-                                    component.onPairLeftPositioned(leftId: pair.left.id, rect: rect.toRectF())
-                                },
-                                onRightPositioned: { rect in
-                                    component.onRightPositioned(rightId: pair.right.id, rect: rect.toRectF())
-                                },
-                                onLeftDragStart: {
-                                    component.startDrag(fromPair: true, leftId: pair.left.id)
-                                },
-                                onLeftDragBy: { delta in
-                                    component.dragBy(p: CGPoint(x: delta.width, y: delta.height).toPointF())
-                                },
-                                onLeftDragEnd: {
-                                    component.endDrag()
-                                },
-                                onLeftDragCancel: {
-                                    component.cancelDrag()
-                                }
-                            )
-                            .padding(.horizontal, 12)
-                        } else if let unmatched = r as? RowModelUnmatchedRow {
-                            UnmatchedRowView(
-                                left: unmatched.left,
-                                right: unmatched.right,
-                                isRightHovered: unmatched.right.map { state.hoveredRightId == $0.id } ?? false,
-                                isWrong: unmatched.left.map { state.invalidLeftIds.contains($0.id) } ?? false,
-                                onLeftPositioned: { leftId, rect in
-                                    component.onLeftPositioned(leftId: leftId, rect: rect.toRectF())
-                                },
-                                onRightPositioned: { rightId, rect in
-                                    component.onRightPositioned(rightId: rightId, rect: rect.toRectF())
-                                },
-                                onLeftDragStart: { leftId in
-                                    component.startDrag(fromPair: false, leftId: leftId)
-                                },
-                                onLeftDragBy: { leftId, delta in
-                                    component.dragBy(leftId: leftId, p: CGPoint(x: delta.width, y: delta.height).toPointF())
-                                },
-                                onLeftDragEnd: {
-                                    component.endDrag()
-                                },
-                                onLeftDragCancel: {
-                                    component.cancelDrag()
-                                }
-                            )
-                            .padding(.horizontal, 12)
+                    ForEach(Array(state.rows.enumerated()), id: \.element.key) { _, _ in
+//                        if let pair = r as? PairRow {
+//                            PairRowView(
+//                                left: pair.left,
+//                                right: pair.right,
+//                                isRightHovered: state.hoveredRightId == pair.right.id,
+//                                isWrong: state.invalidLeftIds.contains(pair.left.id),
+//                                onLeftHandlePositioned: { rect in
+//                                    component.onPairLeftPositioned(leftId: pair.left.id, rect: rect.toRectF())
+//                                },
+//                                onRightPositioned: { rect in
+//                                    component.onRightPositioned(rightId: pair.right.id, rect: rect.toRectF())
+//                                },
+//                                onLeftDragStart: {
+//                                    component.startDrag(fromPair: true, leftId: pair.left.id)
+//                                },
+//                                onLeftDragBy: { delta in
+//                                    component.dragBy(p: CGPoint(x: delta.width, y: delta.height).toPointF())
+//                                },
+//                                onLeftDragEnd: {
+//                                    component.endDrag()
+//                                },
+//                                onLeftDragCancel: {
+//                                    component.cancelDrag()
+//                                }
+//                            )
+//                            .padding(.horizontal, 12)
+//                        } else if let unmatched = r as? RowModelUnmatchedRow {
+//                            UnmatchedRowView(
+//                                left: unmatched.left,
+//                                right: unmatched.right,
+//                                isRightHovered: unmatched.right.map { state.hoveredRightId == $0.id } ?? false,
+//                                isWrong: unmatched.left.map { state.invalidLeftIds.contains($0.id) } ?? false,
+//                                onLeftPositioned: { leftId, rect in
+//                                    component.onLeftPositioned(leftId: leftId, rect: rect.toRectF())
+//                                },
+//                                onRightPositioned: { rightId, rect in
+//                                    component.onRightPositioned(rightId: rightId, rect: rect.toRectF())
+//                                },
+//                                onLeftDragStart: { leftId in
+//                                    component.startDrag(fromPair: false, leftId: leftId)
+//                                },
+//                                onLeftDragBy: { leftId, delta in
+//                                    component.dragBy(leftId: leftId, p: CGPoint(x: delta.width, y: delta.height).toPointF())
+//                                },
+//                                onLeftDragEnd: {
+//                                    component.endDrag()
+//                                },
+//                                onLeftDragCancel: {
+//                                    component.cancelDrag()
+//                                }
+//                            )
+//                            .padding(.horizontal, 12)
+//                        }
+//                    }
+                        Spacer().frame(height: 24)
+                    }
+                    .padding(.vertical, 12)
+                }
+            }
+            .onAppear {
+                setOnContinue {
+                    component.onContinueClick()
+                }
+            }
+        }
+    }
+
+    // MARK: - PairRow (text on left, text on right – mirrors Compose)
+
+    // MARK: - Building blocks
+
+    private struct PuzzleTile<Content: View>: View {
+        let background: Color
+        let border: Color
+        let content: () -> Content
+
+        init(background: Color, border: Color, @ViewBuilder content: @escaping () -> Content) {
+            self.background = background
+            self.border = border
+            self.content = content
+        }
+
+        var body: some View {
+            content()
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
+                .background(background, in: RoundedRectangle(cornerRadius: 10))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(border, lineWidth: 1)
+                )
+        }
+    }
+
+    // These are light-weight stand-ins for your Compose "PuzzleLayoutIn/Out" containers.
+    // You can replace them with more complex shapes if you already have equivalents on iOS.
+
+    private enum TabSide { case right }
+
+    private struct PuzzleLayoutIn<Content: View>: View {
+        let tabSide: TabSide
+        let onClick: () -> Void
+        let modifier: AnyViewModifier
+        let content: () -> Content
+
+        init(tabSide: TabSide, onClick: @escaping () -> Void, modifier: AnyViewModifier = AnyViewModifier(AnyView(EmptyView())), @ViewBuilder content: @escaping () -> Content) {
+            self.tabSide = tabSide
+            self.onClick = onClick
+            self.modifier = modifier
+            self.content = content
+        }
+
+        var body: some View {
+            content()
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
+                .background(Colors.white.opacity(0.0))
+                .modifier(modifier)
+        }
+    }
+
+    private struct PuzzleLayoutOut<Content: View>: View {
+        let onClick: () -> Void
+        let modifier: AnyViewModifier
+        let content: () -> Content
+
+        init(onClick: @escaping () -> Void, modifier: AnyViewModifier = AnyViewModifier(AnyView(EmptyView())), @ViewBuilder content: @escaping () -> Content) {
+            self.onClick = onClick
+            self.modifier = modifier
+            self.content = content
+        }
+
+        var body: some View {
+            content()
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
+                .background(Colors.matchedBg, in: RoundedRectangle(cornerRadius: 10))
+                .modifier(modifier)
+        }
+    }
+
+    private struct AnyViewModifier: ViewModifier {
+        let view: AnyView
+        init(_ view: AnyView) { self.view = view }
+        func body(content: Content) -> some View { content.background(view) }
+    }
+
+    // Remote image with AsyncImage, matching Compose AsyncImage
+    private struct RemoteImage: View {
+        let urlString: String?
+
+        var body: some View {
+            if let s = urlString, let url = URL(string: s) {
+                if #available(iOS 15.0, *) {
+                    SwiftUI.AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .empty:
+                            Rectangle()
+                                .foregroundColor(.gray.opacity(0.3))
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .scaledToFit()
+                        case .failure:
+                            Rectangle()
+                                .foregroundColor(.gray.opacity(0.2))
+                        @unknown default:
+                            Rectangle()
+                                .foregroundColor(.gray.opacity(0.2))
                         }
                     }
-                    Spacer().frame(height: 24)
-                }
-                .padding(.vertical, 12)
-            }
-        }
-        .onAppear {
-            setOnContinue {
-                component.onContinueClick()
-            }
-        }
-    }
-}
-
-// MARK: - PairRow (text on left, text on right – mirrors Compose)
-
-
-
-// MARK: - Building blocks
-
-private struct PuzzleTile<Content: View>: View {
-    let background: Color
-    let border: Color
-    let content: () -> Content
-
-    init(background: Color, border: Color, @ViewBuilder content: @escaping () -> Content) {
-        self.background = background
-        self.border = border
-        self.content = content
-    }
-
-    var body: some View {
-        content()
-            .padding(.horizontal, 10)
-            .padding(.vertical, 8)
-            .background(background, in: RoundedRectangle(cornerRadius: 10))
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(border, lineWidth: 1)
-            )
-    }
-}
-
-// These are light-weight stand-ins for your Compose "PuzzleLayoutIn/Out" containers.
-// You can replace them with more complex shapes if you already have equivalents on iOS.
-
-private enum TabSide { case right }
-
-private struct PuzzleLayoutIn<Content: View>: View {
-    let tabSide: TabSide
-    let onClick: () -> Void
-    let modifier: AnyViewModifier
-    let content: () -> Content
-
-    init(tabSide: TabSide, onClick: @escaping () -> Void, modifier: AnyViewModifier = AnyViewModifier(AnyView(EmptyView())), @ViewBuilder content: @escaping () -> Content) {
-        self.tabSide = tabSide
-        self.onClick = onClick
-        self.modifier = modifier
-        self.content = content
-    }
-
-    var body: some View {
-        content()
-            .padding(.horizontal, 10)
-            .padding(.vertical, 8)
-            .background(Colors.white.opacity(0.0))
-            .modifier(modifier)
-    }
-}
-
-private struct PuzzleLayoutOut<Content: View>: View {
-    let onClick: () -> Void
-    let modifier: AnyViewModifier
-    let content: () -> Content
-
-    init(onClick: @escaping () -> Void, modifier: AnyViewModifier = AnyViewModifier(AnyView(EmptyView())), @ViewBuilder content: @escaping () -> Content) {
-        self.onClick = onClick
-        self.modifier = modifier
-        self.content = content
-    }
-
-    var body: some View {
-        content()
-            .padding(.horizontal, 10)
-            .padding(.vertical, 8)
-            .background(Colors.matchedBg, in: RoundedRectangle(cornerRadius: 10))
-            .modifier(modifier)
-    }
-}
-
-private struct AnyViewModifier: ViewModifier {
-    let view: AnyView
-    init(_ view: AnyView) { self.view = view }
-    func body(content: Content) -> some View { content.background(view) }
-}
-
-// Remote image with AsyncImage, matching Compose AsyncImage
-private struct RemoteImage: View {
-    let urlString: String?
-
-    var body: some View {
-        if let s = urlString, let url = URL(string: s) {
-            if #available(iOS 15.0, *) {
-                SwiftUI.AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .empty:
-                        Rectangle()
-                            .foregroundColor(.gray.opacity(0.3))
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .scaledToFit()
-                    case .failure:
-                        Rectangle()
-                            .foregroundColor(.gray.opacity(0.2))
-                    @unknown default:
-                        Rectangle()
-                            .foregroundColor(.gray.opacity(0.2))
-                    }
+                } else {
+                    // Fallback simple placeholder on iOS < 15
+                    Rectangle().foregroundColor(.gray.opacity(0.2))
                 }
             } else {
-                // Fallback simple placeholder on iOS < 15
                 Rectangle().foregroundColor(.gray.opacity(0.2))
             }
-        } else {
-            Rectangle().foregroundColor(.gray.opacity(0.2))
         }
     }
-}
 
-// MARK: - Geometry helpers
+    // MARK: - Geometry helpers
 
-
-// MARK: - Text
+    // MARK: - Text
 
 
 
-// Hex initializer for Color
-private extension Color {
-    init(_ hex: UInt32, opacity: Double = 1.0) {
-        let r = Double((hex >> 16) & 0xFF) / 255.0
-        let g = Double((hex >> 8) & 0xFF) / 255.0
-        let b = Double(hex & 0xFF) / 255.0
-        self.init(.sRGB, red: r, green: g, blue: b, opacity: opacity)
-    }
-}
+    // TextConnect (mirrors @text_connect_screen.kt)
+    private struct TextConnectTaskView: View {
+        let component: TextConnectTaskComponent
+        @StateValue private var state: TextConnectTaskComponentState
 
-// MARK: - RectF / PointF adapters (KMM types)
+        private let setOnContinue: (@escaping () -> Void) -> Void
 
-private extension CGRect {
-    func toRectF() -> RectF {
-        RectF(
-            left: Float(minX),
-            top: Float(minY),
-            right: Float(maxX),
-            bottom: Float(maxY)
-        )
-    }
-}
+        init(component: TextConnectTaskComponent, setOnContinue: @escaping (@escaping () -> Void) -> Void) {
+            self.component = component
+            _state = StateValue(component.state)
+            self.setOnContinue = setOnContinue
+        }
 
-private extension CGPoint {
-    func toPointF() -> PointF {
-        PointF(x: Float(x), y: Float(y))
-    }
-}
-
-// TextConnect (mirrors @text_connect_screen.kt)
-private struct TextConnectTaskView: View {
-    let component: TextConnectTaskComponent
-    @StateValue private var state: TextConnectTaskComponentState
-
-    private let setOnContinue: (@escaping () -> Void) -> Void
-
-    init(component: TextConnectTaskComponent, setOnContinue: @escaping (@escaping () -> Void) -> Void) {
-        self.component = component
-        _state = StateValue(component.state)
-        self.setOnContinue = setOnContinue
-    }
-
-    var body: some View {
-        let columns = [GridItem(.flexible()), GridItem(.flexible())]
-        LazyVGrid(columns: columns, spacing: 24) {
-            let pairsCount = state.elements.count
-            ForEach(0..<pairsCount, id: \.self) { idx in
-                let pair = state.elements[idx] as! KotlinPair<AnyObject, AnyObject>
-
-                // LEFT (Text)
-                if let left = pair.first as? TextTaskModel, let baseLeft = pair.first as? Task_ {
-                    PuzzleTile(background: colorFor(taskState: left.state)) {
-                        Text(left.text)
-                            .foregroundColor(.primary)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .padding(.vertical, 8)
-                    }
-                    .onTapGesture {
-                        component.onTaskClick(taskId: baseLeft.id)
-                    }
-                } else {
-                    Color.clear.frame(height: 44)
-                }
-
-                // RIGHT (Text)
-                if let right = pair.second as? TextTaskModel, let baseRight = pair.second as? Task_ {
-                    PuzzleTile(background: colorFor(taskState: right.state)) {
-                        Text(right.text)
-                            .foregroundColor(.primary)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .padding(.vertical, 8)
-                    }
-                    .onTapGesture {
-                        component.onTaskClick(taskId: baseRight.id)
-                    }
-                } else {
-                    Color.clear.frame(height: 44)
-                }
-            }
+        var body: some View {
+            let columns = [GridItem(.flexible()), GridItem(.flexible())]
+//        LazyVGrid(columns: columns, spacing: 24) {
+//            let pairsCount = state.elements.count
+//            ForEach(0..<pairsCount, id: \.self) { idx in
+//                let pair = state.elements[idx] as! KotlinPair<AnyObject, AnyObject>
+//
+//                // LEFT (Text)
+//                if let left = pair.first as? TextTaskModel, let baseLeft = pair.first as? Task_ {
+//                    PuzzleTile(background: colorFor(taskState: left.state)) {
+//                        Text(left.text)
+//                            .foregroundColor(.primary)
+//                            .frame(maxWidth: .infinity, alignment: .center)
+//                            .padding(.vertical, 8)
+//                    }
+//                    .onTapGesture {
+//                        component.onTaskClick(taskId: baseLeft.id)
+//                    }
+//                } else {
+//                    Color.clear.frame(height: 44)
+//                }
+//
+//                // RIGHT (Text)
+//                if let right = pair.second as? TextTaskModel, let baseRight = pair.second as? Task_ {
+//                    PuzzleTile(background: colorFor(taskState: right.state)) {
+//                        Text(right.text)
+//                            .foregroundColor(.primary)
+//                            .frame(maxWidth: .infinity, alignment: .center)
+//                            .padding(.vertical, 8)
+//                    }
+//                    .onTapGesture {
+//                        component.onTaskClick(taskId: baseRight.id)
+//                    }
+//                } else {
+//                    Color.clear.frame(height: 44)
+//                }
+//            }
         }
         .onAppear {
             setOnContinue {
@@ -1239,8 +969,6 @@ private struct TextInputTaskView: View {
 }
 
 // MARK: - Helpers used by task UIs
-
-
 
 // A simple wrapping layout to place text and inline TextFields for gaps
 @available(iOS 16.0, *)
@@ -1354,30 +1082,30 @@ private struct GapSentenceView: View {
     }
 }
 
-private struct GapField: View {
-    let gap: Gap
-    let onGapChange: (Gap) -> Void
-
-    @State private var text: String = ""
-
-    var body: some View {
-        let correct = gap.correctWord
-        let width: CGFloat = max(44, CGFloat(correct.count) * 9)
-
-        TextField("", text: Binding(
-            get: { gap.enter.isEmpty ? text : gap.enter },
-            set: { new in
-                text = new
-                // Use doCopy from KMM bridge (or create a new Gap with init)
-                onGapChange(gap.doCopy(enter: new, correctWord: gap.correctWord, index: gap.index))
-            }
-        ))
-        .textFieldStyle(.roundedBorder)
-        .font(.system(size: 15, weight: .medium))
-        .foregroundColor(Color(UIColor.darkGray).opacity(0.8))
-        .frame(width: width, height: 28)
-    }
-}
+// private struct GapField: View {
+//    let gap: Gap
+//    let onGapChange: (Gap) -> Void
+//
+//    @State private var text: String = ""
+//
+//    var body: some View {
+//        let correct = gap.correctWord
+//        let width: CGFloat = max(44, CGFloat(correct.count) * 9)
+//
+//        TextField("", text: Binding(
+//            get: { gap.enter.isEmpty ? text : gap.enter },
+//            set: { new in
+//                text = new
+//                // Use doCopy from KMM bridge (or create a new Gap with init)
+//                onGapChange(gap.doCopy(enter: new, correctWord: gap.correctWord, index: gap.index))
+//            }
+//        ))
+//        .textFieldStyle(.roundedBorder)
+//        .font(.system(size: 15, weight: .medium))
+//        .foregroundColor(Color(UIColor.darkGray).opacity(0.8))
+//        .frame(width: width, height: 28)
+//    }
+// }
 
 // MARK: - Shared bits
 

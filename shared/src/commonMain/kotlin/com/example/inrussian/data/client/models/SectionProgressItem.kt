@@ -32,7 +32,7 @@ import kotlin.time.Instant
  */
 
 @Serializable
-data class SectionProgressItem constructor(
+data class SectionProgressItem(
     val userId: String,
     val courseId: String,
     val solvedTasks: Int,

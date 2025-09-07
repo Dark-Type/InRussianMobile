@@ -1,6 +1,7 @@
 package com.example.inrussian.platformInterfaces
 
 import com.example.inrussian.navigation.configurations.Configuration
+import com.example.inrussian.components.main.profile.AppTheme
 import kotlinx.cinterop.*
 import platform.CoreFoundation.*
 import platform.Foundation.NSUserDefaults
@@ -14,6 +15,10 @@ class UserConfigurationStorageImpl(
     private val tokenKey = "user_token"
     private val refreshTokenKey = "refresh_token"
     private val keychainService = "com.example.inrussian"
+
+    private val notificationsKey = "notifications_enabled"
+
+    private val themeKey = "app_theme"
 
     // --------------------------
     // App configuration (NSUserDefaults)
@@ -180,5 +185,44 @@ class UserConfigurationStorageImpl(
             CFDataGetBytes(this, CFRangeMake(0, length), pinned.addressOf(0))
         }
         return out.toByteArray()
+    }
+    override fun saveNotificationsEnabled(enabled: Boolean) {
+        defaults.setBool(enabled, forKey = notificationsKey)
+    }
+
+    override fun getNotificationsEnabled(): Boolean? {
+        return if (defaults.objectForKey(notificationsKey) != null) {
+            defaults.boolForKey(notificationsKey)
+        } else {
+            null
+        }
+    }
+
+    override fun saveTheme(theme: AppTheme) {
+        val value = when (theme) {
+            AppTheme.SYSTEM -> "SYSTEM"
+            AppTheme.LIGHT -> "LIGHT"
+            AppTheme.DARK -> "DARK"
+        }
+        defaults.setObject(value, forKey = themeKey)
+    }
+
+    override fun getTheme(): AppTheme? {
+        val stored = defaults.stringForKey(themeKey)
+        return when (stored) {
+            "SYSTEM" -> AppTheme.SYSTEM
+            "LIGHT" -> AppTheme.LIGHT
+            "DARK" -> AppTheme.DARK
+            else -> null
+        }
+    }
+
+    override fun clearAll() {
+        defaults.removeObjectForKey(key)
+        defaults.removeObjectForKey(tokenKey)
+        defaults.removeObjectForKey(refreshTokenKey)
+        defaults.removeObjectForKey(notificationsKey)
+        defaults.removeObjectForKey(themeKey)
+        deleteCreds()
     }
 }

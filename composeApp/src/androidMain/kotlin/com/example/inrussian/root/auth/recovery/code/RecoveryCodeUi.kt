@@ -44,7 +44,7 @@ import inrussian.composeapp.generated.resources.repeat_send_code
 import inrussian.composeapp.generated.resources.sms_code
 import inrussian.composeapp.generated.resources.support_contact
 import inrussian.composeapp.generated.resources.write_code
-import nekit.corporation.shift_app.ui.theme.LocalExtraColors
+import com.example.inrussian.ui.theme.LocalExtraColors
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource

@@ -1,4 +1,4 @@
-package nekit.corporation.shift_app.ui.theme
+package com.example.inrussian.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -8,26 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
-import com.example.inrussian.ui.theme.BaseBackgroundDark
-import com.example.inrussian.ui.theme.BaseBackgroundLight
-import com.example.inrussian.ui.theme.Black
-import com.example.inrussian.ui.theme.ComponentBackgroundDark
-import com.example.inrussian.ui.theme.ComponentBackgroundLight
-import com.example.inrussian.ui.theme.ErrorColor
-import com.example.inrussian.ui.theme.FontCaptiveDark
-import com.example.inrussian.ui.theme.FontCaptiveLight
-import com.example.inrussian.ui.theme.FontInactiveDark
-import com.example.inrussian.ui.theme.FontInactiveLight
-import com.example.inrussian.ui.theme.FootnoteDark
-import com.example.inrussian.ui.theme.FootnoteLight
-import com.example.inrussian.ui.theme.Inactive
-import com.example.inrussian.ui.theme.LightBlue
-import com.example.inrussian.ui.theme.SecondaryBackgroundDark
-import com.example.inrussian.ui.theme.SecondaryBackgroundLight
-import com.example.inrussian.ui.theme.StrokeDark
-import com.example.inrussian.ui.theme.StrokeLight
-import com.example.inrussian.ui.theme.TabBackgroundDark
-import com.example.inrussian.ui.theme.TabBackgroundLight
+import nekit.corporation.shift_app.ui.theme.Typography
 
 
 data class ExtraColors(
