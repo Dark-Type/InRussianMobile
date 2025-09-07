@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import androidx.compose.runtime.getValue
 import com.example.inrussian.components.main.train.TrainComponent
-import com.example.inrussian.components.main.train.TrainComponentCopy
 
 @Composable
 fun TrainComponentUi(component: TrainComponent) {

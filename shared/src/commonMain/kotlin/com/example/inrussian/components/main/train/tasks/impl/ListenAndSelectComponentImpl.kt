@@ -8,7 +8,7 @@ import com.example.inrussian.components.main.train.tasks.interfaces.ListenAndSel
 import com.example.inrussian.components.main.train.tasks.interfaces.ListenAndSelectComponent.State
 import com.example.inrussian.data.client.models.Variant
 import com.example.inrussian.data.client.models.VariantState
-import com.example.inrussian.models.models.task.TaskBody.ListenAndSelect
+import com.example.inrussian.repository.main.train.TaskBody
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -17,7 +17,7 @@ class ListenAndSelectComponentImpl(
     component: ComponentContext,
     private val onContinueClicked: (Boolean) -> Unit,
     private val onButtonEnable: (Boolean) -> Unit,
-    listenAndSelectTask: ListenAndSelect,
+    listenAndSelectTask: TaskBody.ListenAndSelect,
 ) : ListenAndSelectComponent, ComponentContext by component {
     
     private val _state = MutableValue<State>(

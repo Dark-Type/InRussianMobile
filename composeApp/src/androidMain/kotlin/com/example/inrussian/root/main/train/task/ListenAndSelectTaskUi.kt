@@ -44,7 +44,7 @@ import com.arkivanov.decompose.value.MutableValue
 import com.example.inrussian.components.main.train.tasks.interfaces.ListenAndSelectComponent
 import com.example.inrussian.data.client.models.Variant
 import com.example.inrussian.data.client.models.VariantState
-import com.example.inrussian.models.models.task.support.AudioBlocks
+import com.example.inrussian.repository.main.train.AudioBlocks
 import com.example.inrussian.ui.theme.DarkGrey
 import com.example.inrussian.ui.theme.Green
 import com.example.inrussian.ui.theme.Orange
@@ -291,8 +291,11 @@ class ListenAndSelectTaskUi : ListenAndSelectComponent {
                 AudioBlocks(
                     name = "Спикер 1",
                     audio = "",
+                    description = "Описание",
+                    descriptionTranslate = "Descirption translation",
                 ), AudioBlocks(
-                    name = "Спикер 3", audio = "", description = "Вася ,ты когда читать научишься"
+                    name = "Спикер 3", audio = "", description = "Вася ,ты когда читать научишься",
+                    descriptionTranslate = "Vasya, when will you learn to read?"
                 ), AudioBlocks(
                     name = "Спикер 2",
                     audio = "",
