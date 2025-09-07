@@ -41,7 +41,7 @@ import inrussian.composeapp.generated.resources.sign_in_with_yandex
 import inrussian.composeapp.generated.resources.sign_up
 import inrussian.composeapp.generated.resources.vk
 import inrussian.composeapp.generated.resources.yandex
-import nekit.corporation.shift_app.ui.theme.LocalExtraColors
+import com.example.inrussian.ui.theme.LocalExtraColors
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

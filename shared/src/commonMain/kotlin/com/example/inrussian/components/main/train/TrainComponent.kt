@@ -1,7 +1,10 @@
 package com.example.inrussian.components.main.train
 
-import co.touchlab.kermit.Logger
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.router.slot.ChildSlot
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
@@ -9,45 +12,46 @@ import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.pushNew
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
-import com.example.inrussian.di.SectionDetailComponentFactory
-import com.example.inrussian.di.TrainComponentFactory
+import com.example.inrussian.components.main.train.tasks.impl.AudioConnectTaskComponentImpl
+import com.example.inrussian.components.main.train.tasks.impl.ImageConnectTaskComponentImpl
+import com.example.inrussian.components.main.train.tasks.impl.ListenAndSelectComponentImpl
+import com.example.inrussian.components.main.train.tasks.impl.TextConnectTaskComponentImpl
+import com.example.inrussian.components.main.train.tasks.impl.TextInputTaskComponentImpl
+import com.example.inrussian.components.main.train.tasks.impl.TextInputTaskWithVariantComponentImpl
+import com.example.inrussian.components.main.train.tasks.interfaces.AudioConnectTaskComponent
+import com.example.inrussian.components.main.train.tasks.interfaces.ImageConnectTaskComponent
+import com.example.inrussian.components.main.train.tasks.interfaces.ListenAndSelectComponent
+import com.example.inrussian.components.main.train.tasks.interfaces.TextConnectTaskComponent
+import com.example.inrussian.components.main.train.tasks.interfaces.TextInputTaskComponent
+import com.example.inrussian.components.main.train.tasks.interfaces.TextInputTaskWithVariantComponent
+import com.example.inrussian.repository.main.train.TaskBody
+import com.example.inrussian.repository.main.train.ThemeTreeNode
 import com.example.inrussian.repository.main.train.TrainRepository
+import com.example.inrussian.stores.main.train.TrainStore
+import com.example.inrussian.stores.main.train.TrainStoreFactory
+import com.example.inrussian.utils.asValue
+import com.example.inrussian.utils.componentCoroutineScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlin.coroutines.cancellation.CancellationException
+import kotlin.math.roundToInt
 
 sealed interface TrainOutput {
     data object NavigateBack : TrainOutput
 }
 
-sealed interface SectionDetailOutput {
-    data object NavigateBack : SectionDetailOutput
-}
-
-sealed interface TasksOutput {
-    data object NavigateBack : TasksOutput
-    data object CompletedSection : TasksOutput
-}
-
-/* ---------------- TrainComponent Root ---------------- */
-
 interface TrainComponent {
     val childStack: Value<ChildStack<Config, Child>>
-    fun onSectionSelected(sectionId: String)
+    fun onThemeSelected(courseId: String, themePath: List<String>)
     fun onBack()
 
     sealed interface Child {
         data class CoursesChild(val component: TrainCoursesListComponent) : Child
-        data class SectionDetailChild(val component: SectionDetailComponent) : Child
+        data class ThemeTasksChild(val component: ThemeTasksComponent) : Child
     }
 
     @Serializable
@@ -56,15 +60,15 @@ interface TrainComponent {
         data object Courses : Config
 
         @Serializable
-        data class SectionDetail(val sectionId: String) : Config
+        data class ThemeTasks(val courseId: String, val themeId: String) : Config
     }
 }
 
 class DefaultTrainComponent(
     componentContext: ComponentContext,
-    private val onOutput: (TrainOutput) -> Unit,
-    private val sectionDetailComponentFactory: SectionDetailComponentFactory,
-    private val repository: TrainRepository
+    private val repository: TrainRepository,
+    private val storeFactory: TrainStoreFactory,
+    private val onOutput: (TrainOutput) -> Unit
 ) : TrainComponent, ComponentContext by componentContext {
 
     private val navigation = StackNavigation<TrainComponent.Config>()
@@ -75,586 +79,393 @@ class DefaultTrainComponent(
             serializer = TrainComponent.Config.serializer(),
             initialConfiguration = TrainComponent.Config.Courses,
             handleBackButton = true,
-            childFactory = ::child
+            childFactory = ::createChild
         )
 
-    override fun onSectionSelected(sectionId: String) {
-        navigation.pushNew(TrainComponent.Config.SectionDetail(sectionId))
+    override fun onThemeSelected(courseId: String, themePath: List<String>) {
+        val themeId = themePath.lastOrNull() ?: return
+        navigation.pushNew(TrainComponent.Config.ThemeTasks(courseId, themeId))
     }
 
     override fun onBack() {
-        if (childStack.value.backStack.isNotEmpty()) {
-            navigation.pop()
-        } else onOutput(TrainOutput.NavigateBack)
+        if (childStack.value.backStack.isNotEmpty()) navigation.pop()
+        else onOutput(TrainOutput.NavigateBack)
     }
 
-    private fun child(
-        configuration: TrainComponent.Config,
-        componentContext: ComponentContext
+    private fun createChild(
+        config: TrainComponent.Config,
+        ctx: ComponentContext
     ): TrainComponent.Child =
-        when (configuration) {
-            is TrainComponent.Config.Courses ->
+        when (config) {
+            TrainComponent.Config.Courses ->
                 TrainComponent.Child.CoursesChild(
                     DefaultTrainCoursesListComponent(
-                        componentContext,
-                        repository,
-                        ::onSectionSelected
+                        componentContext = ctx,
+                        repository = repository,
+                        onNavigateTheme = ::onThemeSelected
                     )
                 )
 
-            is TrainComponent.Config.SectionDetail ->
-                TrainComponent.Child.SectionDetailChild(
-                    sectionDetailComponentFactory(
-                        componentContext,
-                        configuration.sectionId
-                    ) { out ->
-                        if (out is SectionDetailOutput.NavigateBack) onBack()
-                    }
+            is TrainComponent.Config.ThemeTasks ->
+                TrainComponent.Child.ThemeTasksChild(
+                    DefaultThemeTasksComponent(
+                        componentContext = ctx,
+                        themeId = config.themeId,
+                        store = storeFactory.create(config.themeId),
+                        onFinished = ::onBack,
+                        back = ::onBack
+                    )
                 )
         }
 }
 
-/* ---------------- Courses List ---------------- */
+/* ================================================================================================
+ * COURSES LIST
+ * ================================================================================================
+ */
+
+data class TrainCoursesState(
+    val isLoading: Boolean = false,
+    val courses: List<CourseUiModel> = emptyList(),
+    val error: String? = null
+)
+
+data class CourseUiModel(
+    val id: String,
+    val title: String,
+    val percent: Int,
+    val solvedTasks: Int,
+    val totalTasks: Int,
+    val themes: List<ThemeModel>
+)
+
+data class ThemeModel(
+    val id: String,
+    val title: String,
+    val description: String? = null,
+    val childThemes: List<ThemeModel> = emptyList(),
+    val solvedTasks: Int,
+    val totalTasks: Int,
+    val isLeaf: Boolean
+) {
+    val completionFraction: Float
+        get() = if (totalTasks == 0) 0f else (solvedTasks.toFloat() / totalTasks).coerceIn(0f, 1f)
+}
 
 interface TrainCoursesListComponent {
     val state: Value<TrainCoursesState>
-    fun onSectionClick(sectionId: String)
-    fun refresh()
+    fun onRefresh()
+    fun onThemeClick(courseId: String, themePath: List<String>)
+    fun onResumeCourse(courseId: String)
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class DefaultTrainCoursesListComponent(
     componentContext: ComponentContext,
     private val repository: TrainRepository,
-    private val onSectionSelected: (String) -> Unit
+    private val onNavigateTheme: (courseId: String, themePath: List<String>) -> Unit
 ) : TrainCoursesListComponent, ComponentContext by componentContext {
 
-    private val scope = CoroutineScope(Dispatchers.Main.immediate + SupervisorJob())
-
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val _state = MutableValue(TrainCoursesState(isLoading = true))
     override val state: Value<TrainCoursesState> = _state
 
     init {
+        load(
+            initial = true,
+            force = false
+        )
+    }
 
+    override fun onRefresh() {
+        if (_state.value.isLoading) return
+        load(initial = false, force = true)
+    }
+
+    override fun onThemeClick(courseId: String, themePath: List<String>) {
+        onNavigateTheme(courseId, themePath)
+    }
+
+    override fun onResumeCourse(courseId: String) {
+        val course = _state.value.courses.firstOrNull { it.id == courseId } ?: return
+        val leaf = course.themes.firstNotNullOfOrNull { findIncompleteLeaf(it) } ?: return
+        onNavigateTheme(courseId, listOf(leaf.id))
+    }
+
+    private fun findIncompleteLeaf(t: ThemeModel): ThemeModel? {
+        if (t.isLeaf && t.solvedTasks < t.totalTasks) return t
+        t.childThemes.forEach { c -> findIncompleteLeaf(c)?.let { return it } }
+        return null
+    }
+
+    private fun load(initial: Boolean, force: Boolean) {
         scope.launch {
+            if (initial) _state.value = _state.value.copy(isLoading = true, error = null)
             try {
-                Logger.d { "start".toString() }
-                val courses = withContext(Dispatchers.IO) { repository.userCourses() }
-                Logger.d { courses.toString() }
-                if (courses.isEmpty()) {
-                    _state.value = TrainCoursesState(isLoading = false, courses = emptyList())
-                    return@launch
+                if (force) repository.refresh()
+
+                val enrollments = repository.userCourseEnrollments()
+                val courseUi = enrollments.map { enrollment ->
+                    val tree = repository.themeTree(enrollment.courseId)
+                    val themes = tree.map { toThemeModel(it) }
+                    val leaves = themes.flatMap { collectLeaves(it) }
+                    val total = leaves.sumOf { it.totalTasks }.coerceAtLeast(1)
+                    val solved = leaves.sumOf { it.solvedTasks }
+                    val percent = (solved.toFloat() / total * 100f).roundToInt()
+                    CourseUiModel(
+                        id = enrollment.courseId,
+                        title = "Course ${enrollment.courseId}",
+                        percent = percent,
+                        solvedTasks = solved,
+                        totalTasks = total,
+                        themes = themes
+                    )
                 }
 
-                val deferred = courses.map { course ->
-                    async(Dispatchers.IO) {
-                        val secs = repository.sectionsForCourse(course.id)
-                        CourseWithSections(course, secs)
-                    }
-                }
-
-                val list = deferred.awaitAll()
-                _state.value = TrainCoursesState(isLoading = false, courses = list)
-            } catch (ce: CancellationException) {
-                throw ce
+                _state.value = _state.value.copy(isLoading = false, courses = courseUi)
             } catch (t: Throwable) {
-                _state.value = TrainCoursesState(isLoading = false, courses = emptyList())
+                _state.value = _state.value.copy(
+                    isLoading = false,
+                    error = t.message ?: "Load error"
+                )
             }
         }
     }
 
-    override fun onSectionClick(sectionId: String) = onSectionSelected(sectionId)
-
-    override fun refresh() { /* no-op for mock */
+    private suspend fun toThemeModel(node: ThemeTreeNode): ThemeModel {
+        if (node.children.isEmpty()) {
+            val contents = repository.themeContents(node.theme.id)
+            return ThemeModel(
+                id = node.theme.id,
+                title = node.theme.name,
+                description = node.theme.description,
+                childThemes = emptyList(),
+                solvedTasks = 0,
+                totalTasks = contents.tasks.size,
+                isLeaf = true
+            )
+        }
+        val children = node.children.map { toThemeModel(it) }
+        return ThemeModel(
+            id = node.theme.id,
+            title = node.theme.name,
+            description = node.theme.description,
+            childThemes = children,
+            solvedTasks = children.sumOf { it.solvedTasks },
+            totalTasks = children.sumOf { it.totalTasks },
+            isLeaf = false
+        )
     }
+
+    private fun collectLeaves(t: ThemeModel): List<ThemeModel> =
+        if (t.isLeaf) listOf(t) else t.childThemes.flatMap { collectLeaves(it) }
 
     fun dispose() = scope.cancel()
 }
 
-/* ---------------- Section Detail ---------------- */
+/* ================================================================================================
+ * THEME TASKS COMPONENT (Wraps TrainStore + adds helper intents)
+ * ================================================================================================
+ */
 
-interface SectionDetailComponent {
-    val sectionId: String
-    val state: Value<SectionDetailState>
-    fun openTasks(option: TasksOption)
+interface ThemeTasksComponent {
+    val themeId: String
+    val state: Value<TrainStore.State>
+    val childSlot: Value<ChildSlot<TaskBodyConfig, TaskBodyChild>>
+
+    fun markCorrectAndSubmit()
+    fun markIncorrectAttempt()
+    fun continueAfterCorrect()
+    fun toggleButton(enabled: Boolean)
     fun onBack()
 }
 
-typealias TrainComponentFactory = (
-    ComponentContext,
-    String,
-    TasksOption,
-    (TasksOutput) -> Unit
-) -> TrainComponentCopy
+/* ---------------- Slot Child Definitions ---------------- */
 
-typealias SectionDetailComponentFactory = (
-    ComponentContext,
-    String,
-    (SectionDetailOutput) -> Unit
-) -> SectionDetailComponent
+sealed interface TaskBodyChild {
+    data class TextConnect(val component: TextConnectTaskComponent) : TaskBodyChild
+    data class AudioConnect(val component: AudioConnectTaskComponent) : TaskBodyChild
+    data class ImageConnect(val component: ImageConnectTaskComponent) : TaskBodyChild
+    data class TextInput(val component: TextInputTaskComponent) : TaskBodyChild
+    data class TextInputWithVariant(val component: TextInputTaskWithVariantComponent) :
+        TaskBodyChild
 
-class DefaultSectionDetailComponent(
+    data class ListenAndSelect(val component: ListenAndSelectComponent) : TaskBodyChild
+    data object Empty : TaskBodyChild
+}
+
+@Serializable
+sealed interface TaskBodyConfig {
+    @Serializable
+    @SerialName("TextConnect")
+    data class TextConnectCfg(val task: TaskBody.TextConnectTask) : TaskBodyConfig
+    @Serializable
+    @SerialName("ImageConnect")
+    data class ImageConnectCfg(val task: TaskBody.ImageConnectTask) : TaskBodyConfig
+    @Serializable
+    @SerialName("AudioConnect")
+    data class AudioConnectCfg(val task: TaskBody.AudioConnectTask) : TaskBodyConfig
+    @Serializable
+    @SerialName("TextInput")
+    data class TextInputCfg(val task: TaskBody.TextInputTask) : TaskBodyConfig
+    @Serializable
+    @SerialName("TextInputVariant")
+    data class TextInputVariantCfg(val task: TaskBody.TextInputWithVariantTask) : TaskBodyConfig
+    @Serializable
+    @SerialName("ListenSelect")
+    data class ListenSelectCfg(val task: TaskBody.ListenAndSelect) : TaskBodyConfig
+    @Serializable
+    @SerialName("Empty")
+    data object EmptyCfg : TaskBodyConfig
+}
+
+class DefaultThemeTasksComponent(
     componentContext: ComponentContext,
-    private val repository: TrainRepository,
-    override val sectionId: String,
-    private val onOutput: (SectionDetailOutput) -> Unit,
-    private val tasksFactory: TrainComponentFactory
-) : SectionDetailComponent, ComponentContext by componentContext {
+    override val themeId: String,
+    private val store: TrainStore,
+    private val onFinished: () -> Unit,
+    private val back: () -> Unit
+) : ThemeTasksComponent, ComponentContext by componentContext {
 
-    private val navigation = StackNavigation<InnerConfig>()
-    private val scope = CoroutineScope(Dispatchers.Main.immediate + SupervisorJob())
+    override val state: Value<TrainStore.State> = store.asValue()
+    private val scope = componentCoroutineScope()
 
-    private val _state = MutableValue(SectionDetailState(isLoading = true, section = null))
-    override val state: Value<SectionDetailState> = _state
-
-    val childStack: Value<ChildStack<InnerConfig, InnerChild>> =
-        childStack(
+    private val navigation = SlotNavigation<TaskBodyConfig>()
+    override val childSlot: Value<ChildSlot<TaskBodyConfig, TaskBodyChild>> =
+        childSlot(
             source = navigation,
-            serializer = null,
-            initialConfiguration = InnerConfig.Details,
-            handleBackButton = true,
+            serializer = TaskBodyConfig.serializer(),
+            key = "task_body_slot",
+            handleBackButton = false,
             childFactory = ::createChild
         )
 
     init {
         scope.launch {
-            val section = repository.section(sectionId)
-            _state.value = _state.value.copy(
-                isLoading = section == null,
-                section = section
-            )
+            state.subscribe { st ->
+                val body = st.showedTask?.body
+                val cfg = when (body) {
+                    is TaskBody.TextConnectTask -> TaskBodyConfig.TextConnectCfg(body)
+                    is TaskBody.ImageConnectTask -> TaskBodyConfig.ImageConnectCfg(body)
+                    is TaskBody.AudioConnectTask -> TaskBodyConfig.AudioConnectCfg(body)
+                    is TaskBody.TextInputTask -> TaskBodyConfig.TextInputCfg(body)
+                    is TaskBody.TextInputWithVariantTask -> TaskBodyConfig.TextInputVariantCfg(body)
+                    is TaskBody.ListenAndSelect -> TaskBodyConfig.ListenSelectCfg(body)
+                    is TaskBody.ConstructSentenceTask,
+                    is TaskBody.ImageAndSelect,
+                    is TaskBody.SelectWordsTask,
+                    null -> TaskBodyConfig.EmptyCfg
+                }
+                navigation.activate(cfg)
 
+                if ((st.percent ?: 0f) >= 1f) {
+                    onFinished()
+                }
+            }
         }
     }
 
-    override fun openTasks(option: TasksOption) {
-        _state.value = _state.value.copy(selectedOption = option)
-        navigation.pushNew(InnerConfig.Tasks(state.value.selectedOption?.name ?: TasksOption.All.name))
+    /* ---------- UI Intent Helpers ---------- */
+
+    override fun markCorrectAndSubmit() {
+        store.accept(TrainStore.Intent.InCheckStateChange(true))
+        store.accept(TrainStore.Intent.ButtonClick(isPass = true))
     }
 
-    override fun onBack() {
-        if (childStack.value.backStack.isNotEmpty()) navigation.pop()
-        else onOutput(SectionDetailOutput.NavigateBack)
+    override fun markIncorrectAttempt() {
+        store.accept(TrainStore.Intent.InCheckStateChange(false))
+        store.accept(TrainStore.Intent.ButtonClick(isPass = false))
     }
 
-    private fun createChild(config: InnerConfig, ctx: ComponentContext): InnerChild =
+    override fun continueAfterCorrect() {
+        // If already correct, pressing continue triggers next
+        store.accept(TrainStore.Intent.ButtonClick(isPass = true))
+    }
+
+    override fun toggleButton(enabled: Boolean) {
+        store.accept(TrainStore.Intent.OnButtonStateChange(enabled))
+    }
+
+    override fun onBack() = back()
+
+    /* ---------- Child Factory ---------- */
+    private fun createChild(config: TaskBodyConfig, ctx: ComponentContext): TaskBodyChild =
         when (config) {
-            InnerConfig.Details -> InnerChild.DetailsChild(this)
-            is InnerConfig.Tasks -> InnerChild.TasksChild(
-                tasksFactory(ctx, config.themeId) { out ->
-                    when (out) {
-                        TasksOutput.NavigateBack -> onBack()
-                        TasksOutput.CompletedSection ->
-                            _state.value = _state.value.copy(showCompletionDialog = true)
+            is TaskBodyConfig.TextConnectCfg ->
+                TaskBodyChild.TextConnect(
+                    TextConnectTaskComponentImpl(
+                        ctx,
+                        ::onAction,
+                        ::onCheckChange,
+                        ::toggleButton,
+                        config.task
+                    )
+                )
 
-                        SectionDetailOutput.NavigateBack -> onBack()
-                    }
-                }
-            )
+            is TaskBodyConfig.ImageConnectCfg ->
+                TaskBodyChild.ImageConnect(
+                    ImageConnectTaskComponentImpl(
+                        ctx,
+                        ::onAction,
+                        ::onCheckChange,
+                        ::toggleButton,
+                        config.task
+                    )
+                )
+
+            is TaskBodyConfig.AudioConnectCfg ->
+                TaskBodyChild.AudioConnect(
+                    AudioConnectTaskComponentImpl(
+                        ctx,
+                        ::onAction,
+                        ::onCheckChange,
+                        ::toggleButton,
+                        config.task
+                    )
+                )
+
+            is TaskBodyConfig.TextInputCfg ->
+                TaskBodyChild.TextInput(
+                    TextInputTaskComponentImpl(
+                        ctx,
+                        ::onAction,
+                        ::onCheckChange,
+                        ::toggleButton,
+                        config.task
+                    )
+                )
+
+            is TaskBodyConfig.TextInputVariantCfg ->
+                TaskBodyChild.TextInputWithVariant(
+                    TextInputTaskWithVariantComponentImpl(
+                        ctx,
+                        ::onAction,
+                        ::onCheckChange,
+                        ::toggleButton,
+                        config.task
+                    )
+                )
+
+            is TaskBodyConfig.ListenSelectCfg ->
+                TaskBodyChild.ListenAndSelect(
+                    ListenAndSelectComponentImpl(
+                        ctx,
+                        ::onAction,
+                        ::toggleButton,
+                        config.task
+                    )
+                )
+
+            TaskBodyConfig.EmptyCfg -> TaskBodyChild.Empty
         }
 
-    sealed interface InnerConfig {
-        data object Details : InnerConfig
-        data class Tasks(val themeId: String) : InnerConfig
+    /* ---------- Child → Store Bridges ---------- */
+
+    private fun onAction(passed: Boolean) {
+        store.accept(TrainStore.Intent.ButtonClick(passed))
     }
 
-    sealed interface InnerChild {
-        data class DetailsChild(val component: SectionDetailComponent) : InnerChild
-        data class TasksChild(val component: TrainComponentCopy) : InnerChild
+    private fun onCheckChange(inCheck: Boolean) {
+        store.accept(TrainStore.Intent.InCheckStateChange(inCheck))
     }
 }
 
-/* ---------------- Tasks Component (interactive) ---------------- */
-
-data class TasksState(
-    val isLoading: Boolean = false,
-    val option: TasksOption,
-    val sectionId: String,
-    val totalTasks: Int = 0,
-    val completedTasks: Int = 0,
-    val progressPercent: Int = 0,
-    val completed: Boolean = false,
-    val currentQueueTask: Task? = null,
-    val queueSize: Int = 0,
-    val remainingInQueue: Int = 0,
-    val filteredTasks: List<FullTask> = emptyList(),
-    val currentIndex: Int = 0,
-    val activeFullTask: FullTask? = null,
-    val singleSelection: String? = null,
-    val multiSelection: Set<String> = emptySet(),
-    val wordOrder: List<String> = emptyList(),
-    val wordSelection: Set<String> = emptySet(),
-    val textInput: String = "",
-    val lastSubmissionCorrect: Boolean? = null,
-    val showResult: Boolean = false,
-    val canSubmit: Boolean = false,
-    val hadIncorrectAttempt: Boolean = false
-)
-
-interface TasksComponent {
-    val state: Value<TasksState>
-    fun selectOption(optionId: String)
-    fun toggleOption(optionId: String)
-    fun reorderWordOrder(newOrder: List<String>)
-    fun updateTextInput(text: String)
-    fun submitAnswer()
-    fun nextAfterResult()
-    fun markCurrentAs(correct: Boolean)
-    fun onBack()
-}
-/*
-
-class DefaultTasksComponent(
-    componentContext: ComponentContext,
-    private val repository: TrainRepository,
-    private val sectionId: String,
-    private val option: TasksOption,
-    private val onOutput: (TasksOutput) -> Unit,
-    private val json: Json = Json
-) : TasksComponent, ComponentContext by componentContext {
-
-    private val scope = CoroutineScope(Dispatchers.Main.immediate + SupervisorJob())
-    private val _state = MutableValue(
-        TasksState(isLoading = true, option = option, sectionId = sectionId)
-    )
-    private var queueJob: Job? = null
-    override val state: Value<TasksState> = _state
-
-    init {
-        scope.launch { repository.selectOption(sectionId, option) }
-        when (option) {
-            TasksOption.Continue -> observeQueue()
-            TasksOption.All, TasksOption.Theory, TasksOption.Practice -> observeFiltered()
-        }
-    }
-
-    override fun selectOption(optionId: String) {
-        val full = _state.value.activeFullTask ?: return
-        val at = full.answer?.answerType ?: return
-        when (at) {
-            AnswerType.SINGLE_CHOICE_SHORT,
-            AnswerType.SINGLE_CHOICE_LONG ->
-                _state.value = _state.value.copy(singleSelection = optionId, canSubmit = true)
-
-            AnswerType.MULTIPLE_CHOICE_SHORT,
-            AnswerType.MULTIPLE_CHOICE_LONG -> toggleOption(optionId)
-
-            AnswerType.WORD_SELECTION -> {
-                val cur = _state.value.wordSelection.toMutableSet()
-                if (!cur.add(optionId)) cur.remove(optionId)
-                _state.value = _state.value.copy(wordSelection = cur, canSubmit = cur.isNotEmpty())
-            }
-
-            AnswerType.WORD_ORDER -> {
-                val cur = _state.value.wordOrder
-                if (!cur.contains(optionId)) {
-                    val upd = cur + optionId
-                    _state.value = _state.value.copy(
-                        wordOrder = upd,
-                        canSubmit = upd.size == full.options.size
-                    )
-                }
-            }
-
-            AnswerType.TEXT_INPUT -> {}
-        }
-    }
-
-    override fun toggleOption(optionId: String) {
-        val full = _state.value.activeFullTask ?: return
-        val at = full.answer?.answerType ?: return
-        if (at != AnswerType.MULTIPLE_CHOICE_SHORT && at != AnswerType.MULTIPLE_CHOICE_LONG) return
-        val cur = _state.value.multiSelection.toMutableSet()
-        if (!cur.add(optionId)) cur.remove(optionId)
-        _state.value = _state.value.copy(multiSelection = cur, canSubmit = cur.isNotEmpty())
-    }
-
-    override fun reorderWordOrder(newOrder: List<String>) {
-        val full = _state.value.activeFullTask ?: return
-        if (full.answer?.answerType != AnswerType.WORD_ORDER) return
-        _state.value = _state.value.copy(
-            wordOrder = newOrder,
-            canSubmit = newOrder.size == full.options.size
-        )
-    }
-
-    override fun updateTextInput(text: String) {
-        _state.value = _state.value.copy(textInput = text, canSubmit = text.isNotBlank())
-    }
-
-    override fun submitAnswer() {
-        val full = _state.value.activeFullTask ?: return
-        val answer = full.answer ?: return
-        val correct = evaluate(full, answer)
-
-        val currentHadIncorrect = _state.value.hadIncorrectAttempt
-        _state.value = _state.value.copy(
-            lastSubmissionCorrect = correct,
-            showResult = true,
-            hadIncorrectAttempt = currentHadIncorrect || !correct
-        )
-    }
-
-
-
-    override fun nextAfterResult() {
-        val st = _state.value
-        if (!st.showResult) return
-
-        val correct = st.lastSubmissionCorrect == true
-        val hadIncorrect = st.hadIncorrectAttempt
-
-        // Reset interaction state but keep hadIncorrectAttempt until we advance (for reinforcement decision)
-        val resetInteraction = st.copy(
-            showResult = false,
-            lastSubmissionCorrect = null,
-            singleSelection = null,
-            multiSelection = emptySet(),
-            wordOrder = emptyList(),
-            wordSelection = emptySet(),
-            textInput = "",
-            canSubmit = false
-        )
-
-        when (option) {
-            TasksOption.Continue -> {
-                if (!correct) {
-                    _state.value = resetInteraction.copy(
-                        hadIncorrectAttempt = true,
-                        activeFullTask = st.activeFullTask
-                    )
-                } else {
-                    val taskId = st.activeFullTask?.task?.id
-                    scope.launch {
-                        if (taskId != null) {
-                            repository.consumeCurrentQueueTask(sectionId, true)
-                            if (hadIncorrect && taskId.isNotBlank()) {
-                                repository.scheduleReinforcement(sectionId, taskId, 3..5)
-                            }
-                        }
-                    }
-                    _state.value = resetInteraction.copy(hadIncorrectAttempt = false)
-                }
-            }
-            TasksOption.All, TasksOption.Theory, TasksOption.Practice -> {
-                if (!correct) {
-                    _state.value = resetInteraction.copy(
-                        hadIncorrectAttempt = true,
-                        activeFullTask = st.activeFullTask
-                    )
-                } else {
-                    val nextIndex = st.currentIndex + 1
-                    if (nextIndex < st.filteredTasks.size) {
-                        _state.value = resetInteraction.copy(
-                            currentIndex = nextIndex,
-                            activeFullTask = st.filteredTasks[nextIndex],
-                            hadIncorrectAttempt = false
-                        )
-                    } else {
-                        _state.value = resetInteraction.copy(
-                            hadIncorrectAttempt = false
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    override fun markCurrentAs(correct: Boolean) {
-        if (option != TasksOption.Continue) return
-        scope.launch { repository.consumeCurrentQueueTask(sectionId, correct) }
-    }
-
-    override fun onBack() = onOutput(TasksOutput.NavigateBack)
-
-    */
-/* ------------ Observers ------------ *//*
-
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private fun observeQueue() {
-        // Cancel any previous collector if you already handle that elsewhere.
-        queueJob?.cancel()
-        queueJob = scope.launch {
-            // Example structure; adapt to your actual combine/flatMap chain.
-            combine(
-                repository.userQueue(sectionId),
-                repository.section(sectionId)
-            ) { queue, section -> queue to section }
-                .flatMapLatest { (queue, section) ->
-                    // Build the FullTask for the head of the queue (if any)
-                    val head = queue.firstOrNull()
-                    if (head == null) {
-                        flowOf(Triple(queue, section, null))
-                    } else {
-                        buildFullTaskFlow(head.taskId).map { full ->
-                            Triple(queue, section, full)
-                        }
-                    }
-                }
-                .collect { (queue, section, full) ->
-
-
-                    val previous = _state.value
-                    val previousTaskId = previous.activeFullTask?.task?.id
-                    val newTaskId = full?.task?.id
-                    val taskChanged = previousTaskId != newTaskId
-
-                    _state.value = previous.copy(
-                        isLoading = false,
-                        currentQueueTask = full?.task,
-                        activeFullTask = full,
-                        queueSize = queue.size,
-                        remainingInQueue = queue.size,
-                        totalTasks = section?.totalTasks ?: 0,
-                        completedTasks = section?.completedTasks ?: 0,
-                        progressPercent = section?.progressPercent ?: 0,
-                        completed = (section?.totalTasks ?: 0) > 0 &&
-                                section?.completedTasks == section?.totalTasks,
-                        canSubmit = if (taskChanged) false else previous.canSubmit,
-                        singleSelection = if (taskChanged) null else previous.singleSelection,
-                        multiSelection = if (taskChanged) emptySet() else previous.multiSelection,
-                        wordOrder = if (taskChanged) emptyList() else previous.wordOrder,
-                        wordSelection = if (taskChanged) emptySet() else previous.wordSelection,
-                        textInput = if (taskChanged) "" else previous.textInput,
-                        showResult = if (taskChanged) false else previous.showResult,
-                        lastSubmissionCorrect = if (taskChanged) null else previous.lastSubmissionCorrect,
-                        hadIncorrectAttempt = if (taskChanged) false else previous.hadIncorrectAttempt
-                    )
-                }
-        }
-    }
-
-    private fun buildFullTaskFlow(taskId: String): Flow<FullTask?> {
-        return combine(
-            repository.tasksForSection(sectionId),
-            repository.contentItemsForTask(taskId),
-            repository.answerOptionsForTask(taskId),
-            repository.answerForTask(taskId)
-        ) { tasks, contents, options, answer ->
-            val task = tasks.firstOrNull { it.id == taskId } ?: return@combine null
-            FullTask(task = task, contents = contents, options = options, answer = answer)
-        }
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private fun observeFiltered() {
-        scope.launch {
-            repository.tasksForSection(sectionId)
-                .flatMapLatest { tasks ->
-                    if (tasks.isEmpty()) {
-                        flowOf(Triple(emptyList<FullTask>(), sectionId, null as SectionModel?))
-                    } else {
-                        combine(
-                            combine(tasks.map { task ->
-                                combine(
-                                    repository.contentItemsForTask(task.id),
-                                    repository.answerOptionsForTask(task.id),
-                                    repository.answerForTask(task.id)
-                                ) { contents, options, ans ->
-                                    FullTask(
-                                        task,
-                                        contents.sortedBy { it.orderNum },
-                                        options.sortedBy { it.orderNum },
-                                        ans
-                                    )
-                                }
-                            }) { it.toList() },
-                            repository.section(sectionId)
-                        ) { fulls, section ->
-                            Triple(fulls, sectionId, section)
-                        }
-                    }
-                }
-                .collect { (fullList, _, section) ->
-                    val filtered = when (option) {
-                        TasksOption.All -> fullList
-                        TasksOption.Theory -> fullList.filter { it.task.type in THEORY_TASK_TYPES }
-                        TasksOption.Practice -> fullList.filter { it.task.type in PRACTICE_TASK_TYPES }
-                        TasksOption.Continue -> emptyList()
-                    }
-                    _state.value = _state.value.copy(
-                        isLoading = false,
-                        filteredTasks = filtered,
-                        activeFullTask = filtered.firstOrNull(),
-                        currentIndex = 0,
-                        totalTasks = section?.totalTasks ?: 0,
-                        completedTasks = section?.completedTasks ?: 0,
-                        progressPercent = section?.progressPercent ?: 0,
-                        completed = (section?.totalTasks ?: 0) > 0 &&
-                                section?.completedTasks == section?.totalTasks
-                    )
-                    if (_state.value.completed) onOutput(TasksOutput.CompletedSection)
-                }
-        }
-    }
-
-    */
-/* ------------ Evaluation ------------ *//*
-
-
-    private fun evaluate(full: FullTask, answer: TaskAnswerItem): Boolean =
-        when (answer.answerType) {
-            AnswerType.SINGLE_CHOICE_SHORT,
-            AnswerType.SINGLE_CHOICE_LONG -> evalSingle(full, answer)
-            AnswerType.MULTIPLE_CHOICE_SHORT,
-            AnswerType.MULTIPLE_CHOICE_LONG -> evalMultiple(full, answer)
-            AnswerType.TEXT_INPUT -> evalText(answer)
-            AnswerType.WORD_ORDER -> evalWordOrder(answer)
-            AnswerType.WORD_SELECTION -> evalWordSelection(answer)
-        }
-
-    private fun evalSingle(full: FullTask, answer: TaskAnswerItem): Boolean {
-        val sel = state.value.singleSelection ?: return false
-        if (full.options.firstOrNull { it.id == sel }?.isCorrect == true) return true
-        return safeCheckId(answer.correctAnswer) { ids -> sel in ids }
-    }
-
-    private fun evalMultiple(full: FullTask, answer: TaskAnswerItem): Boolean {
-        val selected = state.value.multiSelection
-        if (selected.isEmpty()) return false
-        val correct = safeCollectIds(answer.correctAnswer)
-            ?: full.options.filter { it.isCorrect }.map { it.id }.toSet()
-        return selected == correct
-    }
-
-    private fun evalText(answer: TaskAnswerItem): Boolean {
-        val input = state.value.textInput.trim()
-        if (input.isEmpty()) return false
-        return try {
-            normalize(input) == normalize(answer.correctAnswer.jsonPrimitive.content)
-        } catch (_: Throwable) {
-            false
-        }
-    }
-
-    private fun evalWordOrder(answer: TaskAnswerItem): Boolean {
-        val user = state.value.wordOrder
-        if (user.isEmpty()) return false
-        val correct = safeCollectList(answer.correctAnswer) ?: return false
-        return user == correct
-    }
-
-    private fun evalWordSelection(answer: TaskAnswerItem): Boolean {
-        val selected = state.value.wordSelection
-        if (selected.isEmpty()) return false
-        val correct = safeCollectIds(answer.correctAnswer) ?: return false
-        return selected == correct
-    }
-
-    private fun safeCheckId(el: JsonElement, block: (Set<String>) -> Boolean): Boolean =
-        try { block(safeCollectIds(el) ?: emptySet()) } catch (_: Throwable) { false }
-
-    private fun safeCollectIds(el: JsonElement): Set<String>? = try {
-        el.jsonArray.map { it.jsonPrimitive.content }.toSet()
-    } catch (_: Throwable) {
-        try { setOf(el.jsonPrimitive.content) } catch (_: Throwable) { null }
-    }
-
-    private fun safeCollectList(el: JsonElement): List<String>? = try {
-        el.jsonArray.map { it.jsonPrimitive.content }
-    } catch (_: Throwable) { null }
-
-    private fun normalize(s: String) =
-        s.lowercase().replace("\\s+".toRegex(), " ").trim()
-}*/

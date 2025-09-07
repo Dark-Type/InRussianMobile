@@ -6,8 +6,8 @@ import com.example.inrussian.repository.main.home.HomeRepository
 import com.example.inrussian.repository.main.home.HomeRepositoryImpl
 import com.example.inrussian.repository.main.settings.SettingsRepository
 import com.example.inrussian.repository.main.settings.SettingsRepositoryImpl
+import com.example.inrussian.repository.main.train.MockTrainRepository
 import com.example.inrussian.repository.main.train.TrainRepository
-import com.example.inrussian.repository.main.train.TrainRepositoryImpl
 import com.example.inrussian.repository.main.user.UserRepository
 import com.example.inrussian.repository.main.user.UserRepositoryImpl
 import kotlinx.coroutines.CoroutineScope
@@ -33,9 +33,12 @@ val mainModule = module {
     single<BadgeRepository> { MockBadgeRepository(scope = get(QAppScope)) }
     single<SettingsRepository> { SettingsRepositoryImpl() }
 
+//    single<TrainRepository> {
+//        val appScope: CoroutineScope = get(named("AppScope"))
+//        TrainRepositoryImpl(get())
+//    }
     single<TrainRepository> {
-        val appScope: CoroutineScope = get(named("AppScope"))
-        TrainRepositoryImpl(get())
+        MockTrainRepository()
     }
     single<HomeRepository> {
         HomeRepositoryImpl(get(), get(), get())

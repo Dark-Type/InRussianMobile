@@ -49,7 +49,7 @@ import com.example.inrussian.ui.theme.TabSide
 import com.example.inrussian.utils.Piece
 import com.example.inrussian.utils.RowModel
 import com.example.inrussian.utils.RowModel.PairRow
-import nekit.corporation.shift_app.ui.theme.LocalExtraColors
+import com.example.inrussian.ui.theme.LocalExtraColors
 
 @Composable
 fun ImageConnectTask(

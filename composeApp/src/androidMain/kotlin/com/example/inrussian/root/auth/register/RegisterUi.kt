@@ -34,7 +34,7 @@ import inrussian.composeapp.generated.resources.eye_show
 import inrussian.composeapp.generated.resources.password
 import inrussian.composeapp.generated.resources.placeholder
 import inrussian.composeapp.generated.resources.sign_up
-import nekit.corporation.shift_app.ui.theme.LocalExtraColors
+import com.example.inrussian.ui.theme.LocalExtraColors
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource

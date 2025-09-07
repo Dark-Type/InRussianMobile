@@ -17,10 +17,13 @@ import com.example.inrussian.components.main.profile.DefaultEditProfileComponent
 import com.example.inrussian.components.main.profile.DefaultPrivacyPolicyComponent
 import com.example.inrussian.components.main.profile.DefaultProfileComponent
 import com.example.inrussian.components.main.root.DefaultMainRootComponent
-import com.example.inrussian.components.main.train.DefaultSectionDetailComponent
+import com.example.inrussian.components.main.train.DefaultThemeTasksComponent
 import com.example.inrussian.components.main.train.DefaultTrainComponent
+import com.example.inrussian.components.main.train.DefaultTrainCoursesListComponent
+import com.example.inrussian.components.main.train.ThemeTasksComponent
 import com.example.inrussian.components.main.train.TrainComponent
-import com.example.inrussian.components.main.train.TrainComponentImpl
+import com.example.inrussian.components.main.train.TrainCoursesListComponent
+import com.example.inrussian.components.main.train.TrainOutput
 import com.example.inrussian.components.onboarding.citizenship.DefaultCitizenshipComponent
 import com.example.inrussian.components.onboarding.confirmation.DefaultConfirmationComponent
 import com.example.inrussian.components.onboarding.education.DefaultEducationComponent
@@ -34,6 +37,7 @@ import com.example.inrussian.di.main.QAboutText
 import com.example.inrussian.di.main.QPrivacyText
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
+import kotlin.invoke
 
 
 val navigationModule = module {
@@ -163,22 +167,22 @@ val navigationModule = module {
 
     factory<LanguageFactory>(qualifier = QLanguageFactory) {
         { componentContext, onOutput ->
-            DefaultLanguageComponent(componentContext, onOutput,store = get())
+            DefaultLanguageComponent(componentContext, onOutput, store = get())
         }
     }
     factory<PersonalDataFactory>(qualifier = QPersonalDataFactory) {
         { componentContext, onOutput ->
-            DefaultPersonalDataComponent(onOutput,store = get())
+            DefaultPersonalDataComponent(onOutput, store = get())
         }
     }
     factory<CitizenshipFactory>(qualifier = QCitizenshipFactory) {
         { componentContext, onOutput ->
-            DefaultCitizenshipComponent(onOutput,store = get())
+            DefaultCitizenshipComponent(onOutput, store = get())
         }
     }
     factory<EducationFactory>(qualifier = QEducationFactory) {
         { componentContext, onOutput ->
-            DefaultEducationComponent(onOutput,store = get())
+            DefaultEducationComponent(onOutput, store = get())
         }
     }
     factory<ConfirmationFactory>(qualifier = QConfirmationFactory) {
@@ -198,29 +202,6 @@ val navigationModule = module {
                 courseId = courseId,
                 repository = get(),
                 onOutput = onOutput
-            )
-        }
-    }
-
-    factory<TrainComponentFactory>(QTrainComponentFactory) {
-        { componentContext, sectionId, onOutput ->
-            TrainComponentImpl(
-                componentContext = componentContext,
-                onOutput = onOutput,
-                store = get { parametersOf(sectionId) },
-                courseId = sectionId
-            )
-        }
-    }
-
-    factory<SectionDetailComponentFactory>(QSectionDetailComponentFactory) {
-        { componentContext, sectionId, onOutput ->
-            DefaultSectionDetailComponent(
-                componentContext = componentContext,
-                repository = get(),
-                sectionId = sectionId,
-                onOutput = onOutput,
-                tasksFactory = get(QTrainComponentFactory)
             )
         }
     }
@@ -264,17 +245,73 @@ val navigationModule = module {
             )
         }
     }
+//    factory<TrainComponent> { (context: ComponentContext, onOutput: (TrainOutput) -> Unit) ->
+//        DefaultTrainComponent(
+//            componentContext = context,
+//            repository = get(),
+//            storeFactory = get(QTrainStoreFactory),
+//            onOutput = onOutput
+//        )
+//    }
+//
 
-    factory<TrainFactory>(QTrainFactory) {
-        { componentContext, onOutput ->
+    factory<TrainFactory>(qualifier = QTrainFactory) {
+        { context: ComponentContext, onOutput: (TrainOutput) -> Unit ->
             DefaultTrainComponent(
-                componentContext = componentContext,
-                onOutput = onOutput,
-                sectionDetailComponentFactory = get(QSectionDetailComponentFactory),
-                repository = get()
+                componentContext = context,
+                repository = get(),
+                storeFactory = get(QTrainStoreFactory),
+                onOutput = onOutput
             )
         }
     }
+
+    factory<TrainCoursesListFactory>(qualifier = QTrainCoursesListFactory) {
+        { context: ComponentContext, onNavigateTheme: (String, List<String>) -> Unit ->
+            DefaultTrainCoursesListComponent(
+                componentContext = context,
+                repository = get(),
+                onNavigateTheme = onNavigateTheme
+            )
+        }
+    }
+
+
+// TrainCoursesListComponentFactory
+    factory<ThemeTasksFactory>(qualifier = QThemeTasksFactory) {
+        { context: ComponentContext, themeId: String, onFinished: () -> Unit, back: () -> Unit ->
+            DefaultThemeTasksComponent(
+                componentContext = context,
+                themeId = themeId,
+                onFinished = onFinished,
+                store = get(),
+                back = back
+            )
+        }
+    }
+
+// TrainCoursesListComponent
+    factory<TrainCoursesListComponent> { (context: ComponentContext, onNavigateTheme: (String, List<String>) -> Unit) ->
+        DefaultTrainCoursesListComponent(
+            componentContext = context,
+            repository = get(),
+            onNavigateTheme = onNavigateTheme
+        )
+    }
+
+// ThemeTasksComponent
+    factory<ThemeTasksComponent> { (context: ComponentContext, themeId: String, onFinished: () -> Unit, back: () -> Unit) ->
+        DefaultThemeTasksComponent(
+            componentContext = context,
+            themeId = themeId,
+            onFinished = onFinished,
+            store = get(),
+            back = TODO(),
+        )
+    }
+
+
+
 
     factory<ProfileFactory>(QProfileFactory) {
         { componentContext, onOutput ->

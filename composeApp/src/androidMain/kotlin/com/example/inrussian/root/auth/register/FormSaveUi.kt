@@ -24,7 +24,7 @@ import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.checkmark_circle
 import inrussian.composeapp.generated.resources.`continue`
 import inrussian.composeapp.generated.resources.success_save_date
-import nekit.corporation.shift_app.ui.theme.LocalExtraColors
+import com.example.inrussian.ui.theme.LocalExtraColors
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 

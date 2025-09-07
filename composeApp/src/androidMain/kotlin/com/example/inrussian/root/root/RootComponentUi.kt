@@ -8,7 +8,7 @@ import com.example.inrussian.components.root.RootComponent
 import com.example.inrussian.root.auth.root.AuthRootComponentUi
 import com.example.inrussian.root.main.root.MainRootComponentUi
 import com.example.inrussian.root.onboarding.root.OnboardingRootComponentUi
-import nekit.corporation.shift_app.ui.theme.InRussianTheme
+import com.example.inrussian.ui.theme.InRussianTheme
 
 @Composable
 fun RootComponentUi(component: RootComponent) {

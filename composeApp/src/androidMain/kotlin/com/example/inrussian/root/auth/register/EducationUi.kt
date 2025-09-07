@@ -41,7 +41,7 @@ import inrussian.composeapp.generated.resources.understand_rus_language
 import inrussian.composeapp.generated.resources.understand_rus_speech
 import inrussian.composeapp.generated.resources.understand_rus_text
 import inrussian.composeapp.generated.resources.which_language
-import nekit.corporation.shift_app.ui.theme.LocalExtraColors
+import com.example.inrussian.ui.theme.LocalExtraColors
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 

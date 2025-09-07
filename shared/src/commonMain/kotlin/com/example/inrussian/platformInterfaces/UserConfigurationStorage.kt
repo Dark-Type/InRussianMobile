@@ -1,5 +1,6 @@
 package com.example.inrussian.platformInterfaces
 
+import com.example.inrussian.components.main.profile.AppTheme
 import com.example.inrussian.navigation.configurations.Configuration
 
 sealed class Creds {
@@ -19,4 +20,8 @@ interface UserConfigurationStorage {
     fun saveCreds(creds: Creds)
     fun getCreds(): Creds?
     fun deleteCreds()
+    fun saveNotificationsEnabled(enabled: Boolean)
+    fun getNotificationsEnabled(): Boolean?
+    fun saveTheme(theme: AppTheme)
+    fun getTheme(): AppTheme?
 }

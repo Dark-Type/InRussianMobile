@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -24,7 +23,7 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.inrussian.components.main.root.MainRootComponent
 import com.example.inrussian.root.main.home.HomeComponentUi
 import com.example.inrussian.root.main.profile.ProfileComponentUi
-import com.example.inrussian.root.main.train.TrainComponentUi
+import com.example.inrussian.root.main.train.v2.TrainComponentUi
 
 import com.example.inrussian.ui.theme.Orange
 import com.example.inrussian.ui.theme.TabUnselectedColor
@@ -35,8 +34,7 @@ import inrussian.composeapp.generated.resources.main
 import inrussian.composeapp.generated.resources.person_crop_circle
 import inrussian.composeapp.generated.resources.profile
 import inrussian.composeapp.generated.resources.training
-import nekit.corporation.shift_app.ui.theme.ExtraColors
-import nekit.corporation.shift_app.ui.theme.LocalExtraColors
+import com.example.inrussian.ui.theme.LocalExtraColors
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

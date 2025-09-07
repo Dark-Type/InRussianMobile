@@ -140,10 +140,6 @@ data class UserTaskQueueItem @OptIn(ExperimentalUuidApi::class) constructor(
  * (Only those that are shared; keep others near their components if preferred)
  * ----------------------------------------------------------- */
 
-data class TrainCoursesState(
-    val isLoading: Boolean = true,
-    val courses: List<CourseWithSections> = emptyList()
-)
 
 data class CourseWithSections(
     val course: ShortCourse,

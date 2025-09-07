@@ -57,8 +57,8 @@ import inrussian.composeapp.generated.resources.phone
 import inrussian.composeapp.generated.resources.profile
 import inrussian.composeapp.generated.resources.second_name
 import inrussian.composeapp.generated.resources.third_name
-import nekit.corporation.shift_app.ui.theme.InRussianTheme
-import nekit.corporation.shift_app.ui.theme.LocalExtraColors
+import com.example.inrussian.ui.theme.InRussianTheme
+import com.example.inrussian.ui.theme.LocalExtraColors
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import java.util.Calendar
