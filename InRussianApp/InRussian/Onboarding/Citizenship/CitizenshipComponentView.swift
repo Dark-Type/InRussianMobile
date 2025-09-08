@@ -414,7 +414,106 @@ struct CitizenshipChipField: View {
         }
     }
 }
+struct LanguageSkillChipField: View {
+    let placeholder: Text
+    @Binding var selections: [UserLanguageSkill]
+    @Binding var showPicker: Bool
+    let accent: Color
+    let backgroundColor: Color
 
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if selections.isEmpty {
+                HStack {
+                    placeholder
+                    Spacer()
+                    Image(systemName: "chevron.down")
+                        .foregroundColor(accent)
+                        .frame(width: 36, height: 36, alignment: .center)
+                }
+                .frame(minHeight: 44)
+                .contentShape(Rectangle())
+                .onTapGesture { withAnimation { showPicker = true } }
+            } else {
+                HStack(alignment: .top, spacing: 8) {
+                    FlowLayout(spacing: 8, runSpacing: 8, alignment: .leading) {
+                        ForEach(selections, id: \.language) { skill in
+                            ChipView(
+                                text: skill.language,
+                                accent: accent,
+                                onRemove: {
+                                    withAnimation {
+                                        selections.removeAll { $0.language == skill.language }
+                                    }
+                                }
+                            )
+                        }
+                    }
+                    Spacer(minLength: 4)
+                    Button {
+                        withAnimation { showPicker = true }
+                    } label: {
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(accent)
+                            .frame(width: 36, height: 36, alignment: .center)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .frame(minHeight: 44)
+            }
+        }
+    }
+}
+
+struct CitizenshipFieldSingle: View {
+    let placeholder: Text
+    @Binding var selection: String
+    @Binding var showPicker: Bool
+    let accent: Color
+    let backgroundColor: Color
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if selection.isEmpty {
+                HStack {
+                    placeholder
+                    Spacer()
+                    Image(systemName: "chevron.down")
+                        .foregroundColor(Color(.systemBlue))
+                        .frame(width: 36, height: 36, alignment: .center)
+                }
+                .frame(minHeight: 44)
+                .contentShape(Rectangle())
+                .onTapGesture { withAnimation { showPicker = true } }
+            } else {
+                HStack(alignment: .top, spacing: 8) {
+                    ChipView(
+                        text: selection,
+                        accent: accent,
+                        onRemove: {
+                            withAnimation {
+                                selection = ""
+                            }
+                        }
+                    )
+                    Spacer(minLength: 4)
+
+                    Button {
+                        withAnimation { showPicker = true }
+                    } label: {
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(accent)
+                            .frame(width: 36, height: 36, alignment: .center)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .frame(minHeight: 44)
+            }
+        }
+    }
+}
 // MARK: - Chip View
 
 struct ChipView: View {

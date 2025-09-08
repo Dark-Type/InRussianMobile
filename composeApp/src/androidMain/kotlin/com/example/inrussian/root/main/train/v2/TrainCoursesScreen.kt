@@ -52,6 +52,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
@@ -141,9 +142,9 @@ fun TrainCoursesScreen(component: TrainCoursesListComponent) {
             TopAppBar(
                 title = {
                     Column {
-                        Text("Training", fontWeight = FontWeight.SemiBold)
+                        Text("Тренажер", fontWeight = FontWeight.SemiBold)
                         Text(
-                            "${state.courses.size} course${if (state.courses.size == 1) "" else "s"}",
+                            "${state.courses.size} курс${if (state.courses.size == 1) "" else "а"}",
                             style = MaterialTheme.typography.labelSmall,
                             color = colors.fontInactive
                         )
@@ -153,7 +154,14 @@ fun TrainCoursesScreen(component: TrainCoursesListComponent) {
                     IconButton(onClick = { component.onRefresh() }) {
                         Icon(Icons.Default.Refresh, contentDescription = "Refresh")
                     }
-                }
+                },
+                colors = TopAppBarColors(
+                    containerColor = colors.baseBackground,
+                    scrolledContainerColor = colors.baseBackground,
+                    navigationIconContentColor = colors.fontCaptive,
+                    titleContentColor = colors.fontCaptive,
+                    actionIconContentColor = colors.fontCaptive
+                )
             )
         },
         containerColor = colors.baseBackground
@@ -176,7 +184,7 @@ fun TrainCoursesScreen(component: TrainCoursesListComponent) {
                         .padding(padding)
                         .fillMaxSize()
                         .background(colors.baseBackground),
-                    contentPadding = PaddingValues(bottom = 32.dp, top = 8.dp),
+                    contentPadding = PaddingValues(bottom = 32.dp, top = 8.dp, start = 16.dp, end = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
                     items(state.courses, key = { it.id }) { course ->
@@ -303,7 +311,7 @@ private fun CourseCard(
             ) {
                 AssistChip(
                     onClick = onResume,
-                    label = { Text("Resume") },
+                    label = { Text("Продолжить") },
                     leadingIcon = {
                         Icon(Icons.Default.PlayArrow, contentDescription = null, tint = accentColor)
                     },
@@ -469,15 +477,15 @@ private fun ThemeNode(
                     )
                 }
 
-                if (theme.childThemes.isNotEmpty()) {
-                    TextButton(
-                        onClick = { onDeepThemeNavigate(theme, path) },
-                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
-                    ) {
-                        Text("Open Theme", fontSize = 12.sp)
-                    }
-                    Spacer(Modifier.height(6.dp))
-                }
+//                if (theme.childThemes.isNotEmpty()) {
+//                    TextButton(
+//                        onClick = { onDeepThemeNavigate(theme, path) },
+//                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
+//                    ) {
+//                        Text("Open Theme", fontSize = 12.sp)
+//                    }
+//                    Spacer(Modifier.height(6.dp))
+//                }
 
                 theme.childThemes.forEach { child ->
                     ThemeNode(

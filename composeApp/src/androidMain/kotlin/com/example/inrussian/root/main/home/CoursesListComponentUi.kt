@@ -199,13 +199,13 @@ fun CoursesListComponentUi(component: CoursesListComponent) {
                         )
                         Spacer(Modifier.height(8.dp))
                         Text(
-                            "No enrolled courses yet",
+                            "Вы еще не записаны ни на один курс",
                             color = currentColors.fontInactive,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Medium
                         )
                         Text(
-                            "Browse recommended courses to get started",
+                            "Выберите курс и начните обучение прямо сейчас",
                             color = currentColors.fontInactive,
                             fontSize = 14.sp,
                             textAlign = TextAlign.Center

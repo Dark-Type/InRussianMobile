@@ -71,14 +71,17 @@ fun CourseDetailsComponentUi(component: CourseDetailsComponent) {
     val course = state.course
     val currentColors = LocalExtraColors.current
 
-    // Map old sections -> themes (transition layer).
-    val themes = remember(state.sections) { state.sections } // Replace with state.themes if you add it later.
+    val themes =
+        remember(state.sections) { state.sections } // Replace with state.themes if you add it later.
 
     val totalThemes = themes.size
     val totalThemeLessons = themes.sumOf { it.totalLessons }
     val completedThemeLessons = themes.sumOf { it.completedLessons }
     val progressFraction =
-        if (totalThemeLessons == 0) 0f else (completedThemeLessons.toFloat() / totalThemeLessons.toFloat()).coerceIn(0f, 1f)
+        if (totalThemeLessons == 0) 0f else (completedThemeLessons.toFloat() / totalThemeLessons.toFloat()).coerceIn(
+            0f,
+            1f
+        )
     val progressPercent = (progressFraction * 100).roundToInt()
 
     val enrolled = state.isEnrolled
@@ -86,7 +89,12 @@ fun CourseDetailsComponentUi(component: CourseDetailsComponent) {
     // Achievements only meaningful when enrolled.
     val achievements = remember(course?.id, enrolled, progressPercent) {
         if (!enrolled) emptyList() else listOf(
-            AchievementUi("first_steps", "First Step", "Completed first theme", progressPercent > 0),
+            AchievementUi(
+                "first_steps",
+                "First Step",
+                "Completed first theme",
+                progressPercent > 0
+            ),
             AchievementUi("steady", "Consistency", "Active 3 days", progressPercent >= 10),
             AchievementUi("halfway", "Halfway", "Reached 50% progress", progressPercent >= 50),
             AchievementUi("closer", "Closer", "Reached 80% progress", progressPercent >= 80),
@@ -99,7 +107,7 @@ fun CourseDetailsComponentUi(component: CourseDetailsComponent) {
     Column(
         Modifier
             .fillMaxSize()
-            .background(currentColors.baseBackground)
+            .background(currentColors.secondaryBackground)
             .verticalScroll(scrollState)
     ) {
         HeroImageWithOverlay(
@@ -215,7 +223,7 @@ private fun HeroImageWithOverlay(
                 .clip(
                     RoundedCornerShape(
                         bottomStart = 28.dp,
-                        bottomEnd = 28.dp
+                        bottomEnd = 28.dp,
                     )
                 ),
             contentScale = ContentScale.Crop
@@ -282,7 +290,7 @@ private fun HeroImageWithOverlay(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .padding(start = 20.dp, bottom = 28.dp, end = 60.dp)
-                    .clip(RoundedCornerShape(topEnd = 14.dp, bottomEnd = 14.dp))
+                    .clip(RoundedCornerShape(topEnd = 14.dp, bottomEnd = 14.dp, topStart = 14.dp, bottomStart = 14.dp))
                     .background(Orange)
                     .padding(horizontal = 16.dp, vertical = 12.dp),
                 color = White,
@@ -305,12 +313,13 @@ private fun AuthorMetaBlock(
     totalThemes: Int,
     totalLessons: Int
 ) {
+    val currentColors = LocalExtraColors.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .padding(horizontal = 16.dp)
             .clip(RoundedCornerShape(24.dp))
-            .background(Color.White)
+            .background(currentColors.componentBackground)
             .padding(horizontal = 18.dp, vertical = 14.dp)
             .fillMaxWidth()
     ) {
@@ -335,13 +344,13 @@ private fun AuthorMetaBlock(
                 text = stringResource(Res.string.author) + ": " + (authorId?.take(12) ?: "-"),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Medium,
-                color = Color(0xFF222222)
+                color = currentColors.fontCaptive
             )
             if (!createdAt.isNullOrBlank()) {
                 Text(
                     text = stringResource(Res.string.post) + " " + createdAt.take(10),
                     fontSize = 12.sp,
-                    color = Color(0xFF666666)
+                    color = currentColors.fontInactive
                 )
             }
         }
@@ -378,14 +387,14 @@ private fun ProgressCardCompact(
         Modifier
             .padding(horizontal = 16.dp)
             .clip(RoundedCornerShape(20.dp))
-            .background(Color.White)
+            .background(currentColors.componentBackground)
             .padding(horizontal = 18.dp, vertical = 20.dp)
     ) {
         Text(
             "Прогресс",
             fontSize = 18.sp,
             fontWeight = FontWeight.SemiBold,
-            color = Color(0xFF222222)
+            color = currentColors.fontCaptive
         )
         Spacer(Modifier.height(14.dp))
 
@@ -422,7 +431,7 @@ private fun ProgressCardCompact(
             Text(
                 "$completedLessons / $totalLessons уроков завершено",
                 fontSize = 12.sp,
-                color = Color(0xFF666666)
+                color = currentColors.fontInactive
             )
         }
 
@@ -462,26 +471,27 @@ private data class AchievementUi(
 
 @Composable
 private fun AchievementGrid(achievements: List<AchievementUi>) {
+    val currentColors = LocalExtraColors.current
     Column(
         Modifier
             .padding(horizontal = 16.dp)
             .clip(RoundedCornerShape(20.dp))
-            .background(Color.White)
+            .background(currentColors.componentBackground)
             .padding(18.dp)
     ) {
         Text(
             "Достижения",
             fontSize = 18.sp,
             fontWeight = FontWeight.SemiBold,
-            color = Color(0xFF222222)
+            color = currentColors.fontCaptive
         )
         Spacer(Modifier.height(14.dp))
 
-        // FlowRow ensures at least 2 per row if width permits
         FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(14.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
             verticalArrangement = Arrangement.spacedBy(14.dp),
-            maxItemsInEachRow = 2
+            maxItemsInEachRow = 2,
+            modifier = Modifier.fillMaxWidth()
         ) {
             achievements.forEach { ach ->
                 AchievementCard(ach)
@@ -647,7 +657,10 @@ private fun mockAccuracy(progressPercent: Int): Int =
 fun CourseDetailsComponentUiPreview() {
     val mockState = MutableValue(
         CourseDetailsState(
-            course = CourseModel(name = "Курс на патент, прям оч большое название", description = "Большое описание курса, почему Вам стоит записаться, и прочее"),
+            course = CourseModel(
+                name = "Курс на патент, прям оч большое название",
+                description = "Большое описание курса, почему Вам стоит записаться, и прочее"
+            ),
             isEnrolled = true,
             sections = emptyList(),
             progressPercent = 20,

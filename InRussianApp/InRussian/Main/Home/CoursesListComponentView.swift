@@ -198,7 +198,7 @@ private struct EmptyEnrolledStateView: View {
         .frame(maxWidth: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(Color(uiColor: .systemBackground))
+                .fill(Color(uiColor: .componentBackground))
                 .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
         )
         .accessibilityElement(children: .combine)

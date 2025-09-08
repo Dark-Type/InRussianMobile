@@ -24,6 +24,7 @@ struct EditProfileView: View {
     private let countryOptions = [
         "Россия", "Казахстан", "Китай", "Киргизия", "Таджикистан", "Узбекистан"
     ].sorted()
+    @State var localLanguageSkills: [UserLanguageSkill] = []
 
     init(component: EditProfileComponent) {
         self.component = component
@@ -47,7 +48,7 @@ struct EditProfileView: View {
                                 Text("Язык приложения")
                                     .font(.system(size: 16))
                                 Spacer()
-                                let lang = working.language
+                                let lang = working.systemLanguage
                                 Text(lang.name)
                                     .font(.system(size: 16))
 
@@ -65,101 +66,31 @@ struct EditProfileView: View {
 
                         sectionTitle("Персональные данные")
 
-                        VStack(spacing: 0) {
-                            CustomAsteriskTextField(
-                                placeholder: "Фамилия",
-                                text: Binding(
-                                    get: { working.surname },
-                                    set: { component.updateSurname(value: $0) }
-                                )
-                            )
-                            Divider().padding(.horizontal, 8)
-
-                            CustomAsteriskTextField(
-                                placeholder: "Имя",
-                                text: Binding(
-                                    get: { working.name },
-                                    set: { component.updateName(value: $0) }
-                                )
-                            )
-                            Divider().padding(.horizontal, 8)
-
-                            CustomAsteriskTextField(
-                                placeholder: "Отчество",
-                                text: Binding(
-                                    get: { working.patronymic ?? "" },
-                                    set: { component.updatePatronymic(value: $0) }
-                                ),
-                                showAsterisk: false
-                            )
-                            Divider().padding(.horizontal, 8)
-
-                            // Gender (picker-like)
-                            PickerLikeRow(
-                                label: labelForPicker(current: working.gender.name, placeholder: "Пол"),
-                                icon: "chevron.down",
-                                isEmpty: (working.gender.name).isEmpty,
-                                inactiveColor: AppColors.Palette.inactive.color
-                            ) { withAnimation { showGenderPicker = true } }
-                                .padding(.horizontal, 8)
-                            Divider().padding(.horizontal, 8)
-
-                            // Date of birth (picker-like)
-                            PickerLikeRow(
-                                label: labelForPicker(current: working.dob, placeholder: "Дата рождения"),
-                                icon: "calendar",
-                                isEmpty: (working.dob).isEmpty,
-                                inactiveColor: AppColors.Palette.inactive.color
-                            ) { withAnimation { showDatePicker = true } }
-                                .padding(.horizontal, 8)
-                            Divider().padding(.horizontal, 8)
-
-                            CustomAsteriskTextField(
-                                placeholder: "Телефон",
-                                text: Binding(
-                                    get: { working.dor }, // phone (dor)
-                                    set: { component.updateDor(value: $0) }
-                                ),
-                                keyboardType: .phonePad
-                            )
-                            Divider().padding(.horizontal, 8)
-
-                            CustomAsteriskTextField(
-                                placeholder: "Email",
-                                text: Binding(
-                                    get: { working.email },
-                                    set: { component.updateEmail(value: $0) }
-                                ),
-                                keyboardType: .emailAddress
-                            )
-                        }
-                        .padding(.vertical, 8)
-                        .background(CardBackground())
+                        PersonalDataSection(
+                            working: working,
+                            component: component,
+                            showGenderPicker: $showGenderPicker,
+                            showDatePicker: $showDatePicker
+                        ).background(CardBackground())
 
                         sectionTitle("Гражданство и проживание")
 
                         // Citizenship + residence card
                         VStack(spacing: 0) {
                             // Citizenship chips (multi-select)
-                            CitizenshipChipField(
+                            CitizenshipFieldSingle(
                                 placeholder: Text("Гражданство").foregroundColor(.secondary) + Text("*").foregroundColor(.red),
-                                selections: Binding(
-                                    get: { working.citizenship ?? [] },
-                                    set: { newList in
-                                        let old = working.citizenship ?? []
-                                        // removals
-                                        old.filter { !newList.contains($0) }
-                                            .forEach { component.deleteCountry(country: $0) }
-                                        // additions
-                                        newList.filter { !old.contains($0) }
-                                            .forEach { component.selectCountry(country: $0) }
+                                selection: Binding(
+                                    get: { working.citizenship ?? "" },
+                                    set: { newValue in
+                                        
+                                        component.updateCitizenship(value: newValue)
                                     }
                                 ),
                                 showPicker: $showCitizenshipPicker,
                                 accent: AppColors.Palette.accent.color,
                                 backgroundColor: AppColors.Palette.componentBackground.color
-                            )
-                            .padding(.horizontal, 8)
+                            )                            .padding(.horizontal, 8)
                             Divider().padding(.horizontal, 8)
 
                             PickerLikeRow(
@@ -202,27 +133,18 @@ struct EditProfileView: View {
 
                         sectionTitle("Владение языками")
 
+                        
                         // Languages + skills (simple)
                         VStack(spacing: 0) {
-                            CitizenshipChipField(
+                            LanguageSkillChipField(
                                 placeholder: Text("Языки").foregroundColor(.secondary) + Text("*").foregroundColor(.red),
-                                selections: Binding(
-                                    get: { working.languages },
-                                    set: { newList in
-                                        let old = working.languages
-                                        old.filter { !newList.contains($0) }
-                                            .forEach { component.deleteLanguage(language: $0) }
-                                        newList.filter { !old.contains($0) }
-                                            .forEach { component.selectLanguage(language: $0) }
-                                    }
-                                ),
+                                selections: $localLanguageSkills,
                                 showPicker: $showLanguagesPicker,
                                 accent: AppColors.Palette.accent.color,
                                 backgroundColor: AppColors.Palette.componentBackground.color
                             )
                             .padding(.horizontal, 8)
 
-                            // If you want additional toggles here, add below with Dividers
                         }
                         .padding(.vertical, 8)
                         .background(CardBackground())
@@ -287,7 +209,7 @@ struct EditProfileView: View {
                         selectedGender: working.gender.name, // String (guaranteed)
                         onSelect: { selectedName in // String -> map to Gender
                             let genderEnum = mapGender(from: selectedName)
-                            component.updateGender(value: genderEnum) // pass Gender to component
+                            component.updateGender(value: genderEnum ?? UserProfileModel.Gender.male)
                             withAnimation { showGenderPicker = false }
                         },
                         onCancel: { withAnimation { showGenderPicker = false } }
@@ -307,7 +229,7 @@ struct EditProfileView: View {
                     OptionListModal(
                         title: "Добавить гражданство",
                         options: countryOptions,
-                        selected: Set((working.citizenship) ?? []),
+                        selected: Set([working.citizenship].compactMap { $0 }),
                         allowsMultiple: true,
                         accent: AppColors.Palette.accent.color,
                         onSelect: { country in component.selectCountry(country: country) },
@@ -340,11 +262,26 @@ struct EditProfileView: View {
                         options: [
                             "Русский", "Английский", "Китайский", "Узбекский", "Таджикский", "Казахский"
                         ],
-                        selected: Set((working.languages as [String])),
+                        selected: Set(localLanguageSkills.map { $0.language }),
                         allowsMultiple: true,
                         accent: AppColors.Palette.accent.color,
-                        onSelect: { lang in component.selectLanguage(language: lang) },
-                        onRemove: { lang in component.deleteLanguage(language: lang) },
+                        onSelect: { lang in
+                            if !localLanguageSkills.contains(where: { $0.language == lang }) {
+                                let newSkill = UserLanguageSkill(
+                                    userId: "currentUser",
+                                    language: lang,
+                                    understands: false,
+                                    speaks: false,
+                                    reads: false,
+                                    writes: false
+                                )
+                                localLanguageSkills.append(newSkill)
+                            }
+                        },
+                        onRemove: { lang in
+                            
+                            localLanguageSkills.removeAll { $0.language == lang }
+                        },
                         onDone: { withAnimation { showLanguagesPicker = false } }
                     )
                 }
@@ -397,6 +334,89 @@ struct EditProfileView: View {
         }
     }
 }
+struct PersonalDataSection: View {
+    let working: UserProfileModel
+    let component: EditProfileComponent
+    @Binding var showGenderPicker: Bool
+    @Binding var showDatePicker: Bool
+
+    var body: some View {
+        VStack(spacing: 0) {
+            CustomAsteriskTextField(
+                placeholder: "Фамилия",
+                text: Binding(
+                    get: { working.surname },
+                    set: { component.updateSurname(value: $0) }
+                )
+            )
+            Divider().padding(.horizontal, 8)
+
+            CustomAsteriskTextField(
+                placeholder: "Имя",
+                text: Binding(
+                    get: { working.name },
+                    set: { component.updateName(value: $0) }
+                )
+            )
+            Divider().padding(.horizontal, 8)
+
+            CustomAsteriskTextField(
+                placeholder: "Отчество",
+                text: Binding(
+                    get: { working.patronymic ?? "" },
+                    set: { component.updatePatronymic(value: $0) }
+                ),
+                showAsterisk: false
+            )
+            Divider().padding(.horizontal, 8)
+
+            PickerLikeRow(
+                label: labelForPicker(current: working.gender.name, placeholder: "Пол"),
+                icon: "chevron.down",
+                isEmpty: (working.gender.name).isEmpty,
+                inactiveColor: AppColors.Palette.inactive.color
+            ) { withAnimation { showGenderPicker = true } }
+            .padding(.horizontal, 8)
+            Divider().padding(.horizontal, 8)
+
+            PickerLikeRow(
+                label: labelForPicker(current: working.dob, placeholder: "Дата рождения"),
+                icon: "calendar",
+                isEmpty: (working.dob).isEmpty,
+                inactiveColor: AppColors.Palette.inactive.color
+            ) { withAnimation { showDatePicker = true } }
+            .padding(.horizontal, 8)
+            Divider().padding(.horizontal, 8)
+
+            CustomAsteriskTextField(
+                placeholder: "Телефон",
+                text: Binding(
+                    get: { working.dor },
+                    set: { component.updateDor(value: $0) }
+                ),
+                keyboardType: .phonePad
+            )
+            Divider().padding(.horizontal, 8)
+
+            CustomAsteriskTextField(
+                placeholder: "Email",
+                text: Binding(
+                    get: { working.email },
+                    set: { component.updateEmail(value: $0) }
+                ),
+                keyboardType: .emailAddress
+            )
+        }.padding(.vertical, 8)
+    }
+
+    private func labelForPicker(current: String, placeholder: String) -> Text {
+        if current.isEmpty {
+            return Text(placeholder).foregroundColor(.secondary) + Text("*").foregroundColor(.red)
+        } else {
+            return Text(current).foregroundColor(.primary)
+        }
+    }
+}
 
 // MARK: - Small helpers
 
@@ -419,11 +439,10 @@ private struct CardRow<Content: View>: View {
     }
 }
 
-func mapGender(from label: String) -> Gender {
-    let upper = label.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-    if upper == "МУЖСКОЙ" || upper == "MALE" {
-        return Gender.male
-    } else {
-        return Gender.female
+private func mapGender(from string: String) -> UserProfileModel.Gender? {
+    switch string {
+    case "МУЖСКОЙ": return UserProfileModel.Gender.male
+    case "ЖЕНСКИЙ": return UserProfileModel.Gender.female
+    default: return nil
     }
 }
