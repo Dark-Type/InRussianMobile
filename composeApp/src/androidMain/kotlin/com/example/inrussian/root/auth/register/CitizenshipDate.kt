@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
@@ -34,9 +35,11 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.value.MutableValue
 import com.example.inrussian.components.onboarding.citizenship.CitizenshipComponent
+import com.example.inrussian.models.models.auth.PeriodSpent
 import com.example.inrussian.ui.theme.BackButton
 import com.example.inrussian.ui.theme.ContinueButton
 import com.example.inrussian.ui.theme.DarkGrey
+import com.example.inrussian.ui.theme.LocalExtraColors
 import com.example.inrussian.ui.theme.Orange
 import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.checkmark_circle
@@ -50,7 +53,6 @@ import inrussian.composeapp.generated.resources.residence_city
 import inrussian.composeapp.generated.resources.residence_country
 import inrussian.composeapp.generated.resources.study_country
 import inrussian.composeapp.generated.resources.time_of_stay
-import com.example.inrussian.ui.theme.LocalExtraColors
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -482,14 +484,7 @@ private val nationalityOptionsRu = listOf(
     "Японец"
 ).sorted()
 
-private val timeOptionsRu = listOf(
-    "менее месяца",
-    "менее полугода",
-    "менее года",
-    "более года",
-    "более пяти лет",
-    "никогда не был"
-)
+
 
 @Composable
 fun CitizenshipDate(component: CitizenshipComponent) {
@@ -497,7 +492,7 @@ fun CitizenshipDate(component: CitizenshipComponent) {
     val currentColors = LocalExtraColors.current
     val isResidenceOpen = remember { mutableStateOf(false) }
     val isStudyCountryOpen = remember { mutableStateOf(false) }
-
+    val context = LocalContext.current
     Column(
         Modifier
             .background(currentColors.secondaryBackground)
@@ -511,17 +506,17 @@ fun CitizenshipDate(component: CitizenshipComponent) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             BackButton(true, component::onBack)
-
+            
             Text(
                 stringResource(Res.string.citizenship_data),
                 style = MaterialTheme.typography.titleLarge,
                 color = currentColors.fontCaptive,
                 textAlign = TextAlign.Center
             )
-
+            
             ContinueButton(state.continueEnable, component::onNext)
         }
-
+        
         Box(
             Modifier
                 .weight(0.8f)
@@ -537,7 +532,7 @@ fun CitizenshipDate(component: CitizenshipComponent) {
                 tint = Orange
             )
         }
-
+        
         Column(
             Modifier
                 .fillMaxWidth()
@@ -556,7 +551,7 @@ fun CitizenshipDate(component: CitizenshipComponent) {
                 placeholder = stringResource(Res.string.citizenship)
             )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp), color = currentColors.stroke)
-
+            
             // Национальность — сингл-селект (список национальностей)
             SingleSelectRow(
                 isOpen = state.isNationalityOpen,
@@ -565,10 +560,9 @@ fun CitizenshipDate(component: CitizenshipComponent) {
                 placeholder = stringResource(Res.string.nationality),
                 onChangeExpanded = component::openNationality,
                 onSelect = component::selectNationality,
-                onClear = { component.selectNationality("") }
-            )
+                onClear = { component.selectNationality("") })
             HorizontalDivider(Modifier.padding(horizontal = 16.dp), color = currentColors.stroke)
-
+            
             // Страна проживания — сингл-селект (список стран)
             SingleSelectRow(
                 isOpen = isResidenceOpen.value,
@@ -577,19 +571,16 @@ fun CitizenshipDate(component: CitizenshipComponent) {
                 placeholder = stringResource(Res.string.residence_country),
                 onChangeExpanded = { isResidenceOpen.value = it },
                 onSelect = { choice -> component.countryLiveChange(choice) },
-                onClear = { component.countryLiveChange("") }
-            )
+                onClear = { component.countryLiveChange("") })
             HorizontalDivider(Modifier.padding(horizontal = 16.dp), color = currentColors.stroke)
-
-            // Город проживания — текстовое поле
+            
             InputFormField(
                 state.cityOfResidence,
                 component::cityLiveChange,
                 stringResource(Res.string.residence_city)
             )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp), color = currentColors.stroke)
-
-            // Страна во время обучения — сингл-селект (список стран)
+            
             SingleSelectRow(
                 isOpen = isStudyCountryOpen.value,
                 value = state.countryDuringEducation,
@@ -597,19 +588,17 @@ fun CitizenshipDate(component: CitizenshipComponent) {
                 placeholder = stringResource(Res.string.study_country),
                 onChangeExpanded = { isStudyCountryOpen.value = it },
                 onSelect = { choice -> component.studyCountyChange(choice) },
-                onClear = { component.studyCountyChange("") }
-            )
+                onClear = { component.studyCountyChange("") })
             HorizontalDivider(Modifier.padding(horizontal = 16.dp), color = currentColors.stroke)
-
+            
             SingleSelectRow(
                 isOpen = state.isTimeOpen,
                 value = state.timeSpentInRussia,
-                options = timeOptionsRu,
+                options = PeriodSpent.entries.toList(),
                 placeholder = stringResource(Res.string.time_of_stay),
                 onChangeExpanded = component::openTime,
                 onSelect = component::selectTime,
-                onClear = { component.selectTime("") }
-            )
+                onClear = { component.selectTime(null) })
         }
     }
 }
@@ -625,9 +614,7 @@ fun CommonClips(onClick: (String) -> Unit, text: String) {
                 .clip(RoundedCornerShape(18.dp))
                 .background(DarkGrey.copy(0.1f))
                 .border(
-                    width = 1.dp,
-                    color = currentColors.stroke,
-                    shape = RoundedCornerShape(18.dp)
+                    width = 1.dp, color = currentColors.stroke, shape = RoundedCornerShape(18.dp)
                 )
                 .padding(horizontal = 9.dp, vertical = 3.dp)
                 .align(Alignment.Center)
@@ -660,7 +647,7 @@ fun ClipsContainer(
     placeholder: String
 ) {
     val currentColors = LocalExtraColors.current
-
+    
     Box(Modifier.fillMaxWidth()) {
         FlowRow(
             Modifier.padding(start = 16.dp, end = 12.dp, top = 12.dp, bottom = 8.dp),
@@ -673,10 +660,9 @@ fun ClipsContainer(
                 Text(placeholder, color = currentColors.fontCaptive)
             }
         }
-
+        
         IconButton(
-            onClick = { onChangeExpanded(!isOpen) },
-            modifier = Modifier.align(Alignment.TopEnd)
+            onClick = { onChangeExpanded(!isOpen) }, modifier = Modifier.align(Alignment.TopEnd)
         ) {
             Icon(
                 vectorResource(Res.drawable.down_arrow),
@@ -684,7 +670,7 @@ fun ClipsContainer(
                 tint = currentColors.stroke
             )
         }
-
+        
         DropdownMenu(
             expanded = isOpen,
             onDismissRequest = { onChangeExpanded(false) },
@@ -692,13 +678,10 @@ fun ClipsContainer(
             containerColor = currentColors.componentBackground
         ) {
             variants.forEach { option ->
-                DropdownMenuItem(
-                    text = { Text(option) },
-                    onClick = {
-                        if (!active.contains(option)) onAddClick(option)
-                        onChangeExpanded(false)
-                    }
-                )
+                DropdownMenuItem(text = { Text(option) }, onClick = {
+                    if (!active.contains(option)) onAddClick(option)
+                    onChangeExpanded(false)
+                })
             }
         }
     }
@@ -716,7 +699,7 @@ private fun SingleSelectRow(
     onClear: () -> Unit
 ) {
     val currentColors = LocalExtraColors.current
-
+    
     Box(
         Modifier
             .fillMaxWidth()
@@ -729,13 +712,13 @@ private fun SingleSelectRow(
             verticalAlignment = Alignment.CenterVertically
         ) {
             val isEmpty = value.isEmpty()
-
+            
             Text(
                 if (isEmpty) placeholder else value,
                 color = if (isEmpty) currentColors.fontInactive else currentColors.fontCaptive,
                 modifier = Modifier.weight(1f)
             )
-
+            
             IconButton(onClick = { onChangeExpanded(!isOpen) }, Modifier.size(32.dp)) {
                 Icon(
                     vectorResource(Res.drawable.down_arrow),
@@ -744,7 +727,7 @@ private fun SingleSelectRow(
                 )
             }
         }
-
+        
         DropdownMenu(
             expanded = isOpen,
             onDismissRequest = { onChangeExpanded(false) },
@@ -752,90 +735,153 @@ private fun SingleSelectRow(
             containerColor = currentColors.componentBackground
         ) {
             options.forEach { option ->
-                DropdownMenuItem(
-                    text = { Text(option) },
-                    trailingIcon = {
-                        if (option == value) {
-                            Icon(
-                                vectorResource(Res.drawable.checkmark_circle),
-                                contentDescription = null,
-                                tint = Orange,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-                    },
-                    onClick = {
-                        onSelect(option)
-                        onChangeExpanded(false)
+                DropdownMenuItem(text = { Text(option) }, trailingIcon = {
+                    if (option == value) {
+                        Icon(
+                            vectorResource(Res.drawable.checkmark_circle),
+                            contentDescription = null,
+                            tint = Orange,
+                            modifier = Modifier.size(18.dp)
+                        )
                     }
+                }, onClick = {
+                    onSelect(option)
+                    onChangeExpanded(false)
+                })
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SingleSelectRow(
+    isOpen: Boolean,
+    value: PeriodSpent?,
+    options: List<PeriodSpent>,
+    placeholder: String,
+    onChangeExpanded: (Boolean) -> Unit,
+    onSelect: (PeriodSpent) -> Unit,
+    onClear: () -> Unit
+) {
+    val currentColors = LocalExtraColors.current
+    val context = LocalContext.current
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 8.dp, top = 12.dp, bottom = 8.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.CenterStart),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            
+            Text(
+                text = value?.string?.getString(context) ?: placeholder,
+                color = if (value == null) currentColors.fontInactive else currentColors.fontCaptive,
+                modifier = Modifier.weight(1f)
+            )
+            
+            IconButton(onClick = { onChangeExpanded(!isOpen) }, Modifier.size(32.dp)) {
+                Icon(
+                    vectorResource(Res.drawable.down_arrow),
+                    contentDescription = null,
+                    tint = currentColors.stroke
                 )
+            }
+        }
+        
+        DropdownMenu(
+            expanded = isOpen,
+            onDismissRequest = { onChangeExpanded(false) },
+            offset = DpOffset(x = 220.dp, y = 0.dp),
+            containerColor = currentColors.componentBackground
+        ) {
+            options.forEach { option ->
+                DropdownMenuItem(text = { Text(option.string.getString(context)) }, trailingIcon = {
+                    if (option == value) {
+                        Icon(
+                            vectorResource(Res.drawable.checkmark_circle),
+                            contentDescription = null,
+                            tint = Orange,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }, onClick = {
+                    onSelect(option)
+                    onChangeExpanded(false)
+                })
             }
         }
     }
 }
 
 class CitizenshipDate : CitizenshipComponent {
+    
     override val state = MutableValue(
         CitizenshipComponent.State(isNationalityOpen = true)
     )
-
+    
     override fun onNext() {
         TODO("Not yet implemented")
     }
-
+    
     override fun onBack() {
         TODO("Not yet implemented")
     }
-
+    
     override fun countryLiveChange(country: String) {
         TODO("Not yet implemented")
     }
-
+    
     override fun cityLiveChange(city: String) {
         TODO("Not yet implemented")
     }
-
+    
     override fun studyCountyChange(country: String) {
         TODO("Not yet implemented")
     }
-
+    
     override fun selectCountry(country: String) {
         TODO("Not yet implemented")
     }
-
+    
     override fun openCitizenship(isOpen: Boolean) {
         TODO("Not yet implemented")
     }
-
+    
     override fun openNationality(isOpen: Boolean) {
         TODO("Not yet implemented")
     }
-
+    
     override fun openTime(isOpen: Boolean) {
         TODO("Not yet implemented")
     }
-
-
+    
+    
     override fun selectNationality(string: String) {
         TODO("Not yet implemented")
     }
-
+    
     override fun deleteCountry(country: String) {
         TODO("Not yet implemented")
     }
-
-    override fun selectTime(time: String) {
+    
+    override fun selectTime(time: PeriodSpent?) {
         TODO("Not yet implemented")
     }
-
+    
+   
     override fun deleteNationality(nationality: String) {
         TODO("Not yet implemented")
     }
-
+    
     override fun deleteTime(time: String) {
         TODO("Not yet implemented")
     }
-
+    
     @Preview(showBackground = true, showSystemUi = true)
     @Composable
     fun Preview() {

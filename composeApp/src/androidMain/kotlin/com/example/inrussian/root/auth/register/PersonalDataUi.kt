@@ -42,9 +42,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.value.MutableValue
+import com.example.inrussian.components.main.profile.Gender
 import com.example.inrussian.components.onboarding.personalData.PersonalDataComponent
 import com.example.inrussian.ui.theme.BackButton
 import com.example.inrussian.ui.theme.ContinueButton
+import com.example.inrussian.ui.theme.InRussianTheme
+import com.example.inrussian.ui.theme.LocalExtraColors
 import com.example.inrussian.ui.theme.Orange
 import inrussian.composeapp.generated.resources.Res
 import inrussian.composeapp.generated.resources.calendar
@@ -57,8 +60,6 @@ import inrussian.composeapp.generated.resources.phone
 import inrussian.composeapp.generated.resources.profile
 import inrussian.composeapp.generated.resources.second_name
 import inrussian.composeapp.generated.resources.third_name
-import com.example.inrussian.ui.theme.InRussianTheme
-import com.example.inrussian.ui.theme.LocalExtraColors
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import java.util.Calendar
@@ -68,8 +69,9 @@ import java.util.Date
 fun PersonaDataUi(component: PersonalDataComponent) {
     val state by component.state.subscribeAsState()
     val currentColors = LocalExtraColors.current
+    val context = LocalContext.current
     Box {
-
+        
         Column(
             Modifier
                 .background(currentColors.secondaryBackground)
@@ -83,21 +85,21 @@ fun PersonaDataUi(component: PersonalDataComponent) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 BackButton(true, component::onBack)
-
+                
                 Text(
                     stringResource(Res.string.personal_data),
                     style = MaterialTheme.typography.titleLarge,
                     color = currentColors.fontCaptive,
                     textAlign = TextAlign.Center
                 )
-
+                
                 ContinueButton(state.isEnableContinueButton, component::onNext)
             }
             Box(
                 Modifier
                     .weight(0.8f)
                     .fillMaxWidth(),
-
+                
                 ) {
                 Icon(
                     vectorResource(Res.drawable.profile),
@@ -132,7 +134,7 @@ fun PersonaDataUi(component: PersonalDataComponent) {
                     stringResource(Res.string.first_name),
                     isRequired = true
                 )
-
+                
                 HorizontalDivider(
                     Modifier.padding(horizontal = 16.dp),
                     color = currentColors.stroke
@@ -147,19 +149,19 @@ fun PersonaDataUi(component: PersonalDataComponent) {
                     color = currentColors.stroke
                 )
                 var expanded by remember { mutableStateOf(state.isGenderOpen) }
-
+                
                 Row(
                     Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     InputFormField(
-                        state.gender,
+                        state.gender?.string?.getString(context) ?: "",
                         {},
                         stringResource(Res.string.gender),
                         Modifier.weight(1f),
                         isRequired = true
                     )
-
+                    
                     Box {
                         IconButton(onClick = { expanded = true }) {
                             Icon(
@@ -177,9 +179,14 @@ fun PersonaDataUi(component: PersonalDataComponent) {
                                 .background(currentColors.componentBackground) // фон меню
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Мужской", color = currentColors.fontCaptive) },
+                                text = {
+                                    Text(
+                                        Gender.MALE.string.getString(context),
+                                        color = currentColors.fontCaptive
+                                    )
+                                },
                                 onClick = {
-                                    component.changeGender("Мужской")
+                                    component.changeGender(Gender.MALE)
                                     expanded = false
                                 },
                                 modifier = Modifier.background(currentColors.componentBackground) // фон пункта
@@ -189,9 +196,14 @@ fun PersonaDataUi(component: PersonalDataComponent) {
                                 color = currentColors.stroke
                             )
                             DropdownMenuItem(
-                                text = { Text("Женский", color = currentColors.fontCaptive) },
+                                text = {
+                                    Text(
+                                        Gender.FEMALE.string.getString(context),
+                                        color = currentColors.fontCaptive
+                                    )
+                                },
                                 onClick = {
-                                    component.changeGender("Женский")
+                                    component.changeGender(Gender.FEMALE)
                                     expanded = false
                                 },
                                 modifier = Modifier.background(currentColors.componentBackground) // фон пункта
@@ -225,7 +237,7 @@ fun PersonaDataUi(component: PersonalDataComponent) {
         }
         DataPickerSimple(state.showDataPicker, component::onDataChange)
     }
-
+    
 }
 
 
@@ -275,11 +287,11 @@ fun DataPickerSimple(showDataPicker: Boolean, onSelect: (String) -> Unit) {
     val year = calendar.get(Calendar.YEAR)
     val month = calendar.get(Calendar.MONTH)
     val day = calendar.get(Calendar.DAY_OF_MONTH)
-
+    
     calendar.time = Date()
-
+    
     var date by remember { mutableStateOf("") }
-
+    
     val datePicker = remember {
         DatePickerDialog(
             context,
@@ -291,16 +303,16 @@ fun DataPickerSimple(showDataPicker: Boolean, onSelect: (String) -> Unit) {
             day
         )
     }
-
+    
     LaunchedEffect(showDataPicker) {
         if (showDataPicker)
             datePicker.show()
     }
-
+    
     DisposableEffect(datePicker) {
         onDispose { datePicker.dismiss() }
     }
-
+    
     LaunchedEffect(date) {
         if (date.isNotBlank()) onSelect(date)
     }
@@ -308,6 +320,7 @@ fun DataPickerSimple(showDataPicker: Boolean, onSelect: (String) -> Unit) {
 
 
 class PersonalDataUi() : PersonalDataComponent {
+    
     @Preview(showBackground = true, showSystemUi = true)
     @Composable
     fun Preview() {
@@ -315,56 +328,56 @@ class PersonalDataUi() : PersonalDataComponent {
             PersonaDataUi(this)
         }
     }
-
+    
     override fun onNext() {
         TODO("Not yet implemented")
     }
-
+    
     override val state = MutableValue(PersonalDataComponent.State(isGenderOpen = true))
     override fun changeSurname(surname: String) {
         TODO("Not yet implemented")
     }
-
+    
     override fun changeName(name: String) {
         TODO("Not yet implemented")
     }
-
+    
     override fun changeThirdName(thirdName: String) {
         TODO("Not yet implemented")
     }
-
-    override fun changeGender(gender: String) {
+    
+    override fun changeGender(gender: Gender) {
         TODO("Not yet implemented")
     }
-
+    
     override fun changeDob(dob: String) {
         TODO("Not yet implemented")
     }
-
+    
     override fun changePhone(phone: String) {
         TODO("Not yet implemented")
     }
-
-
+    
+    
     override fun changeGenderChoose(isOpen: Boolean) {
         TODO("Not yet implemented")
     }
-
+    
     override fun openDataPicker() {
         TODO("Not yet implemented")
     }
-
+    
     override fun onDataChange(date: String) {
         TODO("Not yet implemented")
     }
-
+    
     override fun dataPickerMissClick() {
         TODO("Not yet implemented")
     }
-
+    
     override fun onBack() {
         TODO("Not yet implemented")
     }
-
-
+    
+    
 }

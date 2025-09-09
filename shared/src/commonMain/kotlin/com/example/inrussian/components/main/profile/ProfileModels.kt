@@ -1,7 +1,9 @@
 package com.example.inrussian.components.main.profile
 
+import dev.icerock.moko.resources.StringResource
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
+import org.example.library.SharedRes
 
 @Serializable
 data class User(
@@ -56,6 +58,7 @@ enum class UserRole { USER }
 
 @Serializable
 enum class SystemLanguage {
+    
     RUSSIAN, UZBEK, CHINESE, HINDI, TAJIK, ENGLISH
 }
 
@@ -67,7 +70,7 @@ enum class UserStatus {
     PENDING_VERIFICATION
 }
 
-enum class Gender { MALE, FEMALE }
+enum class Gender(val string: StringResource) { MALE(SharedRes.strings.male), FEMALE(SharedRes.strings.female) }
 enum class PeriodSpent {
     MONTH_MINUS, MONTH_SIX_MONTHS_MINUS, SIX_MONTHS, YEAR_MINUS, YEAR_YEAR_PLUS, YEAR_PLUS, FIVE_YEAR_PLUS, FIVE_YEARS_PLUS, NEVER
 }
@@ -87,8 +90,9 @@ data class ProfileMainState(
     val theme: AppTheme = AppTheme.SYSTEM,
     val isEditThemeOpen: Boolean = false,
 ) {
+    
     val displayName: String get() = "${profile?.surname} ${profile?.name}\n${profile?.patronymic}".ifBlank { "—" }
-
+    
     val registrationDate: String
         get() = profile?.dor ?: user?.createdAt ?: "—"
 }

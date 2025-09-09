@@ -5,4 +5,18 @@
     <string name="invalid_password">Пароль должен быть больше 6 символов и содержать спец. символы</string>
     <string name="invalid_confirm_password">Пароли должны совпадать</string>
     <string name="invalid_phone">Неверный номер телефона</string>
+    <string name="my_string">Моя строка локализации по умолчанию</string>
+    <string name="invalid_email">Неправильная почта</string>
+    <string name="invalid_password">Пароль должен быть больше 6 символов и содержать спец. символы</string>
+    <string name="invalid_confirm_password">Пароли должны совпадать</string>
+    <string name="invalid_phone">Неверный номер телефона</string>
+    <string name="male">Мужской</string>
+    <string name="female">Женский</string>
+    <string name="month_minus">Меньше месяца</string>
+    <string name="month_six_month_minus">Менее 6 месяцев</string>
+    <string name="six_month">6 месяцев</string>
+    <string name="year_minus">Меньше года</string>
+    <string name="year_plus">Больше года</string>
+    <string name="five_years_plus">Больше пяти лет</string>
+    <string name="never">Никогда</string>
 </resources>

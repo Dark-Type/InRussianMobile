@@ -9,6 +9,7 @@ import kotlin.random.Random
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 class MockTrainRepository(
     private val seed: Int = 77
 ) : TrainRepository {
@@ -17,6 +18,120 @@ class MockTrainRepository(
     private val themesByCourse = mutableMapOf<String, List<ThemeTreeNode>>()
     private val tasksPerTheme = mutableMapOf<String, MutableList<TaskModel>>()
     private val solvedPerTheme = mutableMapOf<String, MutableSet<String>>()
+    private val tasks = listOf<TaskModel>(
+        TaskModel(
+            taskType = listOf(),
+            taskBody = TaskBody.TextInputWithVariantTask(
+                task = TextInputWithVariantModel(
+                    label = "Chertov spicker",
+                    text = "God, it's was really bad day",
+                    gaps = listOf(
+                        GapWithVariantModel(
+                            indexWord = 0,
+                            variants = listOf("bad", "fucking", "oldest"),
+                            correctVariant = "fucking"
+                        ), GapWithVariantModel(
+                            indexWord = 4,
+                            variants = listOf("bad", "fucking", "oldest"),
+                            correctVariant = "fucking"
+                        )
+                    )
+                )
+            ),
+            question = "тем временем был уже 4 час утра"
+        ),
+        TaskModel(
+            taskType = listOf(TaskType.LISTEN),
+            taskBody = TaskBody.TextInputTask(
+                task = listOf(
+                    TextInputModel(
+                        label = "Спикер 2",
+                        text = "greka ehal cherez reku widit sidit rak",
+                        gaps = listOf(Gap("Greka", 5))
+                    ),
+                    TextInputModel(
+                        label = "Спикер 1",
+                        text = "greka ehal cherez reku widit sidit rak",
+                        gaps = listOf(Gap("Greka", 5))
+                    ),
+                    TextInputModel(
+                        label = "Спикер 0",
+                        text = "greka ehal cherez reku widit sidit rak",
+                        gaps = listOf(Gap("Greka", 5))
+                    ),
+                    
+                    )
+            ),
+            question = "как же надоело писать этот проект"
+        ),
+        TaskModel(
+            taskType = listOf(TaskType.LISTEN),
+            taskBody = TaskBody.AudioConnectTask(
+                variant = listOf("https://ru-d1.drivemusic.me/dl/aUXUtDqRsTEr0AyF_pBYhA/1756874921/download_music/2019/11/the-weeknd-blinding-lights.mp3" to "Гойда")
+            ),
+            question = "как же надоело писать этот проект"
+        ),
+        
+        TaskModel(
+            taskType = listOf(TaskType.SELECT, TaskType.LISTEN),
+            taskBody = TaskBody.ListenAndSelect(
+                task = ListenAndSelectModel(
+                    audioBlocks = listOf(),
+                    variants = listOf()
+                )
+            ),
+            question = "Послушайте и скажите, что курил автор"
+        ),
+        TaskModel(
+            taskType = listOf(TaskType.READ, TaskType.READ),
+            taskBody = TaskBody.TextConnectTask(
+                variant = listOf("BudetMir, goyd2a " to "Гойда")
+            ),
+            question = "live or die, that is question"
+        ),
+        TaskModel(
+            taskType = listOf(TaskType.READ, TaskType.WRITE),
+            taskBody = TaskBody.TextConnectTask(
+                variant = listOf(
+                    "BudetMir, goyd1a " to "Гойда1",
+                    "BudetMir, goyd2a " to "Гойда2",
+                    "BudetMir, goyd3a " to "Гойда3",
+                ),
+            ),
+            question = "live or die, that is question"
+        ),
+        TaskModel(
+            taskType = listOf(TaskType.CONNECT_AUDIO, TaskType.SELECT),
+            taskBody = TaskBody.TextConnectTask(
+                variant = listOf("BudetMir, goyd3a " to "Гойда")
+            ),
+            question = "live or die, that is question"
+        ),
+        TaskModel(
+            id = Uuid.random().toString(),
+            taskType = listOf(TaskType.SELECT),
+            taskBody = TaskBody.ImageAndSelect(
+                ImageAndSelectModel(
+                    imageBlocks = listOf(
+                        ImageBlocks(
+                            name = "Olega",
+                            image = "https://a.d-cd.net/9e05ae6s-1920.jpg"
+                        ),
+                        ImageBlocks(
+                            name = "Мой ахуй если это заведется",
+                            description = "работает, сука",
+                            descriptionTranslate = "It's working, bitch",
+                            image = "https://www.meme-arsenal.com/memes/25e19667a7d1520cde867701f9e80fc9.jpg"
+                        )
+                    ),
+                    variants = listOf("Blu" to false, "bitch" to false, "yesss" to true)
+                )
+            ),
+            question = "",
+            createdAt = "2024-01-01T00:00:00Z",
+            updatedAt = "2024-01-01T00:00:00Z"
+        ),
+    )
     
     override suspend fun userCourseEnrollments(): List<UserCourseEnrollmentItem> =
         withContext(Dispatchers.IO) {
@@ -175,30 +290,8 @@ class MockTrainRepository(
     
     @OptIn(ExperimentalUuidApi::class)
     private fun mockTask(themeId: String, index: Int): TaskModel =
-        TaskModel(
-            id = Uuid.random().toString(),
-            taskType = listOf(TaskType.SELECT),
-            taskBody = TaskBody.ImageAndSelect(
-                ImageAndSelectModel(
-                    imageBlocks = listOf(
-                        ImageBlocks(
-                            name = "Olega",
-                            image = "https://a.d-cd.net/9e05ae6s-1920.jpg"
-                        ),
-                        ImageBlocks(
-                            name = "Мой ахуй если это заведется",
-                            description = "работает, сука",
-                            descriptionTranslate = "It's working, bitch",
-                            image = "https://www.meme-arsenal.com/memes/25e19667a7d1520cde867701f9e80fc9.jpg"
-                        )
-                    ),
-                    variants = listOf("Blu" to false, "bitch" to false, "yesss" to true)
-                )
-            ),
-            question = "Question #$index of $themeId",
-            createdAt = "2024-01-01T00:00:00Z",
-            updatedAt = "2024-01-01T00:00:00Z"
-        )
+        tasks.shuffled().first()
+    
     
     @OptIn(ExperimentalUuidApi::class)
     private fun findThemeIdByTask(taskId: Uuid): String {
