@@ -48,6 +48,7 @@ class RegisterStoreFactory(
     private val authRepository: AuthRepository,
     private val userRepository: UserRepository,
 ) {
+    
     fun create(): RegisterStore =
         object : RegisterStore, Store<Intent, State, Label> by storeFactory.create(
             name = "RegisterStore",
@@ -56,14 +57,14 @@ class RegisterStoreFactory(
             executorFactory = ::ExecutorImpl,
             reducer = ReducerImpl,
         ) {
-
+        
         }
-
+    
     private inner class ExecutorImpl : CoroutineExecutor<Intent, Action, State, Msg, Label>() {
-
+        
         override fun executeAction(action: Action) {
         }
-
+        
         @OptIn(ExperimentalTime::class)
         override fun executeIntent(intent: Intent) {
             scope.launch {
@@ -72,7 +73,7 @@ class RegisterStoreFactory(
                     Intent.SignUpClick -> {
                         scope.launch {
                             val state = state()
-
+                            
                             try {
                                 dispatch(Loading)
                                 validator.validateEmail(state.email)
@@ -80,15 +81,15 @@ class RegisterStoreFactory(
                                 validator.validateConfirmPassword(
                                     state.password, state.confirmPassword
                                 )
-
+                                Logger.d { "start response" }
+                                
                                 val response = authRepository.login(
                                     LoginModel(
-                                        email = state.email,
-                                        password = state.password
+                                        email = state.email, password = state.password
                                     )
                                 )
-
-                                throw ErrorType.EmailExist
+                                
+                                
                             } catch (e: ErrorType) {
                                 if (e is RegisterError) {
                                     when (e) {
@@ -99,7 +100,7 @@ class RegisterStoreFactory(
                                                 )
                                             )
                                         )
-
+                                        
                                         ErrorType.EmailExist -> dispatch(
                                             EmailError(
                                                 errorDecoder.decode(
@@ -107,7 +108,7 @@ class RegisterStoreFactory(
                                                 )
                                             )
                                         )
-
+                                        
                                         ErrorType.InvalidPassword -> dispatch(
                                             PasswordError(
                                                 errorDecoder.decode(
@@ -115,7 +116,7 @@ class RegisterStoreFactory(
                                                 )
                                             )
                                         )
-
+                                        
                                         ErrorType.UnAuthorize -> dispatch(
                                             PasswordError(
                                                 errorDecoder.decode(
@@ -123,8 +124,8 @@ class RegisterStoreFactory(
                                                 )
                                             )
                                         )
-
-
+                                        
+                                        
                                     }
                                 }
                             } catch (e: Exception) {
@@ -132,7 +133,7 @@ class RegisterStoreFactory(
                             }
                         }
                     }
-
+                    
                     is Intent.EmailChange -> dispatch(EmailChanged(intent.email))
                     Intent.EmailImageClick -> dispatch(EmailChanged(""))
                     is Intent.PasswordChange -> dispatch(
@@ -140,19 +141,20 @@ class RegisterStoreFactory(
                             intent.password
                         )
                     )
-
+                    
                     Intent.PasswordImageClick -> dispatch(PasswordTransform)
                     is Intent.ConfirmPasswordChange -> dispatch(ConfirmPasswordChanged(intent.password))
                     Intent.ConfirmPasswordImageClick -> dispatch(ConfirmPasswordTransform)
+                    
                     is Intent.UpdateCitizenship -> {
                         dispatch(UpdateCitizenship(intent.state))
                     }
-
+                    
                     is Intent.UpdateEducation -> {
                         dispatch(UpdateEducation(intent.state))
                         scope.launch {
                             val state = state()
-
+                            
                             try {
                                 val token = authRepository.register(
                                     RegisterModel(
@@ -164,35 +166,39 @@ class RegisterStoreFactory(
                                         )
                                     )
                                 )
+                                Logger.d { "start response: " }
+                                val newUser = UserProfile(
+                                    surname = state.personalDataState?.surname ?: "",
+                                    name = state.personalDataState?.name ?: "",
+                                    patronymic = state.personalDataState?.patronymic,
+                                    gender = UserProfileModel.Gender.valueOf(
+                                        state.personalDataState?.gender ?: ""
+                                    ),
+                                    dob = state.personalDataState?.birthDate ?: "",
+                                    dor = now().toString(),
+                                    citizenship = state.citizenshipState?.citizenship,
+                                    nationality = state.citizenshipState?.nationality,
+                                    countryOfResidence = state.citizenshipState?.countryOfResidence,
+                                    cityOfResidence = state.citizenshipState?.cityOfResidence,
+                                    countryDuringEducation = state.citizenshipState?.countryDuringEducation,
+                                    periodSpent = UserProfileModel.PeriodSpent.valueOf(
+                                        state.citizenshipState?.timeSpentInRussia ?: ""
+                                    ),
+                                    kindOfActivity = state.educationState?.kindOfActivity,
+                                    education = state.educationState?.education,
+                                    purposeOfRegister = state.educationState?.purposeOfRegistration,
+                                    email = state.email
+                                )
+                                Logger.d { newUser.toString() }
+                                Logger.d { userRepository.createProfile(
+                                    newUser
+                                ).toString() }
                                 authRepository.setToken(token.accessToken)
                                 authRepository.saveRefreshToken(token.refreshToken)
-
-                                userRepository.createProfile(
-                                    UserProfile(
-                                        surname = state.personalDataState?.surname ?: "",
-                                        name = state.personalDataState?.name ?: "",
-                                        patronymic = state.personalDataState?.patronymic,
-                                        gender = UserProfileModel.Gender.valueOf(
-                                            state.personalDataState?.gender ?: ""
-                                        ),
-                                        dob = state.personalDataState?.birthDate ?: "",
-                                        dor = now().toString(),
-                                        citizenship = state.citizenshipState?.citizenship as String? as List<String>?,
-                                        nationality = state.citizenshipState?.nationality,
-                                        countryOfResidence = state.citizenshipState?.countryOfResidence,
-                                        cityOfResidence = state.citizenshipState?.cityOfResidence,
-                                        countryDuringEducation = state.citizenshipState?.countryDuringEducation,
-                                        periodSpent = UserProfileModel.PeriodSpent.valueOf(
-                                            state.citizenshipState?.timeSpentInRussia ?: ""
-                                        ),
-                                        kindOfActivity = state.educationState?.kindOfActivity,
-                                        education = state.educationState?.education,
-                                        purposeOfRegister = state.educationState?.purposeOfRegistration,
-                                        email = state.email
-                                    )
-                                )
+                                
+                                
                                 publish(Label.SubmittedSuccessfully)
-
+                                
                             } catch (e: ErrorType) {
                                 Logger.d { "error: $e" }
                                 if (e is RegisterError) {
@@ -204,7 +210,7 @@ class RegisterStoreFactory(
                                                 )
                                             )
                                         )
-
+                                        
                                         ErrorType.InvalidPassword -> dispatch(
                                             PasswordError(
                                                 errorDecoder.decode(
@@ -212,7 +218,7 @@ class RegisterStoreFactory(
                                                 )
                                             )
                                         )
-
+                                        
                                         ErrorType.UnAuthorize -> dispatch(
                                             PasswordError(
                                                 errorDecoder.decode(
@@ -227,8 +233,9 @@ class RegisterStoreFactory(
                             }
                         }
                     }
-
+                    
                     is Intent.UpdateLanguage -> dispatch(UpdateLanguage(intent.state))
+                    
                     is Intent.UpdatePersonalData -> {
                         Logger.d { "UpdatePersonalData : ${intent.state}" }
                         dispatch(UpdatePersonalData(intent.state))
@@ -236,30 +243,31 @@ class RegisterStoreFactory(
                 }
             }
         }
-
+        
     }
-
-
+    
+    
     private object ReducerImpl : Reducer<State, Msg> {
+        
         override fun State.reduce(msg: Msg): State = when (msg) {
             Confirm -> copy(loading = true)
             is EmailChanged -> copy(
                 email = msg.email,
                 emailError = null,
             )
-
+            
             is EmailError -> copy(emailError = msg.messageId)
             Loading -> copy(
                 loading = true, emailError = null, passwordError = null,
             )
-
+            
             is PasswordChanged -> copy(
                 password = msg.password,
                 passwordError = null,
             )
-
+            
             is PasswordError -> copy(passwordError = msg.messageId)
-
+            
             PasswordTransform -> copy(showPassword = !showPassword)
             DeleteEmail -> copy(email = "")
             FinishLoading -> copy(loading = false)

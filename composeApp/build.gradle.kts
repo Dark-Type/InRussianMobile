@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    alias (libs.plugins.kotlinSerialization)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 kotlin {
@@ -16,10 +16,11 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-
+    
     sourceSets {
         androidMain.dependencies {
-            implementation (libs.exoplayer)
+            implementation(libs.reorderable)
+            implementation(libs.exoplayer)
             implementation(libs.ktor.client.okhttp)
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
@@ -49,7 +50,7 @@ kotlin {
 android {
     namespace = "com.example.inrussian"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
-
+    
     defaultConfig {
         applicationId = "com.example.inrussian"
         minSdk = libs.versions.android.minSdk.get().toInt()
@@ -71,12 +72,12 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-
+    
 }
 
 dependencies {
     debugImplementation(compose.uiTooling)
     implementation(libs.coil.compose)
-    implementation (libs.accompanist.insets)
+    implementation(libs.accompanist.insets)
 }
 
