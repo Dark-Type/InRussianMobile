@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,11 +32,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import com.example.inrussian.R
 import com.example.inrussian.components.main.train.TaskBodyChild
 import com.example.inrussian.components.main.train.ThemeTasksComponent
 import com.example.inrussian.getImageRes
@@ -48,6 +54,7 @@ import com.example.inrussian.root.main.train.task.TextConnect
 import com.example.inrussian.root.main.train.task.TextInputTask
 import com.example.inrussian.root.main.train.task.TextInputWithVariantTask
 import com.example.inrussian.stores.main.train.TrainStore
+import com.example.inrussian.ui.theme.CommonButton
 import com.example.inrussian.ui.theme.LocalExtraColors
 import com.example.inrussian.ui.theme.Orange
 import inrussian.composeapp.generated.resources.Res
@@ -81,16 +88,17 @@ private fun ActiveTask(
             .background(currentColors.secondaryBackground)
             .padding(horizontal = 20.dp, vertical = 24.dp), horizontalAlignment = Alignment.Start
     ) {
+        Spacer(Modifier.height(32.dp))
         LinearProgressIndicator(
             progress = { progress },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(8.dp),
-            color = MaterialTheme.colorScheme.primary,
-            trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+            color = Orange,
+            trackColor = White
         )
         Spacer(Modifier.height(16.dp))
-        
+        /*
         Text(
             "Theme: ${state.showedTask?.themeId ?: component.themeId}",
             style = MaterialTheme.typography.labelMedium
@@ -100,70 +108,56 @@ private fun ActiveTask(
             "Progress: ${(progress * 100).toInt()}%", style = MaterialTheme.typography.labelSmall
         )
         Spacer(Modifier.height(20.dp))
+
+         */
         TaskDescription(
             {},
             state.showedTask?.question ?: "",
             state.showedTask?.types ?: listOf()
         )
         Spacer(Modifier.height(24.dp))
-        
-        TaskBodyChildRenderer(bodyChild) { callback ->
-            onEventState = callback
+
+        Box(Modifier.weight(1f, fill = true)) {
+            TaskBodyChildRenderer(bodyChild) { callback -> onEventState = callback }
         }
         
         Spacer(Modifier.height(32.dp))
-        
+
+
         when (state.isCorrect) {
             null -> {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Button(
+                    CommonButton(
+                        text = stringResource(R.string.continue_button),
+                        enable = state.isButtonEnable,
                         onClick = { component.markCorrectAndSubmit();onEventState?.invoke() },
                         modifier = Modifier.weight(1f)
-                    ) { Text("Check (Mock Correct)") }
-                    OutlinedButton(
-                        onClick = { component.markIncorrectAttempt();onEventState?.invoke() },
-                        modifier = Modifier.weight(1f)
-                    ) { Text("Mark Wrong") }
+                    )
                 }
             }
             
             true -> {
-                Text(
-                    "Correct!",
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.SemiBold
-                )
                 Spacer(Modifier.height(12.dp))
-                Button(onClick = {
+                CommonButton(
+                    text = stringResource(R.string.next_button),
+                    enable = true,
+                    onClick = {
                     component.continueAfterCorrect()
                     onEventState?.invoke()
-                }, modifier = Modifier.fillMaxWidth()) {
-                    Text("Continue")
-                }
+                }, modifier = Modifier.fillMaxWidth())
             }
             
             false -> {
-                Text(
-                    "Incorrect, try again.",
-                    color = MaterialTheme.colorScheme.error,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Spacer(Modifier.height(12.dp))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Button(
+                    CommonButton(
+                        text = stringResource(R.string.repeat_button),
+                        enable = state.isButtonEnable,
                         onClick = { component.markCorrectAndSubmit();onEventState?.invoke() },
                         modifier = Modifier.weight(1f)
-                    ) { Text("Force Correct") }
-                    OutlinedButton(
-                        onClick = { component.markIncorrectAttempt();onEventState?.invoke() },
-                        modifier = Modifier.weight(1f)
-                    ) { Text("Retry Wrong") }
+                    )
                 }
             }
         }
-        
-        Spacer(Modifier.height(40.dp))
-        OutlinedButton(onClick = component::onBack) { Text("Back") }
     }
 }
 
@@ -233,10 +227,11 @@ private fun Loading() {
 
 @Composable
 fun TaskDescription(onInfoClick: () -> Unit, text: String, tasksTypes: List<TaskType>) {
+    val currentColors = LocalExtraColors.current
     Column(
         Modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(White)
+            .background(currentColors.componentBackground)
             .padding(horizontal = 10.dp)
             .padding(bottom = 16.dp)
     ) {
@@ -260,7 +255,8 @@ fun TaskDescription(onInfoClick: () -> Unit, text: String, tasksTypes: List<Task
         Spacer(Modifier.height(4.dp))
         Text(
             text,
-            fontSize = 16.sp
+            fontSize = 16.sp,
+            color = currentColors.fontCaptive
         )
     }
 }
