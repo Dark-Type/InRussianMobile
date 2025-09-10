@@ -143,7 +143,7 @@ class ImageAndSelectTask : ImageAndSelectComponent {
                     name = "Спикер 2",
                     image = "",
                     description = "Я подумаю над твоим предложением",
-                    descriptionTranslate = "Go fuck "
+                    descriptionTranslate = "I will think about your offer"
                 )
             ),
             variants = listOf(

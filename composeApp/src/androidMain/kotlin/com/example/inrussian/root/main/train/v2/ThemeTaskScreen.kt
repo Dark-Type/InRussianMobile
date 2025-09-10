@@ -1,5 +1,8 @@
 package com.example.inrussian.root.main.train.v2
 
+import android.app.Activity
+import android.view.View
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +27,8 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,9 +37,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.inrussian.components.main.train.TaskBodyChild
 import com.example.inrussian.components.main.train.ThemeTasksComponent
@@ -59,7 +68,28 @@ import org.jetbrains.compose.resources.vectorResource
 fun ThemeTasksScreen(component: ThemeTasksComponent) {
     val state by component.state.subscribeAsState()
     val slot by component.childSlot.subscribeAsState()
-    
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        val activity = context as? ComponentActivity
+        activity?.let {
+            val windowInsetsController = WindowCompat.getInsetsController(it.window, it.window.decorView)
+            windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
+            windowInsetsController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            val activity = context as? ComponentActivity
+            activity?.let {
+                val windowInsetsController =
+                    WindowCompat.getInsetsController(it.window, it.window.decorView)
+                windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
+            }
+        }
+    }
+
     when {
         state.isLoading && state.showedTask == null -> Loading()
         state.showedTask == null -> EmptyOrFinished(state, component)
@@ -74,7 +104,7 @@ private fun ActiveTask(
     val progress = (state.percent ?: 0f).coerceIn(0f, 1f)
     var onEventState by remember { mutableStateOf<(() -> Unit)?>(null) }
     val currentColors = LocalExtraColors.current
-    
+
     Column(
         Modifier
             .fillMaxSize()
@@ -90,7 +120,7 @@ private fun ActiveTask(
             trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
         )
         Spacer(Modifier.height(16.dp))
-        
+
         Text(
             "Theme: ${state.showedTask?.themeId ?: component.themeId}",
             style = MaterialTheme.typography.labelMedium
@@ -106,13 +136,13 @@ private fun ActiveTask(
             state.showedTask?.types ?: listOf()
         )
         Spacer(Modifier.height(24.dp))
-        
+
         TaskBodyChildRenderer(bodyChild) { callback ->
             onEventState = callback
         }
-        
+
         Spacer(Modifier.height(32.dp))
-        
+
         when (state.isCorrect) {
             null -> {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -126,7 +156,7 @@ private fun ActiveTask(
                     ) { Text("Mark Wrong") }
                 }
             }
-            
+
             true -> {
                 Text(
                     "Correct!",
@@ -141,7 +171,7 @@ private fun ActiveTask(
                     Text("Continue")
                 }
             }
-            
+
             false -> {
                 Text(
                     "Incorrect, try again.",
@@ -161,7 +191,7 @@ private fun ActiveTask(
                 }
             }
         }
-        
+
         Spacer(Modifier.height(40.dp))
         OutlinedButton(onClick = component::onBack) { Text("Back") }
     }
@@ -170,7 +200,7 @@ private fun ActiveTask(
 @Composable
 private fun TaskBodyChildRenderer(child: TaskBodyChild?, onSetOnEvent: ((() -> Unit)?) -> Unit) {
     val currentColor = LocalExtraColors.current
-    
+
     Surface(
         color = currentColor.componentBackground,
         tonalElevation = 2.dp,
@@ -182,7 +212,7 @@ private fun TaskBodyChildRenderer(child: TaskBodyChild?, onSetOnEvent: ((() -> U
                 is TaskBodyChild.TextConnect -> TextConnect(child.component) {
                     onSetOnEvent(it)
                 }
-                
+
                 is TaskBodyChild.AudioConnect -> AudioConnect(child.component) { onSetOnEvent(it) }
                 is TaskBodyChild.ImageConnect -> ImageConnectTask(child.component) { onSetOnEvent(it) }
                 is TaskBodyChild.TextInput -> TextInputTask(child.component) { onSetOnEvent(it) }
@@ -191,13 +221,13 @@ private fun TaskBodyChildRenderer(child: TaskBodyChild?, onSetOnEvent: ((() -> U
                         it
                     )
                 }
-                
+
                 is TaskBodyChild.ListenAndSelect -> ListenAndSelectTaskUi(child.component) {
                     onSetOnEvent(
                         it
                     )
                 }
-                
+
                 TaskBodyChild.Empty, null -> Text("No specific body renderer")
                 is TaskBodyChild.ImageAndSelect -> ImageAndSelectTaskUi(child.component) {
                     onSetOnEvent(it)
@@ -233,10 +263,11 @@ private fun Loading() {
 
 @Composable
 fun TaskDescription(onInfoClick: () -> Unit, text: String, tasksTypes: List<TaskType>) {
+    val currentColors = LocalExtraColors.current
     Column(
         Modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(White)
+            .background(currentColors.componentBackground)
             .padding(horizontal = 10.dp)
             .padding(bottom = 16.dp)
     ) {
@@ -260,7 +291,8 @@ fun TaskDescription(onInfoClick: () -> Unit, text: String, tasksTypes: List<Task
         Spacer(Modifier.height(4.dp))
         Text(
             text,
-            fontSize = 16.sp
+            fontSize = 16.sp,
+            color = currentColors.fontCaptive
         )
     }
 }

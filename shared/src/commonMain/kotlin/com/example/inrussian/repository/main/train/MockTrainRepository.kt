@@ -23,17 +23,17 @@ class MockTrainRepository(
             taskType = listOf(),
             taskBody = TaskBody.TextInputWithVariantTask(
                 task = TextInputWithVariantModel(
-                    label = "Chertov spicker",
+                    label = "Спикер 0",
                     text = "God, it's was really bad day",
                     gaps = listOf(
                         GapWithVariantModel(
                             indexWord = 0,
-                            variants = listOf("bad", "fucking", "oldest"),
-                            correctVariant = "fucking"
+                            variants = listOf("bad", "amazing", "awesome"),
+                            correctVariant = "bad"
                         ), GapWithVariantModel(
                             indexWord = 4,
-                            variants = listOf("bad", "fucking", "oldest"),
-                            correctVariant = "fucking"
+                            variants = listOf("amazing", "bad", "great"),
+                            correctVariant = "great"
                         )
                     )
                 )
@@ -45,31 +45,31 @@ class MockTrainRepository(
             taskBody = TaskBody.TextInputTask(
                 task = listOf(
                     TextInputModel(
-                        label = "Спикер 2",
-                        text = "greka ehal cherez reku widit sidit rak",
+                        label = "Спикер 0",
+                        text = "Ехал грека через реку видит сидит рак",
                         gaps = listOf(Gap("Greka", 5))
                     ),
                     TextInputModel(
                         label = "Спикер 1",
-                        text = "greka ehal cherez reku widit sidit rak",
+                        text = "Ехал грека через реку видит сидит рак",
                         gaps = listOf(Gap("Greka", 5))
                     ),
                     TextInputModel(
-                        label = "Спикер 0",
-                        text = "greka ehal cherez reku widit sidit rak",
+                        label = "Спикер 2",
+                        text = "Ехал грека через реку видит сидит рак",
                         gaps = listOf(Gap("Greka", 5))
                     ),
                     
                     )
             ),
-            question = "как же надоело писать этот проект"
+            question = "Какое слово прорущено?"
         ),
         TaskModel(
             taskType = listOf(TaskType.LISTEN),
             taskBody = TaskBody.AudioConnectTask(
-                variant = listOf("https://ru-d1.drivemusic.me/dl/aUXUtDqRsTEr0AyF_pBYhA/1756874921/download_music/2019/11/the-weeknd-blinding-lights.mp3" to "Гойда")
+                variant = listOf("https://ru-d1.drivemusic.me/dl/aUXUtDqRsTEr0AyF_pBYhA/1756874921/download_music/2019/11/the-weeknd-blinding-lights.mp3" to "Blinding Lights")
             ),
-            question = "как же надоело писать этот проект"
+            question = "что это за песня?"
         ),
         
         TaskModel(
@@ -80,32 +80,32 @@ class MockTrainRepository(
                     variants = listOf()
                 )
             ),
-            question = "Послушайте и скажите, что курил автор"
+            question = "Послушайте и скажите, что здесь не так"
         ),
         TaskModel(
             taskType = listOf(TaskType.READ, TaskType.READ),
             taskBody = TaskBody.TextConnectTask(
-                variant = listOf("BudetMir, goyd2a " to "Гойда")
+                variant = listOf("Left1 " to "Right1")
             ),
-            question = "live or die, that is question"
+            question = "to be or not to be, that's the question question"
         ),
         TaskModel(
             taskType = listOf(TaskType.READ, TaskType.WRITE),
             taskBody = TaskBody.TextConnectTask(
                 variant = listOf(
-                    "BudetMir, goyd1a " to "Гойда1",
-                    "BudetMir, goyd2a " to "Гойда2",
-                    "BudetMir, goyd3a " to "Гойда3",
+                    "Left1 " to "Right1",
+                    "Left2 " to "Right2",
+                    "Left3 " to "Right3",
                 ),
             ),
-            question = "live or die, that is question"
+            question = "to be or not to be, that's the question"
         ),
         TaskModel(
             taskType = listOf(TaskType.CONNECT_AUDIO, TaskType.SELECT),
             taskBody = TaskBody.TextConnectTask(
-                variant = listOf("BudetMir, goyd3a " to "Гойда")
+                variant = listOf("Connect1 " to "Match1")
             ),
-            question = "live or die, that is question"
+            question = "to be or not to be, that's the question"
         ),
         TaskModel(
             id = Uuid.random().toString(),
@@ -114,17 +114,17 @@ class MockTrainRepository(
                 ImageAndSelectModel(
                     imageBlocks = listOf(
                         ImageBlocks(
-                            name = "Olega",
-                            image = "https://a.d-cd.net/9e05ae6s-1920.jpg"
+                            name = "Matreshka",
+                            image = "https://i.pinimg.com/originals/5d/af/6b/5daf6b907517384b8a28fdf3e4ed6e71.png"
                         ),
                         ImageBlocks(
-                            name = "Мой ахуй если это заведется",
-                            description = "работает, сука",
-                            descriptionTranslate = "It's working, bitch",
-                            image = "https://www.meme-arsenal.com/memes/25e19667a7d1520cde867701f9e80fc9.jpg"
+                            name = "Will this work?",
+                            description = "It's working",
+                            descriptionTranslate = "It's working",
+                            image = "https://selcdn.fedsp.com/teth/9/28056/1c65a044000abaa2.jpg"
                         )
                     ),
-                    variants = listOf("Blu" to false, "bitch" to false, "yesss" to true)
+                    variants = listOf("Incorrect" to false, "Wrong" to false, "Correct" to true)
                 )
             ),
             question = "",

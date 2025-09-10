@@ -67,9 +67,11 @@ struct PersonalDataComponentView: View {
             if showGenderPicker {
                 GenderPickerOverlay(
                     genderOptions: genderOptions,
-                    selectedGender: state.gender,
-                    onSelect: { gender in
-                        component.changeGender(gender: gender)
+                    selectedGender: state.gender?.displayString ?? "",
+                    onSelect: { genderString in
+                        if let genderEnum = genderFromString(genderString) {
+                            component.changeGender(gender_: genderEnum)
+                        }
                         withAnimation { showGenderPicker = false }
                     },
                     onCancel: { withAnimation { showGenderPicker = false } }
@@ -155,7 +157,7 @@ private struct PersonalDataFields: View {
             Divider().padding(.horizontal, 8)
 
             GenderPickerButton(
-                gender: state.gender,
+                gender: state.gender?.displayString ?? "",
                 showGenderPicker: $showGenderPicker
             )
             Divider().padding(.horizontal, 8)
@@ -189,11 +191,14 @@ private struct GenderPickerButton: View {
             HStack {
                 if gender.isEmpty {
                     HStack(spacing: 0) {
-                        Text("Пол").foregroundColor(.secondary)
-                        Text("*").foregroundColor(.red)
+                        Text("Пол")
+                            .foregroundColor(.secondary)
+                        Text("*")
+                            .foregroundColor(.red)
                     }
                 } else {
-                    Text(gender).foregroundColor(.primary)
+                    Text(gender)
+                        .foregroundColor(.primary)
                 }
                 Spacer()
                 Image(systemName: "chevron.down")
@@ -232,6 +237,14 @@ private struct BirthDatePickerButton: View {
             .padding(.horizontal, 12)
         }
         .buttonStyle(.plain)
+    }
+}
+
+func genderFromString(_ str: String) -> Gender? {
+    switch str {
+    case "Мужской": return Gender.male
+    case "Женский": return Gender.female
+    default: return nil
     }
 }
 
@@ -367,6 +380,16 @@ struct CustomAsteriskTextField: View {
                 .padding(.vertical, 10)
                 .padding(.horizontal, 12)
                 .background(Color.clear)
+        }
+    }
+}
+
+extension Gender {
+    var displayString: String {
+        switch self {
+        case Gender.male: return "Мужской"
+        case Gender.female: return "Женский"
+        default: return ""
         }
     }
 }

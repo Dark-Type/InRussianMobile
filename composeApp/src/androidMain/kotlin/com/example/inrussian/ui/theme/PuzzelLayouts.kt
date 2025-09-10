@@ -89,69 +89,6 @@ fun PuzzleLayoutIn(
     }
 }
 
-/*@Composable
-fun PuzzleLayoutOut(
-    tabSide: TabSide = TabSide.LEFT,
-    modifier: Modifier = Modifier,
-    elementModifier: Modifier = Modifier,
-    color: Color = White,
-    onClick: () -> Unit = {},
-    element: @Composable BoxScope. (Modifier) -> Unit = {},
-) {
-    Box(
-        modifier
-            .height(IntrinsicSize.Min)
-            .background(color)
-            .drawBehind {
-                val r = size.height * 0.25f
-
-                var ovalRect = Rect(
-
-                    left = size.width - r,
-                    top = (size.height - 2 * r) / 2f,
-                    right = size.width + r,
-                    bottom = (size.height - 2 * r) / 2f + 2 * r
-                )
-                var startAngle = -90f
-                var sweepAngle = 180f
-                when (tabSide) {
-                    TabSide.LEFT -> {
-                        ovalRect =
-                            Rect(
-                                -r,
-                                (size.height - 2 * r) / 2f,
-                                r,
-                                (size.height - 2 * r) / 2f + 2 * r
-                            );startAngle = 270f;sweepAngle = -180f
-                    }
-
-                    TabSide.RIGHT -> {}
-                    TabSide.TOP -> TODO()
-                    TabSide.BOTTOM -> TODO()
-                }
-
-                drawArc(
-                    color = color,
-                    startAngle = startAngle,
-                    sweepAngle = sweepAngle,
-                    useCenter = true,
-                    topLeft = ovalRect.topLeft,
-                    size = ovalRect.size
-                )
-            }
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable {
-                onClick()
-            },
-        contentAlignment = Alignment.Center
-    ) {
-        element(
-            elementModifier
-                .align(Alignment.Center)
-                .fillMaxHeight()
-        )
-    }
-}*/
 @Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xFF2962FF)
 @Composable
 fun PuzzleLayoutOut(

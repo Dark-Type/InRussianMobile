@@ -334,7 +334,7 @@ private fun PairRow(
 
 @Composable
 private fun TextSmall(
-    text: String, color: Color = com.example.inrussian.root.main.train.task.Colors.TextSecondary
+    text: String, color: Color = Colors.TextSecondary
 ) {
     BasicText(
         text = text, style = TextStyle(

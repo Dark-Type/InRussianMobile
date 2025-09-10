@@ -17,6 +17,36 @@ enum TimeSpentInRussia: String, CaseIterable, Identifiable {
     case never = "никогда не был"
 
     var id: String { rawValue }
+
+    static func fromKotlin(_ period: String?) -> TimeSpentInRussia? {
+        switch period {
+        case "MONTH_MINUS": return .lessThanMonth
+        case "MONTH_SIX_MONTHS_MINUS": return .lessThanHalfYear
+        case "SIX_MONTHS": return .lessThanHalfYear
+        case "YEAR_MINUS": return .lessThanYear
+        case "YEAR_PLUS": return .moreThanYear
+        case "FIVE_YEARS_PLUS": return .moreThanFiveYears
+        case "NEVER": return .never
+        default: return nil
+        }
+    }
+
+    var toKotlin: String {
+        switch self {
+        case .lessThanMonth:
+            return "MONTH_MINUS"
+        case .lessThanHalfYear:
+            return "MONTH_SIX_MONTHS_MINUS"
+        case .lessThanYear:
+            return "YEAR_MINUS"
+        case .moreThanYear:
+            return "YEAR_PLUS"
+        case .moreThanFiveYears:
+            return "FIVE_YEARS_PLUS"
+        case .never:
+            return "NEVER"
+        }
+    }
 }
 
 struct CitizenshipComponentView: View {
@@ -87,7 +117,7 @@ struct CitizenshipComponentView: View {
         _cityOfResidence = State(initialValue: component.state.value.cityOfResidence)
         _countryDuringEducation = State(initialValue: component.state.value.countryDuringEducation)
         _timeSpentInRussia = State(initialValue:
-            TimeSpentInRussia.allCases.first(where: { $0.rawValue == component.state.value.timeSpentInRussia })
+            TimeSpentInRussia.fromKotlin(component.state.value.timeSpentInRussia?.name)
         )
     }
 
@@ -373,7 +403,6 @@ struct CitizenshipChipField: View {
                 HStack {
                     placeholder
                     Spacer()
-                    // Make the inactive chevron occupy the same trailing footprint as the active one
                     Image(systemName: "chevron.down")
                         .foregroundColor(Color(.systemBlue))
                         .frame(width: 36, height: 36, alignment: .center)

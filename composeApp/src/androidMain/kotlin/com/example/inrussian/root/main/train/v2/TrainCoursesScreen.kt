@@ -86,41 +86,7 @@ import com.example.inrussian.ui.theme.LocalExtraColors
 import kotlin.math.roundToInt
 
 
-data class TrainCoursesState(
-    val isLoading: Boolean = false,
-    val courses: List<CourseUiModel> = emptyList(),
-    val error: String? = null
-)
 
-///* Provided externally */
-//data class ThemeModel(
-//    val id: String,
-//    val title: String,
-//    val description: String? = null,
-//    val childThemes: List<ThemeModel> = emptyList(),
-//    val solvedTasks: Int,
-//    val totalTasks: Int,
-//    val isLeaf: Boolean
-//) {
-//    val completionFraction: Float
-//        get() = if (totalTasks == 0) 0f else (solvedTasks.toFloat() / totalTasks.toFloat()).coerceIn(0f, 1f)
-//}
-
-data class CourseUiModel(
-    val id: String,
-    val title: String,
-    val percent: Int,
-    val totalTasks: Int,
-    val solvedTasks: Int,
-    val themes: List<ThemeModel>
-)
-
-interface TrainCoursesListComponent {
-    val state: Value<TrainCoursesState>
-    fun onRefresh()
-    fun onThemeClick(courseId: String, themePath: List<String>)
-    fun onResumeCourse(courseId: String)
-}
 
 /* Colors from your existing theme (ExtraColors) */
 val Orange = Color(0xFFFF7A00)
@@ -476,16 +442,6 @@ private fun ThemeNode(
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                 }
-
-//                if (theme.childThemes.isNotEmpty()) {
-//                    TextButton(
-//                        onClick = { onDeepThemeNavigate(theme, path) },
-//                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
-//                    ) {
-//                        Text("Open Theme", fontSize = 12.sp)
-//                    }
-//                    Spacer(Modifier.height(6.dp))
-//                }
 
                 theme.childThemes.forEach { child ->
                     ThemeNode(
