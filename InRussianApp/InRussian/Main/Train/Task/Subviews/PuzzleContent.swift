@@ -18,7 +18,6 @@ struct PuzzleTileRow: View {
     let left: PuzzleContent
     let right: PuzzleContent
 
-    // Visual configuration
     var baseHeight: CGFloat = 120
     var imageMaxExtra: CGFloat = 40
     var fillLeft: Color = .white
@@ -26,11 +25,9 @@ struct PuzzleTileRow: View {
     var stroke: Color = .secondary.opacity(0.3)
     var lineWidth: CGFloat = 1
 
-    // Extra safe padding for the RIGHT tile so content doesn't get carved by the inward connector
     var rightTileSafeLeadingPadding: CGFloat = 18
 
     private var rowHeight: CGFloat {
-        // Allow slight height increase if any side is an image
         let hasImage: Bool = {
             if case .image = left { return true }
             if case .image = right { return true }
@@ -93,7 +90,8 @@ private struct TextTileContent: View {
     }
 }
 
-private final class AudioPlayerModel: ObservableObject {
+// Made internal so it can be reused by other views (e.g., AudioConnectTaskView)
+final class AudioPlayerModel: ObservableObject {
     @Published var isPlaying: Bool = false
 
     let player: AVPlayer
@@ -128,7 +126,8 @@ private final class AudioPlayerModel: ObservableObject {
     }
 }
 
-private struct AudioTileContent: View {
+// Made internal so it can be reused by other views (e.g., AudioConnectTaskView)
+struct AudioTileContent: View {
     @StateObject private var model: AudioPlayerModel
 
     init(url: URL) {

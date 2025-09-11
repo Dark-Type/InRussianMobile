@@ -53,7 +53,7 @@ struct ThemeTasksView: View {
                 themeId: state.showedTask?.themeId ?? component.themeId,
                 progress: progress,
                 question: state.showedTask?.question ?? "",
-                types: (state.showedTask?.types as? [Any]) ?? [],
+                types: (state.showedTask?.types as? [TaskType]) ?? [],
                 bodyChild: slot.child?.instance,
                 isCorrect: state.isCorrect as? Bool,
                 onSetChildEvent: { onChildEvent = $0 },
@@ -84,7 +84,7 @@ private struct ActiveTaskView: View {
     let themeId: String
     let progress: Double
     let question: String
-    let types: [Any]
+    let types: [TaskType]
     let bodyChild: (any TaskBodyChild)?
     let isCorrect: Bool?
     let onSetChildEvent: ((() -> Void)?) -> Void
@@ -94,7 +94,6 @@ private struct ActiveTaskView: View {
     let onContinue: () -> Void
     let onBack: () -> Void
 
-    // Stable identity to ensure SwiftUI refreshes the body child correctly when it changes.
     private var childIdentity: String {
         if let obj = bodyChild as AnyObject? {
             return String(ObjectIdentifier(obj).hashValue)
@@ -105,7 +104,6 @@ private struct ActiveTaskView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                // Header progress and meta (on screen background)
                 VStack(alignment: .leading, spacing: 8) {
                     ProgressView(value: progress)
                         .progressViewStyle(.linear)
@@ -124,7 +122,6 @@ private struct ActiveTaskView: View {
                     }
                 }
 
-                // THEME BODY CARD: description + child + controls on ONE surface
                 ThemeBodyCard(
                     question: question,
                     types: types,
@@ -137,7 +134,6 @@ private struct ActiveTaskView: View {
                     onContinue: onContinue
                 )
 
-                // Secondary action below the card
                 Button("Back", action: onBack)
                     .buttonStyle(.bordered)
                     .controlSize(.large)
@@ -155,7 +151,7 @@ private struct ActiveTaskView: View {
 
 private struct ThemeBodyCard: View {
     let question: String
-    let types: [Any]
+    let types: [TaskType]
     let childIdentity: String
     let bodyChild: (any TaskBodyChild)?
     let isCorrect: Bool?
@@ -166,17 +162,14 @@ private struct ThemeBodyCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            // Content-only description (no own background)
             TaskDescriptionView(onInfo: nil, text: question, taskTypes: types)
 
-            // Content-only body child (no own background)
             TaskBodyChildRenderer(child: bodyChild, onSetOnEvent: onSetChildEvent)
                 .id(childIdentity)
                 .animation(.default, value: childIdentity)
 
             Divider().background(AppColors.Palette.stroke.color)
 
-            // CONTROLS live INSIDE the theme body card surface
             ControlsInsideCardView(
                 isCorrect: isCorrect,
                 onMarkCorrect: onMarkCorrect,
@@ -185,7 +178,6 @@ private struct ThemeBodyCard: View {
             )
         }
         .padding(16)
-        // Use view-builder overload; ensure single, uniform surface color
         .background {
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .fill(AppColors.Palette.componentBackground.color)
@@ -198,7 +190,6 @@ private struct ThemeBodyCard: View {
     }
 }
 
-// Controls inside the component card (Continue is INSIDE here)
 private struct ControlsInsideCardView: View {
     let isCorrect: Bool?
     let onMarkCorrect: () -> Void
