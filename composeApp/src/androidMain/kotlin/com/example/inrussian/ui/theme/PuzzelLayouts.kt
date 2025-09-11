@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -36,17 +37,20 @@ fun PuzzleLayoutIn(
     modifier: Modifier = Modifier,
     elementModifier: Modifier = Modifier,
     background: Color = Blue,
+    notchDiameter: Dp = 28.dp,
     onClick: () -> Unit = {},
     contentAlignment: Alignment = Alignment.TopStart,
     element: @Composable BoxScope.(Modifier) -> Unit = {},
 ) {
+    val density = LocalDensity.current
+    val notchPx = with(density) { notchDiameter.toPx() }
+
     Box(
         modifier
-            .height(IntrinsicSize.Min)
             .drawBehind {
                 drawIntoCanvas { canvas ->
                     val native = canvas.nativeCanvas
-                    val saveCount = native.saveLayer(0f, 0f, size.width, size.height, null)
+                    val save = native.saveLayer(0f, 0f, size.width, size.height, null)
 
                     val bgPaint = android.graphics.Paint().apply {
                         color = background.toArgb()
@@ -58,28 +62,35 @@ fun PuzzleLayoutIn(
                         isAntiAlias = true
                         xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
                     }
+
                     var cx = size.width
                     var cy = size.height / 2f
-                    var radius = size.height / 4f
+
+                    var r = (notchPx / 2f)
                     when (tabSide) {
                         TabSide.LEFT -> {
                             cx = 0f
+                            r = r.coerceAtMost(size.height / 2f - 1f).coerceAtLeast(0f)
                         }
-
-                        TabSide.RIGHT -> {}
+                        TabSide.RIGHT -> {
+                            cx = size.width
+                            r = r.coerceAtMost(size.height / 2f - 1f).coerceAtLeast(0f)
+                        }
                         TabSide.TOP -> {
-                            cx = size.width / 2;cy = 0f;radius = size.width / 4f
+                            cx = size.width / 2f
+                            cy = 0f
+                            r = r.coerceAtMost(size.width / 2f - 1f).coerceAtLeast(0f)
                         }
-
                         TabSide.BOTTOM -> {
-                            cx = size.width / 2;cy = size.height;radius = size.width / 4f
+                            cx = size.width / 2f
+                            cy = size.height
+                            r = r.coerceAtMost(size.width / 2f - 1f).coerceAtLeast(0f)
                         }
                     }
-                    native.drawCircle(cx, cy, radius, clearPaint)
 
-                    native.restoreToCount(saveCount)
+                    native.drawCircle(cx, cy, r, clearPaint)
+                    native.restoreToCount(save)
                 }
-
             }
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable { onClick() },
@@ -160,21 +171,25 @@ fun PuzzleLayoutOut(
     elementModifier: Modifier = Modifier,
     color: Color = Color.White,
     borderColor: Color = Color.Black,
-    borderWidth: Dp = 4.dp,
+    borderWidth: Dp = 0.dp,
+    notchDiameter: Dp = 28.dp,
     onClick: () -> Unit = {},
     element: @Composable BoxScope.(Modifier) -> Unit = {}
 ) {
+    val density = LocalDensity.current
+    val notchPx = with(density) { notchDiameter.toPx() }
+    val strokePx = with(density) { borderWidth.toPx() }
+    val halfStroke = strokePx / 2f
+
     Box(
         modifier = modifier
-            .height(IntrinsicSize.Min)
             .drawWithContent {
                 val w = size.width
                 val h = size.height
 
-                val strokePx = borderWidth.toPx()
-                val halfStroke = strokePx / 2f
+                var r = notchPx / 2f
+                r = r.coerceAtMost(h / 2f - halfStroke - 0.5f).coerceAtLeast(0f)
 
-                val r = h * 0.25f
                 val cy = h / 2f
 
                 val ovalRight = Rect(
@@ -202,7 +217,6 @@ fun PuzzleLayoutOut(
                             lineTo(halfStroke, h - halfStroke)
                             close()
                         }
-
                         TabSide.LEFT -> {
                             moveTo(halfStroke, halfStroke)
                             lineTo(w - halfStroke, halfStroke)
@@ -213,27 +227,26 @@ fun PuzzleLayoutOut(
                             lineTo(halfStroke, halfStroke)
                             close()
                         }
-
-                        else -> {
-                            addRect(Rect(halfStroke, halfStroke, w - halfStroke, h - halfStroke))
-                        }
+                        else -> addRect(Rect(halfStroke, halfStroke, w - halfStroke, h - halfStroke))
                     }
                 }
 
                 drawPath(path = path, color = color)
 
-                clipPath(path) {
-                    this@drawWithContent.drawContent()
+                clipPath(path) { this@drawWithContent.drawContent() }
+
+                if (borderWidth.value > 0f) {
+                    drawPath(
+                        path = path,
+                        color = borderColor,
+                        style = Stroke(width = strokePx, join = StrokeJoin.Round, cap = StrokeCap.Round)
+                    )
                 }
 
                 drawPath(
                     path = path,
                     color = borderColor,
-                    style = Stroke(
-                        width = strokePx,
-                        join = StrokeJoin.Round,
-                        cap = StrokeCap.Round
-                    )
+                    style = Stroke(width = strokePx, join = StrokeJoin.Round, cap = StrokeCap.Round)
                 )
             }
             .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -247,75 +260,4 @@ fun PuzzleLayoutOut(
         )
     }
 }
-/*
-@Composable
-fun PuzzleLayoutOut(
-    tabSide: TabSide = TabSide.LEFT,
-    modifier: Modifier = Modifier,
-    elementModifier: Modifier = Modifier,
-    color: Color = Color.Blue,
-    borderColor: Color = Color.Black,
-    borderWidth: Dp = 4.dp,
-    onClick: () -> Unit = {},
-    element: @Composable BoxScope.(Modifier) -> Unit = { Text("asfasfasf") }
-) {
-    Box(
-        modifier = modifier
-            .drawWithContent {
-                val w = size.width
-                val h = size.height
-                val r = h * 0.25f
-                val cy = h / 2f
 
-                val ovalRight = Rect(left = w - r, top = cy - r, right = w + r, bottom = cy + r)
-                val ovalLeft = Rect(left = -r, top = cy - r, right = r, bottom = cy + r)
-
-                val path = Path().apply {
-                    reset()
-                    when (tabSide) {
-                        TabSide.RIGHT -> {
-                            moveTo(0f, 0f)
-                            lineTo(w, 0f)
-                            lineTo(w, cy - r)
-                            arcTo(ovalRight, -90f, -180f, false)
-                            lineTo(w, h)
-                            lineTo(0f, h)
-                            close()
-                        }
-                        TabSide.LEFT -> {
-                            moveTo(0f, 0f)
-                            lineTo(w, 0f)
-                            lineTo(w, h)
-                            lineTo(0f, h)
-                            lineTo(0f, cy + r)
-                            arcTo(ovalLeft, 90f, -180f, false)
-                            lineTo(0f, 0f)
-                            close()
-                        }
-                        else -> addRect(Rect(0f, 0f, w, h))
-                    }
-                }
-
-                drawPath(path = path, color = color)
-
-                clipPath(path) {
-                    this@drawWithContent.drawContent()
-                }
-
-                drawPath(
-                    path = path,
-                    color = borderColor,
-                    style = Stroke(width = borderWidth.toPx(), join = StrokeJoin.Round)
-                )
-            }
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable { onClick() },
-        contentAlignment = Alignment.Center
-    ) {
-        element(
-            elementModifier
-                .align(Alignment.Center)
-                .fillMaxHeight()
-        )
-    }
-}*/

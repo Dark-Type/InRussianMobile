@@ -98,18 +98,7 @@ private fun ActiveTask(
             trackColor = White
         )
         Spacer(Modifier.height(16.dp))
-        /*
-        Text(
-            "Theme: ${state.showedTask?.themeId ?: component.themeId}",
-            style = MaterialTheme.typography.labelMedium
-        )
-        Spacer(Modifier.height(6.dp))
-        Text(
-            "Progress: ${(progress * 100).toInt()}%", style = MaterialTheme.typography.labelSmall
-        )
-        Spacer(Modifier.height(20.dp))
 
-         */
         TaskDescription(
             {},
             state.showedTask?.question ?: "",

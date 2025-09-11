@@ -1,15 +1,22 @@
 package com.example.inrussian.root.main.train.task
 
+import android.service.quicksettings.Tile
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,11 +26,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
@@ -52,89 +61,66 @@ import com.example.inrussian.ui.theme.LocalExtraColors
 
 @Composable
 fun TextConnect(
-    component: TextConnectTaskComponent, onContinueClick: (() -> Unit) -> Unit
+    component: TextConnectTaskComponent,
+    onContinueClick: (() -> Unit) -> Unit
 ) {
     val currentColors = LocalExtraColors.current
     val state by component.state.subscribeAsState()
+
+    println("THIS IS THIS SCREEEEEEEEEEEEEEN!!!!!!!!!!!!!!!!!!!!!!!!!")
+
     Column(
         Modifier
             .fillMaxSize()
             .background(currentColors.baseBackground)
     ) {
-
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(12.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             itemsIndexed(state.rows, key = { _, r -> r.key }) { _, r ->
                 when (r) {
-                    is PairRow -> {
-                        PairRow(
-                            left = r.left,
-                            right = r.right,
-                            isRightHovered = state.hoveredRightId == r.right.id,
-                            isWrong = state.invalidLeftIds.contains(r.left.id),
-                            onLeftHandlePositioned = { coords ->
-                                val rectF = coords.rectInRootToRectF()
-                                component.onPairLeftPositioned(r.left.id, rectF)
-                            },
-                            onRightPositioned = { coords ->
-                                val rectF = coords.rectInRootToRectF()
-                                component.onRightPositioned(r.right.id, rectF)
-                            },
-                            onLeftDragStart = {
-                                component.startDrag(fromPair = true, leftId = r.left.id)
-                            },
-                            onLeftDragBy = { delta ->
-                                val p = PointF(delta.x, delta.y)
-                                component.dragBy(p)
-                            },
-                            onLeftDragEnd = {
-                                component.endDrag()
-                            },
-                            onLeftDragCancel = {
-                                component.cancelDrag()
-                            })
-                    }
-
-                    is RowModel.UnmatchedRow -> {
-                        UnmatchedRow(
-                            left = r.left,
-                            right = r.right,
-                            isRightHovered = r.right?.let { state.hoveredRightId == it.id } == true,
-                            isWrong = r.left?.let { state.invalidLeftIds.contains(it.id) } == true,
-                            onLeftPositioned = { leftId, coords ->
-                                component.onLeftPositioned(leftId, coords.rectInRootToRectF())
-                            },
-                            onRightPositioned = { rightId, coords ->
-                                component.onRightPositioned(rightId, coords.rectInRootToRectF())
-                            },
-                            onLeftDragStart = { leftId ->
-                                component.startDrag(fromPair = false, leftId = leftId)
-                            },
-                            onLeftDragBy = { leftId, delta ->
-                                val p = PointF(delta.x, delta.y)
-                                component.dragBy(leftId, p)
-                            },
-                            onLeftDragEnd = {
-                                component.endDrag()
-                            },
-                            onLeftDragCancel = {
-                                component.cancelDrag()
-                            })
-                    }
-
+                    is PairRow -> PairRow(
+                        left = r.left,
+                        right = r.right,
+                        isRightHovered = state.hoveredRightId == r.right.id,
+                        isWrong = state.invalidLeftIds.contains(r.left.id),
+                        onLeftHandlePositioned = { coords ->
+                            component.onPairLeftPositioned(r.left.id, coords.rectInRootToRectF())
+                        },
+                        onRightPositioned = { coords ->
+                            component.onRightPositioned(r.right.id, coords.rectInRootToRectF())
+                        },
+                        onLeftDragStart = { component.startDrag(fromPair = true, leftId = r.left.id) },
+                        onLeftDragBy = { delta -> component.dragBy(PointF(delta.x, delta.y)) },
+                        onLeftDragEnd = component::endDrag,
+                        onLeftDragCancel = component::cancelDrag
+                    )
+                    is RowModel.UnmatchedRow -> UnmatchedRow(
+                        left = r.left,
+                        right = r.right,
+                        isRightHovered = r.right?.let { state.hoveredRightId == it.id } == true,
+                        isWrong = r.left?.let { state.invalidLeftIds.contains(it.id) } == true,
+                        onLeftPositioned = { leftId, coords ->
+                            component.onLeftPositioned(leftId, coords.rectInRootToRectF())
+                        },
+                        onRightPositioned = { rightId, coords ->
+                            component.onRightPositioned(rightId, coords.rectInRootToRectF())
+                        },
+                        onLeftDragStart = { leftId -> component.startDrag(fromPair = false, leftId = leftId) },
+                        onLeftDragBy = { leftId, delta -> component.dragBy(leftId, PointF(delta.x, delta.y)) },
+                        onLeftDragEnd = component::endDrag,
+                        onLeftDragCancel = component::cancelDrag
+                    )
                 }
             }
             item { Spacer(Modifier.height(24.dp)) }
         }
     }
-    onContinueClick {
-        component.onContinueClick()
-    }
-
+    onContinueClick { component.onContinueClick() }
 }
+
 
 @Composable
 private fun UnmatchedRow(
@@ -149,110 +135,61 @@ private fun UnmatchedRow(
     onLeftDragEnd: () -> Unit,
     onLeftDragCancel: () -> Unit
 ) {
-    val shape = RoundedCornerShape(12.dp)
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min)
-            .background(Colors.RowBg, shape)
-            .border(1.dp, Colors.RowBorder, shape)
-            .padding(horizontal = 10.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
+    PuzzleRowContainer(
+        isHovered = isRightHovered,
+        isWrong = isWrong,
+        matched = false
     ) {
-        Box(
+        // LEFT
+        PuzzleTile(
+            placeholder = left == null,
+            isHovered = false,
+            isWrong = isWrong,
+            onPositioned = left?.let { { c -> onLeftPositioned(it.id, c) } },
             modifier = Modifier
                 .weight(1f)
-                .padding(end = 6.dp)
-                .then(
+                .padding(end = TaskDimens.betweenTiles)
+                .pointerInput(left?.id) {
                     if (left != null) {
-                        Modifier
-                            .onGloballyPositioned { onLeftPositioned(left.id, it) }
-                            .background(
-                                Colors.Surface,
-                                RoundedCornerShape(10.dp)
-                            )
-                            .border(
-                                1.dp,
-                                Colors.Outline,
-                                RoundedCornerShape(10.dp)
-                            )
-                            .pointerInput(left.id) {
-                                detectDragGestures(
-                                    onDragStart = { onLeftDragStart(left.id) },
-                                    onDrag = { change, amount ->
-                                        onLeftDragBy(left.id, amount)
-                                        change.consume()
-                                    },
-                                    onDragEnd = { onLeftDragEnd() },
-                                    onDragCancel = { onLeftDragCancel() })
-                            }
-                    } else {
-                        Modifier
-                            .background(
-                                Colors.EmptyBg,
-                                RoundedCornerShape(10.dp)
-                            )
-                            .border(
-                                1.dp,
-                                Colors.EmptyBorder,
-                                RoundedCornerShape(10.dp)
-                            )
-                    })
-                .padding(horizontal = 10.dp, vertical = 8.dp),
-            contentAlignment = Alignment.CenterStart) {
-            if (left != null) {
-                PuzzleLayoutIn(TabSide.RIGHT, onClick = {}) {
-                    Text(left.label, modifier = it)
-
+                        detectDragGestures(
+                            onDragStart = { onLeftDragStart(left.id) },
+                            onDrag = { ch, a -> onLeftDragBy(left.id, a).also { ch.consume() } },
+                            onDragEnd = onLeftDragEnd,
+                            onDragCancel = onLeftDragCancel
+                        )
+                    }
                 }
-            } else {
-                PuzzleLayoutIn(TabSide.RIGHT, onClick = {}) {
-                    TextSmall("—")
-                }
-            }
+        ) {
+            PuzzleLayoutIn(
+                tabSide = TabSide.RIGHT,
+                notchDiameter = TaskDimens.notchDiameter,
+                background = taskColors().tileBg,
+                onClick = {}
+            ) {  val C = taskColors()
+                Text(left?.label ?: "—", modifier = it,style = TaskTypography.secondary, color = C.text) }
         }
 
-        val rightBorder = when {
-            right == null -> Colors.EmptyBorder
-            isWrong -> Red
-            isRightHovered -> Colors.Accent
-            else -> Colors.Outline
-        }
-        val rightBg = when {
-            right == null -> Colors.EmptyBg
-            isWrong -> Red
-            isRightHovered -> Colors.HoverBg
-            else -> Colors.Surface
-        }
-        Box(
+        // RIGHT
+        PuzzleTile(
+            placeholder = right == null,
+            isHovered = isRightHovered,
+            isWrong = isWrong,
+            onPositioned = right?.let { { c -> onRightPositioned(it.id, c) } },
             modifier = Modifier
                 .weight(1f)
-                .padding(start = 6.dp)
-                .then(
-                    if (right != null) {
-                        Modifier
-                            .onGloballyPositioned { onRightPositioned(right.id, it) }
-                            .background(rightBg, RoundedCornerShape(10.dp))
-                            .border(1.dp, rightBorder, RoundedCornerShape(10.dp))
-                    } else {
-                        Modifier
-                            .background(rightBg, RoundedCornerShape(10.dp))
-                            .border(1.dp, rightBorder, RoundedCornerShape(10.dp))
-                    })
-                .padding(horizontal = 10.dp, vertical = 8.dp),
-            contentAlignment = Alignment.CenterStart) {
-            if (right != null) {
-                PuzzleLayoutOut(onClick = {}) {
-                    Text(right.label, modifier = it)
-                }
-            } else {
-                PuzzleLayoutOut(onClick = {}) {
-                    TextSmall("—")
-                }
-            }
+                .padding(start = TaskDimens.betweenTiles)
+        ) {
+            PuzzleLayoutOut(
+                notchDiameter = TaskDimens.notchDiameter,
+                color = taskColors().tileBg,
+                onClick = {}
+            ) { val C = taskColors()
+                Text(right?.label ?: "—", style = TaskTypography.secondary, color = C.text)}
         }
     }
 }
+
+
 
 @Composable
 private fun PairRow(
@@ -267,69 +204,122 @@ private fun PairRow(
     onLeftDragEnd: () -> Unit,
     onLeftDragCancel: () -> Unit
 ) {
-    val shape = RoundedCornerShape(12.dp)
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min)
-            .background(if (isWrong) Red.copy(0.1f) else Colors.MatchedBg, shape)
-            .border(
-                1.dp, when {
-                    isWrong -> Red
-                    isRightHovered -> Colors.Accent
-                    else -> Colors.Primary
-                }, shape
-            )
-            .padding(horizontal = 10.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
+    PuzzleRowContainer(
+        isHovered = isRightHovered,
+        isWrong = isWrong,
+        matched = !isWrong
     ) {
-
         PuzzleLayoutIn(
-            TabSide.RIGHT, onClick = {},
+            tabSide = TabSide.RIGHT,
+            notchDiameter = TaskDimens.notchDiameter,
+            background = taskColors().tileBg,
+            onClick = {},
             modifier = Modifier
                 .weight(1f)
-                .fillMaxHeight()
-                .padding(end = 6.dp)
-                .onGloballyPositioned { onLeftHandlePositioned(it) }
-                .background(White.copy(alpha = 0.0f))
+                .padding(end = TaskDimens.betweenTiles)
+                .onGloballyPositioned(onLeftHandlePositioned)
                 .pointerInput(left.id) {
                     detectDragGestures(
                         onDragStart = { onLeftDragStart() },
-                        onDrag = { change, amount ->
-                            onLeftDragBy(amount)
-                            change.consume()
-                        },
-                        onDragEnd = { onLeftDragEnd() },
-                        onDragCancel = { onLeftDragCancel() })
+                        onDrag = { ch, a -> onLeftDragBy(a).also { ch.consume() } },
+                        onDragEnd = onLeftDragEnd,
+                        onDragCancel = onLeftDragCancel
+                    )
                 }
-                .padding(horizontal = 10.dp, vertical = 8.dp),
-        ) {
-            Text(
-                left.label, modifier = it
-                    .fillMaxHeight()
-                    .align(Alignment.Center)
-            )
+                .padding(TaskDimens.tilePadding)
+        ) { Text(left.label, modifier = it, style = TaskTypography.primary, color = taskColors().text) }
 
-        }
-
-        val rightShape = RoundedCornerShape(10.dp)
         PuzzleLayoutOut(
+            notchDiameter = TaskDimens.notchDiameter,
+            color = taskColors().tileBg,
+            onClick = {},
             modifier = Modifier
                 .weight(1f)
-                .fillMaxHeight()
-                .padding(start = 6.dp)
-                .onGloballyPositioned { onRightPositioned(it) }
-                .background(if (isWrong) Red.copy(0.1f) else Colors.MatchedBg, shape)
+                .padding(start = TaskDimens.betweenTiles)
+                .onGloballyPositioned(onRightPositioned)
+                .padding(TaskDimens.tilePadding)
+        ) { val C = taskColors()
 
-                .padding(horizontal = 10.dp, vertical = 8.dp), onClick = {}) {
             Text(
-                right.label, modifier = it
-                    .fillMaxHeight()
-                    .align(Alignment.Center)
-            )
-        }
+                left.label,
+                modifier = it,
+                style = TaskTypography.primary,
+                color = C.text
+            )}
     }
 }
+
+
+
+
+@Composable
+private fun PuzzleRowContainer(
+    isHovered: Boolean,
+    isWrong: Boolean,
+    matched: Boolean,
+    modifier: Modifier = Modifier,
+    content: @Composable RowScope.() -> Unit
+) {
+    val C = taskColors()
+    val bg by animateColorAsState(
+        when {
+            isWrong -> C.error.copy(alpha = 0.06f)
+            isHovered -> C.rowBg
+            else -> C.rowBg
+        }, label = "row-bg"
+    )
+    val elevation by animateDpAsState(if (isHovered) 3.dp else 1.dp, label = "row-elev")
+
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = TaskDimens.rowMinHeight),
+        color = bg,
+        shape = RoundedCornerShape(TaskDimens.rowRadius),
+        tonalElevation = elevation,
+        shadowElevation = elevation,
+        border = null
+    ) {
+        Row(
+            Modifier.padding(TaskDimens.rowPadding),
+            verticalAlignment = Alignment.CenterVertically,
+            content = content
+        )
+    }
+}
+
+@Composable
+private fun PuzzleTile(
+    placeholder: Boolean,
+    isHovered: Boolean,
+    isWrong: Boolean,
+    onPositioned: ((LayoutCoordinates) -> Unit)?,
+    modifier: Modifier = Modifier,
+    content: @Composable BoxScope.() -> Unit
+) {
+    val C = taskColors()
+    val bg by animateColorAsState(
+        when {
+            placeholder -> C.tileBg.copy(alpha = 0.85f)
+            isWrong     -> C.error.copy(alpha = 0.06f)
+            isHovered   -> C.hover
+            else        -> C.tileBg.copy(alpha = 0.00f)
+        }, label = "tile-bg"
+    )
+
+    Box(
+        modifier = modifier
+            .defaultMinSize(minHeight = TaskDimens.tileMinHeight)
+            .then(if (onPositioned != null) Modifier.onGloballyPositioned(onPositioned) else Modifier)
+            .clip(RoundedCornerShape(TaskDimens.tileRadius))
+            .background(bg)
+            .padding(TaskDimens.tilePadding),
+        contentAlignment = Alignment.CenterStart,
+        content = content
+    )
+}
+
+
 
 
 @Composable
@@ -341,6 +331,19 @@ private fun TextSmall(
             color = color, fontSize = 13.sp
         )
     )
+}
+
+@Composable
+private fun taskColors() = LocalExtraColors.current.let { ec ->
+    object {
+        val rowBg = ec.secondaryBackground
+        val tileBg = ec.componentBackground
+        val text = ec.fontCaptive
+        val subtle = ec.fontInactive
+        val hover = ec.baseBackground.copy(alpha = 0.06f)
+        val error = ec.errorColor
+        val stroke = ec.stroke
+    }
 }
 
 private fun Rect.toRectF(): RectF = RectF(left, top, right, bottom)
