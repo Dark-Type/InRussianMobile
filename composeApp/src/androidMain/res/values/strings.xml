@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">InRussian</string>
+    <string name="continue_button">Продолжить</string>
+    <string name="repeat_button">Повторить</string>
+    <string name="next_button">Далее</string>
+    <string name="newww">Далее</string>
 </resources>

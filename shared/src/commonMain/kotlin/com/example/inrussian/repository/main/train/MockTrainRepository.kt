@@ -18,121 +18,117 @@ class MockTrainRepository(
     private val themesByCourse = mutableMapOf<String, List<ThemeTreeNode>>()
     private val tasksPerTheme = mutableMapOf<String, MutableList<TaskModel>>()
     private val solvedPerTheme = mutableMapOf<String, MutableSet<String>>()
-    private val tasks = listOf<TaskModel>(
+    private val tasks = listOf<TaskModel>(  //TODO ПОЧИНИ СУКА КНОПКУ
+        // 1) Заполнение пропусков с вариантами (WRITE)
         TaskModel(
-            taskType = listOf(),
+            taskType = listOf(TaskType.WRITE),
             taskBody = TaskBody.TextInputWithVariantTask(
                 task = TextInputWithVariantModel(
-                    label = "Спикер 0",
-                    text = "God, it's was really bad day",
+                    label = "Выберите подходящие слова",
+                    text = "Сегодня очень день, я на работу.", //++++
                     gaps = listOf(
                         GapWithVariantModel(
-                            indexWord = 0,
-                            variants = listOf("bad", "amazing", "awesome"),
-                            correctVariant = "bad"
-                        ), GapWithVariantModel(
-                            indexWord = 4,
-                            variants = listOf("amazing", "bad", "great"),
-                            correctVariant = "great"
+                            indexWord = 2, // «___» после «очень»
+                            variants = listOf("хороший", "плохая", "тёплое"),
+                            correctVariant = "хороший"
+                        ),
+                        GapWithVariantModel(
+                            indexWord = 5, // «___» перед «на работу»
+                            variants = listOf("иду", "поем", "сяду"),
+                            correctVariant = "иду"
                         )
                     )
                 )
             ),
-            question = "тем временем был уже 4 час утра"
+            question = "Заполните пропуски, выбрав правильные варианты."
         ),
+
+        // 2) Диктант: прослушай и впиши пропущенное слово (LISTEN)
         TaskModel(
             taskType = listOf(TaskType.LISTEN),
             taskBody = TaskBody.TextInputTask(
                 task = listOf(
                     TextInputModel(
-                        label = "Спикер 0",
-                        text = "Ехал грека через реку видит сидит рак",
-                        gaps = listOf(Gap("Greka", 5))
+                        label = "Фраза 1",
+                        text = "Вчера я купил свежие на рынке", //+++++
+                        gaps = listOf(Gap("яблоки", 4))
                     ),
                     TextInputModel(
-                        label = "Спикер 1",
-                        text = "Ехал грека через реку видит сидит рак",
-                        gaps = listOf(Gap("Greka", 5))
-                    ),
-                    TextInputModel(
-                        label = "Спикер 2",
-                        text = "Ехал грека через реку видит сидит рак",
-                        gaps = listOf(Gap("Greka", 5))
-                    ),
-                    
+                        label = "Фраза 2",
+                        text = "Завтра мы поедем в с друзьями",
+                        gaps = listOf(Gap("музей", 4))
                     )
-            ),
-            question = "Какое слово прорущено?"
-        ),
-        TaskModel(
-            taskType = listOf(TaskType.LISTEN),
-            taskBody = TaskBody.AudioConnectTask(
-                variant = listOf("https://ru-d1.drivemusic.me/dl/aUXUtDqRsTEr0AyF_pBYhA/1756874921/download_music/2019/11/the-weeknd-blinding-lights.mp3" to "Blinding Lights")
-            ),
-            question = "что это за песня?"
-        ),
-        
-        TaskModel(
-            taskType = listOf(TaskType.SELECT, TaskType.LISTEN),
-            taskBody = TaskBody.ListenAndSelect(
-                task = ListenAndSelectModel(
-                    audioBlocks = listOf(),
-                    variants = listOf()
                 )
             ),
-            question = "Послушайте и скажите, что здесь не так"
+            question = "Прослушайте фразы и впишите пропущенные слова."
         ),
+
+        // 3) Соотнеси аудио и фразу (CONNECT_AUDIO)
         TaskModel(
-            taskType = listOf(TaskType.READ, TaskType.READ),
-            taskBody = TaskBody.TextConnectTask(
-                variant = listOf("Left1 " to "Right1")
+            taskType = listOf(TaskType.CONNECT_AUDIO),
+            taskBody = TaskBody.AudioConnectTask(
+                variant = listOf(
+                    "https://example.com/audio/privet.mp3" to "Привет",  //TODO звук вставить
+                    "https://example.com/audio/spasibo.mp3" to "Спасибо",
+                    "https://example.com/audio/do_svidaniya.mp3" to "До свидания"
+                )
             ),
-            question = "to be or not to be, that's the question question"
+            question = "Соотнесите аудио и соответствующую фразу."
         ),
+
+        // 4) Чтение: сопоставь фразу и перевод (READ)
         TaskModel(
-            taskType = listOf(TaskType.READ, TaskType.WRITE),
+            taskType = listOf(TaskType.READ),
             taskBody = TaskBody.TextConnectTask(
                 variant = listOf(
-                    "Left1 " to "Right1",
-                    "Left2 " to "Right2",
-                    "Left3 " to "Right3",
-                ),
+                    "Здравствуйте!" to "Hello!",  //++++++
+                    "Как вас зовут?" to "What is your name?",
+                    "Мне нравится этот город" to "I like this city"
+                )
             ),
-            question = "to be or not to be, that's the question"
+            question = "Прочитайте и сопоставьте фразы с переводом."
         ),
+
+        // 5) Чтение и письмо: соотнеси начало и конец фразы (READ, WRITE)
         TaskModel(
-            taskType = listOf(TaskType.CONNECT_AUDIO, TaskType.SELECT),
+            taskType = listOf(TaskType.READ, TaskType.WRITE), //+++++
             taskBody = TaskBody.TextConnectTask(
-                variant = listOf("Connect1 " to "Match1")
+                variant = listOf(
+                    "Я живу" to "в центре города.",
+                    "По выходным" to "мы встречаемся с друзьями.",
+                    "Завтра" to "я пойду гулять."
+                )
             ),
-            question = "to be or not to be, that's the question"
+            question = "Сопоставьте части предложений, чтобы получить корректные фразы."
         ),
+
+        // 6) Выбор по картинке (SELECT)
         TaskModel(
-            id = Uuid.random().toString(),
             taskType = listOf(TaskType.SELECT),
             taskBody = TaskBody.ImageAndSelect(
                 ImageAndSelectModel(
                     imageBlocks = listOf(
                         ImageBlocks(
-                            name = "Matreshka",
-                            image = "https://i.pinimg.com/originals/5d/af/6b/5daf6b907517384b8a28fdf3e4ed6e71.png"
+                            name = "Кошка",
+                            image = "https://fastly.picsum.photos/id/40/4106/2806.jpg?hmac=MY3ra98ut044LaWPEKwZowgydHZ_rZZUuOHrc3mL5mI"
                         ),
                         ImageBlocks(
-                            name = "Will this work?",
-                            description = "It's working",
-                            descriptionTranslate = "It's working",
-                            image = "https://selcdn.fedsp.com/teth/9/28056/1c65a044000abaa2.jpg"
+                            name = "Собака",
+                            image = "https://picsum.photos/id/237/200/300" // я сдаюсь искать рабочие картинки
                         )
                     ),
-                    variants = listOf("Incorrect" to false, "Wrong" to false, "Correct" to true)
+                    variants = listOf(
+                        "Кошка" to true,
+                        "Собака" to false,
+                        "Дом" to false
+                    )
                 )
             ),
-            question = "",
-            createdAt = "2024-01-01T00:00:00Z",
-            updatedAt = "2024-01-01T00:00:00Z"
-        ),
+            question = "Выберите подходящую подпись к изображению."
+        )
     )
-    
+
+
     override suspend fun userCourseEnrollments(): List<UserCourseEnrollmentItem> =
         withContext(Dispatchers.IO) {
             delay(80)
