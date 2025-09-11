@@ -241,7 +241,7 @@ private fun PairRow(
         ) { val C = taskColors()
 
             Text(
-                left.label,
+                right.label,
                 modifier = it,
                 style = TaskTypography.primary,
                 color = C.text
